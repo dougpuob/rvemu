@@ -1,0 +1,60 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Microsoft Project Solution Files
+*.vc
+*.vcxproj
+*.filters
+*.sln
+*.user
+
+# CMake
+*.cmake
+CMakeCache.txt
+CMakeFiles
+
+# Directory
+#debug
+#release
+#Debug
+#Release
+build*
+Build*
+.vscode
+.idea
+*.pyc
+*.ninja
+*.pc
+compile_commands.*
+__pycache__
+thirdparty/googletest
