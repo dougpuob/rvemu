@@ -6,8 +6,13 @@
 
 namespace rv64emu {
 
-bool CmdArgs::Parse(const std::vector<std::string>& Argv)
+bool CmdArgs::Parse(const int Argc, const char** Args ,std::vector<std::string>& Argv)
 {
+    Argv.clear();
+
+    for (int i = 0; i < Argc; i++)
+        Argv.push_back(*(Args + i));
+
     /* parse each argument in turn */
     for (int i = 1; i < Argv.size(); ++i) {
         const std::string& arg = Argv[i];

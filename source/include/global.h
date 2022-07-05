@@ -9,6 +9,6 @@ private:
 public:
     static ConfigSingleton& getInst();
 
-    bool opt_trace;
-    std::string opt_prog_name;
+    bool opt_trace = false;
+    std::string opt_prog_name = "";
 };

@@ -1,23 +1,31 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "include/global.h"
 #include "include/cmd.h"
+#include "include/elf.h"
 
-int main(int argc, char ** args) {
+
+auto on_mem_ifetch = [](void* rv, uint64_t addr) -> uint64_t {
+	return addr;
+};
+
+int main(int Argc, const char ** Args) {
 	std::vector<std::string> Argv;
-	for (int i = 0; i < argc; i++)
-		Argv.push_back(*(args + i));
-
-	if (!rv64emu::CmdArgs::Parse(Argv)) {
+	if (!rv64emu::CmdArgs::Parse(Argc, Args, Argv)) {
 		rv64emu::CmdArgs::PrintUsage(Argv[0]);
 		return 1;
 	}
 
 	/* Open the ELF file from the file system */
+	rv64emu::Elf Elf;
+	Elf.Load();
 
 	/* Install the I/O handlers for the RISC-V runtime */
+	std::vector<std::function<uint64_t(void*, uint64_t)>> IoHandlers = { on_mem_ifetch };
+	uint64_t ret = IoHandlers[0](nullptr, 123);
 
 	/* Find the start of the heap */
 
