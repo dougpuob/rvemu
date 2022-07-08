@@ -1,3 +1,5 @@
+#pragma once
+
 struct riscv_t;
 typedef void *riscv_user_t;
 
