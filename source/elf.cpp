@@ -51,23 +51,23 @@ bool Elf::IsValid() {
   return true;
 }
 
-// const std::string &Elf::GetShString(int Index) {
-//   uint32_t offset = m_Hdr->e_shoff + m_Hdr->e_shstrndx * m_Hdr->e_shentsize;
-//   const struct Elf64_Shdr *shdr =
-//       (const struct Elf64_Shdr *)(m_RawData.data() + offset);
-//   return (const char *)(m_RawData.data() + shdr->sh_offset + Index);
-// }
+const char *Elf::GetShString(int Index) {
+  uint32_t offset = m_Hdr->e_shoff + m_Hdr->e_shstrndx * m_Hdr->e_shentsize;
+  const struct Elf64_Shdr *shdr =
+      (const struct Elf64_Shdr *)(m_RawData.data() + offset);
+  return (const char *)(m_RawData.data() + shdr->sh_offset + Index);
+}
 
-// const Elf64_Shdr * Elf::GetSectionHeader(const std::string& Name) {
-//   for (int s = 0; s < e->hdr->e_shnum; ++s) {
-//     uint32_t offset = e->hdr->e_shoff + s * e->hdr->e_shentsize;
-//     const struct Elf32_Shdr *shdr =
-//         (const struct Elf32_Shdr *)(e->raw_data + offset);
-//     const char *sname = get_sh_string(e, shdr->sh_name);
-//     if (!strcmp(name, sname))
-//       return shdr;
-//   }
-//   return NULL;
-// }
+const Elf64_Shdr *Elf::GetSectionHeader(const char *Name) {
+  for (int s = 0; s < m_Hdr->e_shnum; ++s) {
+    uint32_t offset = m_Hdr->e_shoff + s * m_Hdr->e_shentsize;
+    const struct Elf64_Shdr *shdr =
+        (const struct Elf64_Shdr *)(m_RawData.data() + offset);
+    const char *sh_name = GetShString(shdr->sh_name);
+    if (!strcmp(Name, sh_name))
+      return shdr;
+  }
+  return NULL;
+}
 
 } // namespace rv64emu

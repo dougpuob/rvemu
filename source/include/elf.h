@@ -19,8 +19,8 @@ public:
   Elf(const std::string &FilePath);
   bool IsValid();
 
-  // std::string_view GetShString(int Index);
-  // const Elf64_Shdr *Elf::GetSectionHeader(const std::string_view &Name);
+  const char *GetShString(int Index);
+  const struct Elf64_Shdr *GetSectionHeader(const char *Name);
 };
 
 } // namespace rv64emu
