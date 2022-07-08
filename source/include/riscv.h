@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 struct riscv_t;
 typedef void *riscv_user_t;
 

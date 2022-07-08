@@ -7,6 +7,8 @@
 #include "include/elf.h"
 #include "include/global.h"
 
+using Config = ConfigSingleton;
+
 auto on_mem_ifetch = [](void *rv, uint64_t addr) -> uint64_t { return addr; };
 
 int main(int Argc, const char **Args) {
@@ -17,8 +19,10 @@ int main(int Argc, const char **Args) {
   }
 
   /* Open the ELF file from the file system */
-  rv64emu::Elf Elf;
-  Elf.Load();
+  rv64emu::Elf Elf(Config::getInst().opt_prog_name);
+  if (!Elf.IsValid()) {
+    return 2;
+  }
 
   /* Install the I/O handlers for the RISC-V runtime */
   std::vector<std::function<uint64_t(void *, uint64_t)>> IoHandlers = {
