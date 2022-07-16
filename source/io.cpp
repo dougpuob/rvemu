@@ -12,7 +12,16 @@ static chunk_t *allocateChunk() {
 template <class T> uint64_t Memory<T>::ReadStr(uint8_t *dst, T addr, T max) {
   return 0;
 }
-template <typename T> uint64_t Memory<T>::FetchInst(T addr) { return 0; }
+
+template <typename T> T Memory<T>::FetchInst(T addr) {
+  const T addr_lo = addr & MASK_LO;
+  assert((addr_lo & 1) == 0);
+
+  chunk_t *c = this->m_Data[addr >> 16];
+  assert(c);
+  return *(const T *)(c->data + addr_lo);
+}
+
 template <typename T> uint64_t Memory<T>::Read64(T addr) { return 0; }
 template <typename T> uint32_t Memory<T>::Read32(T addr) { return 0; }
 template <typename T> uint16_t Memory<T>::Read16(T addr) { return 0; }

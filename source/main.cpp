@@ -25,8 +25,8 @@ int main(int Argc, const char **Args) {
   }
 
   /* Install the I/O handlers for the RISC-V runtime */
-  std::vector<std::function<uint64_t(void *, uint64_t)>> IoHandlers = {
-      on_mem_ifetch};
+  using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
+  std::vector<IoHandlePrototype> IoHandlers = {on_mem_ifetch};
   uint64_t ret = IoHandlers[0](nullptr, 123);
 
   /* Find the start of the heap */

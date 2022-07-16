@@ -15,6 +15,8 @@ typedef struct {
 template <class T> class Memory {
 private:
   std::vector<chunk_t *> m_Data;
+  const uint32_t MASK_LO = 0xffff;
+  const uint32_t MASK_HI = ~(0xffff);
 
 public:
   Memory() {
@@ -29,7 +31,7 @@ public:
       }
   }
   uint64_t ReadStr(uint8_t *dst, T addr, T max);
-  uint64_t FetchInst(T addr);
+  T FetchInst(T addr);
   uint64_t Read64(T addr);
   uint32_t Read32(T addr);
   uint16_t Read16(T addr);
