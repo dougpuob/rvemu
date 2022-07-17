@@ -25,6 +25,7 @@ uint64_t Riscv::GetReg(uint8_t Reg) {
   //
   return m_Regs[Reg];
 }
+
 void Riscv::Halt() {
   //
   m_Halted = true;
