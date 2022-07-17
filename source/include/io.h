@@ -14,17 +14,17 @@ typedef struct {
 
 template <class T> class Memory {
 private:
-  std::vector<chunk_t *> m_Data;
+  std::vector<chunk_t *> m_Mem;
   const uint32_t MASK_LO = 0xffff;
   const uint32_t MASK_HI = ~(0xffff);
 
 public:
   Memory() {
-    m_Data.resize((0x10000));
-    memset(m_Data.data(), 0, m_Data.size() * sizeof(chunk_t *));
+    m_Mem.resize((0x10000));
+    memset(m_Mem.data(), 0, m_Mem.size() * sizeof(chunk_t *));
   }
   ~Memory() {
-    for (auto &chunk : m_Data)
+    for (auto &chunk : m_Mem)
       if (chunk != nullptr) {
         delete[] chunk;
         chunk = nullptr;

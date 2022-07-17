@@ -6,6 +6,7 @@
 #include "include/cmd.h"
 #include "include/elf.h"
 #include "include/global.h"
+#include "include/state.h"
 
 using Config = ConfigSingleton;
 
@@ -27,11 +28,11 @@ int main(int Argc, const char **Args) {
   /* Install the I/O handlers for the RISC-V runtime */
   using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
   std::vector<IoHandlePrototype> IoHandlers = {on_mem_ifetch};
-  uint64_t ret = IoHandlers[0](nullptr, 123);
 
   /* Find the start of the heap */
 
   /* Create the RISC-V runtime */
+  rv64emu::State state;
 
   /* Load the ELF file into the memory abstraction */
 

@@ -17,7 +17,7 @@ template <typename T> T Memory<T>::FetchInst(T addr) {
   const T addr_lo = addr & MASK_LO;
   assert((addr_lo & 1) == 0);
 
-  chunk_t *c = this->m_Data[addr >> 16];
+  chunk_t *c = this->m_Mem[addr >> 16];
   assert(c);
   return *(const T *)(c->data + addr_lo);
 }
