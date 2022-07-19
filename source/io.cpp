@@ -38,8 +38,10 @@ uint16_t Memory::Read16(uint64_t addr) {
 }
 
 uint8_t Memory::Read8(uint64_t addr) {
-  //
-  return 0;
+  chunk_t *c;
+  if ((c = m_Mem[addr >> 16]))
+    return *(c->data + (addr & 0xffff));
+  return 0u;
 }
 
 void Memory::Read(uint8_t *dst, uint64_t addr, uint64_t size) {
