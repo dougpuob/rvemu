@@ -6,9 +6,12 @@ void Riscv::Reset(uint64_t Pc) {}
 
 void Riscv::Step(int32_t Cycles) {}
 
-void Riscv::SetPc(uint64_t Pc) {
-  //
+bool Riscv::SetPc(uint64_t Pc) {
+  if (Pc & 3)
+    return false;
+
   m_Pc = Pc;
+  return true;
 }
 
 uint64_t Riscv::GetPc() {
@@ -17,8 +20,13 @@ uint64_t Riscv::GetPc() {
 }
 
 void Riscv::SetReg(uint8_t Reg, uint64_t Val) {
-  //
-  m_Regs[Reg] = Val;
+  if ((int)Reg < RV_NUM_REGS && Reg != (int)RvRegs::zero)
+    m_Regs[(int)Reg] = Val;
+}
+
+void Riscv::SetReg(RvRegs Reg, uint64_t Val) {
+  if ((int)Reg < RV_NUM_REGS && Reg != RvRegs::zero)
+    m_Regs[(int)Reg] = Val;
 }
 
 uint64_t Riscv::GetReg(uint8_t Reg) {

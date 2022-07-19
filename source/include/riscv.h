@@ -1,6 +1,8 @@
 #pragma once
 
+#include "state.h"
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 struct riscv_t;
@@ -11,6 +13,46 @@ typedef uint16_t riscv_half_t;
 typedef uint8_t riscv_byte_t;
 typedef uint32_t riscv_exception_t;
 typedef float riscv_float_t;
+
+#define RV_NUM_REGS 32
+
+using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
+
+// RISC-V register files
+enum class RvRegs : int {
+  zero = 0,
+  ra,
+  sp,
+  gp,
+  tp,
+  rv_reg_t0,
+  rv_reg_t1,
+  rv_reg_t2,
+  rv_reg_s0,
+  rv_reg_s1,
+  rv_reg_a0,
+  rv_reg_a1,
+  rv_reg_a2,
+  rv_reg_a3,
+  rv_reg_a4,
+  rv_reg_a5,
+  rv_reg_a6,
+  rv_reg_a7,
+  rv_reg_s2,
+  rv_reg_s3,
+  rv_reg_s4,
+  rv_reg_s5,
+  rv_reg_s6,
+  rv_reg_s7,
+  rv_reg_s8,
+  rv_reg_s9,
+  rv_reg_s10,
+  rv_reg_s11,
+  rv_reg_t3,
+  rv_reg_t4,
+  rv_reg_t5,
+  rv_reg_t6,
+};
 
 // RISC-V emulator I/O interface
 struct riscv_io_t {
@@ -40,12 +82,16 @@ private:
   std::vector<uint64_t> m_Regs;
 
 public:
-  Riscv() { m_Regs.reserve(32); }
+  Riscv(const std::vector<IoHandlePrototype> &IoHandles,
+        rv64emu::State &State) {
+    m_Regs.reserve(32);
+  }
   void Reset(uint64_t Pc);
   void Step(int32_t Cycles);
-  void SetPc(uint64_t Pc);
+  bool SetPc(uint64_t Pc);
   uint64_t GetPc();
   void SetReg(uint8_t Reg, uint64_t Val);
+  void SetReg(RvRegs Reg, uint64_t Val);
   uint64_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();

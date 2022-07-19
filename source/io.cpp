@@ -9,25 +9,79 @@ static chunk_t *allocateChunk() {
   return chunks;
 }
 
-template <class T> uint64_t Memory<T>::ReadStr(uint8_t *dst, T addr, T max) {
+uint64_t Memory::ReadStr(uint8_t *dst, uint64_t addr, uint64_t max) {
   return 0;
 }
 
-template <typename T> T Memory<T>::FetchInst(T addr) {
-  const T addr_lo = addr & MASK_LO;
-  assert((addr_lo & 1) == 0);
+uint64_t Memory::FetchInst(uint64_t addr) {
+  const uint64_t addr_lo = addr & MASK_LO;
+  // assert((addr_lo & 1) == 0);
 
   chunk_t *c = this->m_Mem[addr >> 16];
-  assert(c);
-  return *(const T *)(c->data + addr_lo);
+  // assert(c);
+  return *(const uint64_t *)(c->data + addr_lo);
 }
 
-template <typename T> uint64_t Memory<T>::Read64(T addr) { return 0; }
-template <typename T> uint32_t Memory<T>::Read32(T addr) { return 0; }
-template <typename T> uint16_t Memory<T>::Read16(T addr) { return 0; }
-template <typename T> uint8_t Memory<T>::Read8(T addr) { return 0; }
-template <typename T> void Memory<T>::Read(uint8_t *dst, T addr, T size) {}
-template <typename T> void Memory<T>::Write(T addr, uint8_t *dst, T size) {}
-template <typename T> void Memory<T>::Fill(T addr, T size, uint8_t val) {}
+uint64_t Memory::Read64(uint64_t addr) {
+  //
+  return 0;
+}
+
+uint32_t Memory::Read32(uint64_t addr) {
+  //
+  return 0;
+}
+
+uint16_t Memory::Read16(uint64_t addr) {
+  //
+  return 0;
+}
+
+uint8_t Memory::Read8(uint64_t addr) {
+  //
+  return 0;
+}
+
+void Memory::Read(uint8_t *dst, uint64_t addr, uint64_t size) {
+  printf("Read Read Read");
+}
+
+void Memory::Write(uint64_t addr, uint8_t *src, uint64_t size) {
+  for (uint32_t i = 0; i < size; ++i) {
+    uint32_t p = addr + i;
+    uint32_t x = p >> 16;
+    chunk_t *c = m_Mem[x];
+    if (!c) {
+      c = (chunk_t *)malloc(sizeof(chunk_t));
+      if (c) {
+
+        memset(c->data, 0, sizeof(c->data));
+        m_Mem[x] = c;
+      }
+    }
+    if (c) {
+      c->data[p & 0xffff] = src[i];
+    }
+  }
+}
+
+void Memory::Fill(uint64_t addr, uint64_t size, uint8_t val) {
+  for (uint32_t i = 0; i < size; ++i) {
+    uint32_t p = addr + i;
+    uint32_t x = p >> 16;
+
+    chunk_t *c = m_Mem[x];
+    if (!c) {
+      c = (chunk_t *)malloc(sizeof(chunk_t));
+      if (c) {
+        memset(c->data, 0, sizeof(chunk_t));
+        m_Mem[x] = c;
+      }
+    }
+    if (c) {
+      c->data[p & 0xffff] = val;
+    }
+  }
+}
 
 } // namespace rv64emu
