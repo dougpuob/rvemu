@@ -97,7 +97,7 @@ public:
   void Halt();
   bool HasHalted();
   void Run();
-  void RunWithTrace(rv64emu::Elf &Elf);
+  void Run(rv64emu::Elf &Elf);
 };
 
 } // namespace rv64emu

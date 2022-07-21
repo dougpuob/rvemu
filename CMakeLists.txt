@@ -41,7 +41,6 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/include/cmd.h
     ${CMAKE_SOURCE_DIR}/source/include/elf.h
     ${CMAKE_SOURCE_DIR}/source/include/io.h
-    ${CMAKE_SOURCE_DIR}/source/include/map.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv.h
     ${CMAKE_SOURCE_DIR}/source/include/state.h
     ${CMAKE_SOURCE_DIR}/source/include/syscall.h
@@ -51,7 +50,6 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/cmd.cpp
     ${CMAKE_SOURCE_DIR}/source/elf.cpp
     ${CMAKE_SOURCE_DIR}/source/io.cpp
-    ${CMAKE_SOURCE_DIR}/source/map.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
     ${CMAKE_SOURCE_DIR}/source/state.cpp
     ${CMAKE_SOURCE_DIR}/source/syscall.cpp

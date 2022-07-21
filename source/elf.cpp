@@ -24,7 +24,8 @@ enum {
 Elf::Elf(const std::string &FilePath) {
   std::error_code errcode;
 
-  if (!std::filesystem::exists(FilePath, errcode))
+  auto AbsPath = std::filesystem::absolute(FilePath);
+  if (!std::filesystem::exists(AbsPath, errcode))
     return;
 
   std::ifstream BinFile(FilePath, std::ios::binary);
@@ -54,7 +55,7 @@ bool Elf::IsValid() {
       m_Hdr->e_ident[3] != 'F')    //
     return false;
 
-  /* must be 32bit ELF */
+  /* must be 64bit ELF */
   if (m_Hdr->e_ident[EI_CLASS] != ELFCLASS64)
     return false;
 
@@ -87,11 +88,12 @@ const Elf64_Shdr *Elf::GetSectionHeader(const char *Name) {
 bool Elf::Load(rv64emu::Memory &Mem) {
 
   /* loop over all of the program headers */
-  for (int i = 0; m_Hdr->e_phnum; i++) {
+  for (int i = 0; i < m_Hdr->e_phnum; i++) {
 
     /* find next program header */
     uint64_t Offset = m_Hdr->e_phoff + (i * m_Hdr->e_phentsize);
-    const Elf64_Phdr *phdr = (const Elf64_Phdr *)m_RawData.data();
+    const Elf64_Phdr *phdr =
+        (const Elf64_Phdr *)((intptr_t)m_RawData.data() + Offset);
 
     /* check this section should be loaded */
     if (phdr->p_type != PT_LOAD)

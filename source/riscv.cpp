@@ -52,7 +52,7 @@ void Riscv::Run() {
   }
 }
 
-void Riscv::RunWithTrace(rv64emu::Elf &Elf) {
+void Riscv::Run(rv64emu::Elf &Elf) {
   const uint32_t cycles_per_step = 1;
   for (; !HasHalted();) { /* run until the flag is done */
     /* trace execution */

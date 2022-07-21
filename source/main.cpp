@@ -48,7 +48,7 @@ int main(int Argc, const char **Args) {
 
   /* Run based on the specified mode */
   if (Config::getInst().opt_trace)
-    Rv.RunWithTrace(Elf);
+    Rv.Run(Elf);
   else
     Rv.Run();
 
