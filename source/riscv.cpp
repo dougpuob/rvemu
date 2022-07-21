@@ -2,7 +2,22 @@
 
 namespace rv64emu {
 
-void Riscv::Reset(uint64_t Pc) {}
+void Riscv::Reset(uint64_t Pc) {
+  for (auto &Reg : m_Regs)
+    Reg = 0;
+
+  // set the reset address
+  m_Pc = 0;
+  // rv->inst_len = INST_UNKNOWN;
+
+  // set the default stack pointer
+  m_Regs[(int)RvRegs::sp] = 0xFFFFFff0; // DEFAULT_STACK_ADDR = 0xFFFFFff0
+
+  // reset the csrs
+  // rv->csr_cycle = 0;
+  // rv->csr_mstatus = 0;
+  m_Halted = false;
+}
 
 void Riscv::Step(int32_t Cycles) {}
 
