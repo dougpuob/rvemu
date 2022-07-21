@@ -44,4 +44,25 @@ bool Riscv::HasHalted() {
   return m_Halted;
 }
 
+void Riscv::Run() {
+  const uint32_t cycles_per_step = 100;
+  for (; !HasHalted();) { /* run until the flag is done */
+    /* step instructions */
+    Step(cycles_per_step);
+  }
+}
+
+void Riscv::RunWithTrace(rv64emu::Elf &Elf) {
+  const uint32_t cycles_per_step = 1;
+  for (; !HasHalted();) { /* run until the flag is done */
+    /* trace execution */
+    uint64_t Pc = GetPc();
+    const char *sym = Elf.FindSymbol(Pc);
+    printf("%16x  %s\n", Pc, (sym ? sym : ""));
+
+    /* step instructions */
+    Step(cycles_per_step);
+  }
+}
+
 } // namespace rv64emu

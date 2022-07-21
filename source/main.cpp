@@ -34,17 +34,26 @@ int main(int Argc, const char **Args) {
   /* Create the RISC-V runtime */
   rv64emu::State State;
   rv64emu::Riscv Rv(IoHandlers, State);
-  Elf.Load(State.GetMem());
 
   /* Load the ELF file into the memory abstraction */
-
-  /* Load the ELF file into the memory abstraction */
+  if (!Elf.Load(State.GetMem())) {
+    return 3;
+  }
 
   /* Initialize the program counter */
+  const uint64_t EntryPoint = Elf.GetEntry();
+  if (!Rv.SetPc(EntryPoint)) {
+    return 4;
+  }
 
   /* Run based on the specified mode */
+  if (Config::getInst().opt_trace)
+    Rv.RunWithTrace(Elf);
+  else
+    Rv.Run();
 
   /* Finalize the RISC-V runtime */
+  // Release everything by RAII
 
   return 0;
 }

@@ -23,6 +23,8 @@ public:
   Elf(const std::string &FilePath);
   bool IsValid();
   bool Load(rv64emu::Memory &Mem);
+  uint64_t GetEntry();
+  const char *FindSymbol(uint64_t Pc);
   const char *GetShString(int Index);
   const struct Elf64_Shdr *GetSectionHeader(const char *Name);
 };

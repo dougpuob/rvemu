@@ -1,5 +1,6 @@
 #pragma once
 
+#include "elf.h"
 #include "state.h"
 #include <cstdint>
 #include <functional>
@@ -95,6 +96,8 @@ public:
   uint64_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();
+  void Run();
+  void RunWithTrace(rv64emu::Elf &Elf);
 };
 
 } // namespace rv64emu

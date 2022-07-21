@@ -113,6 +113,16 @@ bool Elf::Load(rv64emu::Memory &Mem) {
   return true;
 }
 
+uint64_t Elf::GetEntry() {
+  //
+  return m_Hdr->e_entry;
+}
+
+const char *Elf::FindSymbol(uint64_t Pc) {
+  //
+  return "";
+}
+
 ///* get the ELF string table */
 // static const char *get_strtab(elf_t *e) {
 //   const struct Elf32_Shdr *shdr = get_section_header(e, ".strtab");
