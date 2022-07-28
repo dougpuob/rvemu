@@ -19,7 +19,11 @@ void Riscv::Reset(uint64_t Pc) {
   m_Halted = false;
 }
 
-void Riscv::Step(int32_t Cycles) {}
+void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {  
+  uint32_t Inst = Mem.FetchInst(m_Pc);
+  
+
+}
 
 bool Riscv::SetPc(uint64_t Pc) {
   if (Pc & 3)
@@ -59,15 +63,15 @@ bool Riscv::HasHalted() {
   return m_Halted;
 }
 
-void Riscv::Run() {
+void Riscv::Run(State &State) {
   const uint32_t cycles_per_step = 100;
   for (; !HasHalted();) { /* run until the flag is done */
     /* step instructions */
-    Step(cycles_per_step);
+    Step(cycles_per_step, State.GetMem());
   }
 }
 
-void Riscv::Run(rv64emu::Elf &Elf) {
+void Riscv::Run(State &State, rv64emu::Elf &Elf) {
   const uint32_t cycles_per_step = 1;
   for (; !HasHalted();) { /* run until the flag is done */
     /* trace execution */
@@ -76,7 +80,7 @@ void Riscv::Run(rv64emu::Elf &Elf) {
     printf("%16x  %s\n", Pc, (sym ? sym : ""));
 
     /* step instructions */
-    Step(cycles_per_step);
+    Step(cycles_per_step, State.GetMem());
   }
 }
 

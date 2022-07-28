@@ -31,7 +31,7 @@ public:
       }
   }
   uint64_t ReadStr(uint8_t *dst, uint64_t addr, uint64_t max);
-  uint64_t FetchInst(uint64_t addr);
+  uint32_t FetchInst(uint64_t addr);
   uint64_t Read64(uint64_t addr);
   uint32_t Read32(uint64_t addr);
   uint16_t Read16(uint64_t addr);

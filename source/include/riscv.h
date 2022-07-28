@@ -19,6 +19,23 @@ typedef float riscv_float_t;
 
 using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
 
+
+enum OpCodeType {
+  // R-Type
+  RType33 = 0b0110011, // 0x33
+  RType73 = 0b0111011, // 0x73
+  RType13 = 0b0010011, // 0x13
+  RType_ = 0b0011011,
+  RType_Jump = 0b1100011,
+
+  // I-Type
+  IType = 0b0000011,
+
+  // S-Type
+  SType = 0b0100011
+
+};
+
 // RISC-V register files
 enum class RvRegs : int {
   zero = 0,
@@ -78,6 +95,7 @@ namespace rv64emu {
 
 class Riscv {
 private:
+  int m_Cycles = 100;
   bool m_Halted = false;
   uint64_t m_Pc = 0;
   std::vector<uint64_t> m_Regs;
@@ -88,7 +106,7 @@ public:
     m_Regs.reserve(32);
   }
   void Reset(uint64_t Pc);
-  void Step(int32_t Cycles);
+  void Step(int32_t Cycles, rv64emu::Memory &Mem);
   bool SetPc(uint64_t Pc);
   uint64_t GetPc();
   void SetReg(uint8_t Reg, uint64_t Val);
@@ -96,8 +114,8 @@ public:
   uint64_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();
-  void Run();
-  void Run(rv64emu::Elf &Elf);
+  void Run(State &State);
+  void Run(State &State, rv64emu::Elf &Elf);
 };
 
 } // namespace rv64emu

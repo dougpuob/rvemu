@@ -48,9 +48,9 @@ int main(int Argc, const char **Args) {
 
   /* Run based on the specified mode */
   if (Config::getInst().opt_trace)
-    Rv.Run(Elf);
+    Rv.Run(State, Elf);
   else
-    Rv.Run();
+    Rv.Run(State);
 
   /* Finalize the RISC-V runtime */
   // Release everything by RAII

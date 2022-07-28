@@ -23,13 +23,13 @@ uint64_t Memory::ReadStr(uint8_t *dst, uint64_t addr, uint64_t max) {
   return len + 1;
 }
 
-uint64_t Memory::FetchInst(uint64_t addr) {
+uint32_t Memory::FetchInst(uint64_t addr) {
   const uint64_t addr_lo = addr & MASK_LO;
   // assert((addr_lo & 1) == 0);
 
   chunk_t *c = this->m_Mem[addr >> 16];
   // assert(c);
-  return *(const uint64_t *)(c->data + addr_lo);
+  return *(const uint32_t *)(c->data + addr_lo);
 }
 
 uint64_t Memory::Read64(uint64_t addr) {
