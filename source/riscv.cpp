@@ -2,6 +2,40 @@
 
 namespace rv64emu {
 
+struct RvInst {
+  bool _32Bit;
+  bool _64Bit;
+  char Name[16];
+  uint8_t func7_hi;  // _32_27;
+  uint8_t func7_lo;  // _26_25;
+  uint8_t rs2;       // _24_20;
+  uint8_t rs1;       // _19_15;
+  uint8_t func3;     // _14_12;
+  uint8_t rd;        // _11_07;
+  uint8_t opcode_hi; // _06_02;
+  uint8_t opcode_lo; // _01_11;
+};
+
+const RvInst RvInstTable[] = {
+#define REG (0xFF)
+#define IMM (0xFF)
+#define RS1 (0xFF)
+#define RS2 (0xFF)
+#define FN3 (0xFF)
+#define RD (0xFF)
+    // clang-format off
+    /*                         [31:27]	   [26:25]	   [24:20] [19:15] [14:12] [11:07] [06:02]	   [01:00]
+      32bit,   64bit,  Name,   func7_hi,   func7_lo,   rs2,    rs1,    func3,  rd,     opcode_hi,  opcode_lo */
+    { true,    true,   "lui",  IMM,        IMM,        IMM,    IMM,    IMM,    IMM,    0b01101,    0b11 },
+// clang-format on
+#undef RD
+#undef FN3
+#undef RS2
+#undef RS1
+#undef IMM
+#undef REG
+};
+
 void Riscv::Reset(uint64_t Pc) {
   for (auto &Reg : m_Regs)
     Reg = 0;
@@ -19,10 +53,8 @@ void Riscv::Reset(uint64_t Pc) {
   m_Halted = false;
 }
 
-void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {  
+void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {
   uint32_t Inst = Mem.FetchInst(m_Pc);
-  
-
 }
 
 bool Riscv::SetPc(uint64_t Pc) {

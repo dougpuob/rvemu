@@ -19,7 +19,6 @@ typedef float riscv_float_t;
 
 using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
 
-
 enum OpCodeType {
   // R-Type
   RType33 = 0b0110011, // 0x33
