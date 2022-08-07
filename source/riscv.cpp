@@ -1,4 +1,5 @@
 #include "include/riscv.h"
+#include "include/opcode.h"
 
 namespace rv64emu {
 
