@@ -29,7 +29,8 @@ uint32_t Memory::FetchInst(uint64_t addr) {
 
   chunk_t *c = this->m_Mem[addr >> 16];
   // assert(c);
-  return *(const uint32_t *)(c->data + addr_lo);
+  uint32_t inst = *(const uint32_t *)(c->data + addr_lo);  
+  return inst;
 }
 
 uint64_t Memory::Read64(uint64_t addr) {

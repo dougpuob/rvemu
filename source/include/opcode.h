@@ -5,21 +5,40 @@
 
 namespace rv64emu {
 
-using OpcodeEntry = std::function<bool()>;
+// auto on_mem_ifetch = [](void *rv, uint64_t addr) -> uint64_t { return addr;
+// };
 
-class Opcode {
+struct Opcode {
+  using OpcodeEntry = std::function<bool(const Opcode)>;
+
 private:
+  OpcodeEntry load = &Opcode::Load;
+  OpcodeEntry load_fp = &Opcode::LoadFp;
+  OpcodeEntry unimp = &Opcode::UnImp;
+  OpcodeEntry misc_mem = &Opcode::MiscMem;
+  OpcodeEntry auipc = &Opcode::AuiPc;
+  OpcodeEntry lui = &Opcode::Lui;
+  OpcodeEntry system = &Opcode::System;
+  OpcodeEntry amo = &Opcode::Amo;
+  OpcodeEntry jal = &Opcode::Jal;
+  OpcodeEntry nmsub = &Opcode::NMSub;
+  OpcodeEntry madd = &Opcode::MAdd;
+  OpcodeEntry msub = &Opcode::MSub;
+  OpcodeEntry store = &Opcode::Store;
+  OpcodeEntry store_fp = &Opcode::StoreFp;
+  OpcodeEntry branch = &Opcode::Branch;
+  OpcodeEntry jalr = &Opcode::Jalr;
+
   // clang-format off
 // Table 19.1: RISC-V base opcode map, inst[1:0]=11
-  std::vector<OpcodeEntry> OpEntry = { Load
-  ///*      000     001       010     011       100     101     110     111*/
-  ///*00*/  Load,   LoadFp,   UnImp,  MiscMem,  UnImp,  AuiPc,  UnImp,  UnImp,
-  ///*01*/  Store,  StoreFp,  UnImp,  Amo,      UnImp,  Lui,    UnImp,  UnImp,
-  ///*10*/  MAdd,   MSub,     NMSub,  UnImp,    UnImp,  UnImp,  UnImp,  UnImp,
-  ///*11*/  Branch, Jalr,     UnImp,  Jal,      System, UnImp,  UnImp,  UnImp      
+  std::vector<OpcodeEntry> OpEntry = { 
+  /*      000     001       010     011       100     101     110     111*/
+  /*00*/  load,   load_fp,  unimp,  misc_mem, unimp,  auipc,  unimp,  unimp,
+  /*01*/  store,  store_fp, unimp,  amo,      unimp,  lui,    unimp,  unimp,
+  /*10*/  madd,   msub,     nmsub,  unimp,    unimp,  unimp,  unimp,  unimp,
+  /*11*/  branch, jalr,     unimp,  jal,      system, unimp,  unimp,  unimp      
   };
   // clang-format on
-
 private:
   bool UnImp();
   bool Load();    // 0b00'000
