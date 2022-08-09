@@ -1,7 +1,9 @@
 #pragma once
 
 #include "elf.h"
+#include "opcode.h"
 #include "state.h"
+
 #include <cstdint>
 #include <functional>
 #include <vector>
@@ -97,11 +99,13 @@ private:
   int m_Cycles = 100;
   bool m_Halted = false;
   uint64_t m_Pc = 0;
+  uint8_t m_InstLen = 0;
   std::vector<uint64_t> m_Regs;
 
 public:
   Riscv(const std::vector<IoHandlePrototype> &IoHandles,
         rv64emu::State &State) {
+
     m_Regs.reserve(32);
   }
   void Reset(uint64_t Pc);
