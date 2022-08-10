@@ -1,7 +1,7 @@
 #pragma once
 
 #include "elf.h"
-#include "opcode.h"
+#include "riscv_spec.h"
 #include "state.h"
 
 #include <cstdint>
@@ -37,42 +37,6 @@ enum OpCodeType {
 
 };
 
-// RISC-V register files
-enum class RvRegs : int {
-  zero = 0,
-  ra,
-  sp,
-  gp,
-  tp,
-  rv_reg_t0,
-  rv_reg_t1,
-  rv_reg_t2,
-  rv_reg_s0,
-  rv_reg_s1,
-  rv_reg_a0,
-  rv_reg_a1,
-  rv_reg_a2,
-  rv_reg_a3,
-  rv_reg_a4,
-  rv_reg_a5,
-  rv_reg_a6,
-  rv_reg_a7,
-  rv_reg_s2,
-  rv_reg_s3,
-  rv_reg_s4,
-  rv_reg_s5,
-  rv_reg_s6,
-  rv_reg_s7,
-  rv_reg_s8,
-  rv_reg_s9,
-  rv_reg_s10,
-  rv_reg_s11,
-  rv_reg_t3,
-  rv_reg_t4,
-  rv_reg_t5,
-  rv_reg_t6,
-};
-
 // RISC-V emulator I/O interface
 struct riscv_io_t {
   int a;
@@ -95,19 +59,23 @@ struct riscv_io_t {
 namespace rv64emu {
 
 class Riscv {
+
+  using OpcodeEntry = std::function<bool(const Riscv, uint32_t Inst)>;
+
 private:
   int m_Cycles = 100;
   bool m_Halted = false;
   uint64_t m_Pc = 0;
   uint8_t m_InstLen = 0;
   std::vector<uint64_t> m_Regs;
+  std::vector<OpcodeEntry> m_OpEntry;
 
 public:
-  Riscv(const std::vector<IoHandlePrototype> &IoHandles,
-        rv64emu::State &State) {
+  Riscv(const std::vector<IoHandlePrototype> &IoHandles, rv64emu::State &State);
 
-    m_Regs.reserve(32);
-  }
+  //
+  // Instance
+  //
   void Reset(uint64_t Pc);
   void Step(int32_t Cycles, rv64emu::Memory &Mem);
   bool SetPc(uint64_t Pc);
@@ -119,6 +87,28 @@ public:
   bool HasHalted();
   void Run(State &State);
   void Run(State &State, rv64emu::Elf &Elf);
+
+  //
+  // Opcode
+  //
+  bool UnImp(uint32_t Inst);
+  bool Load(uint32_t Inst);    // 0b00'000
+  bool LoadFp(uint32_t Inst);  // 0b00'001
+  bool MiscMem(uint32_t Inst); // 0b00'011
+  bool OpImm(uint32_t Inst);   // 0b00'100
+  bool AuiPc(uint32_t Inst);   // 0b00'101
+  bool Store(uint32_t Inst);   // 0b01'000
+  bool StoreFp(uint32_t Inst); // 0b01'001
+  bool Amo(uint32_t Inst);     // 0b01'011
+  bool Lui(uint32_t Inst);     // 0b01'101
+  bool MAdd(uint32_t Inst);    // 0b10'000
+  bool MSub(uint32_t Inst);    // 0b10'001
+  bool NMSub(uint32_t Inst);   // 0b10'010
+  // bool Fp(void* pRv, uint32_t Inst);      // 0b10'100
+  bool Branch(uint32_t Inst); // 0b11'000
+  bool Jalr(uint32_t Inst);   // 0b11'001
+  bool Jal(uint32_t Inst);    // 0b11'011
+  bool System(uint32_t Inst); // 0b11'100
 };
 
 } // namespace rv64emu

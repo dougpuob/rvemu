@@ -1,69 +1,5 @@
 #include "include/riscv.h"
-#include "include/opcode.h"
-
-// clang-format off
-// instruction decode masks
-enum {
-    //               ....xxxx....xxxx....xxxx....xxxx
-    INST_6_2     = 0b00000000000000000000000001111100,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FR_OPCODE    = 0b00000000000000000000000001111111, // r-type
-    FR_RD        = 0b00000000000000000000111110000000,
-    FR_FUNCT3    = 0b00000000000000000111000000000000,
-    FR_RS1       = 0b00000000000011111000000000000000,
-    FR_RS2       = 0b00000001111100000000000000000000,
-    FR_FUNCT7    = 0b11111110000000000000000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FI_IMM_11_0  = 0b11111111111100000000000000000000, // i-type
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FS_IMM_4_0   = 0b00000000000000000000111110000000, // s-type
-    FS_IMM_11_5  = 0b11111110000000000000000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FB_IMM_11    = 0b00000000000000000000000010000000, // b-type
-    FB_IMM_4_1   = 0b00000000000000000000111100000000,
-    FB_IMM_10_5  = 0b01111110000000000000000000000000,
-    FB_IMM_12    = 0b10000000000000000000000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FU_IMM_31_12 = 0b11111111111111111111000000000000, // u-type
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FJ_IMM_19_12 = 0b00000000000011111111000000000000, // j-type
-    FJ_IMM_11    = 0b00000000000100000000000000000000,
-    FJ_IMM_10_1  = 0b01111111111000000000000000000000,
-    FJ_IMM_20    = 0b10000000000000000000000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FR4_FMT      = 0b00000110000000000000000000000000, // r4-type
-    FR4_RS3      = 0b11111000000000000000000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FC_OPCODE    = 0b00000000000000000000000000000011, // compressed-instuction
-    FC_FUNC3     = 0b00000000000000001110000000000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FC_RS1C      = 0b00000000000000000000001110000000,
-    FC_RS2C      = 0b00000000000000000000000000011100,
-    FC_RS1       = 0b00000000000000000000111110000000,
-    FC_RS2       = 0b00000000000000000000000001111100,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FC_RDC       = 0b00000000000000000000000000011100,
-    FC_RD        = 0b00000000000000000000111110000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FC_IMM_12_10 = 0b00000000000000000001110000000000, // CL,CS,CB
-    FC_IMM_6_5   = 0b00000000000000000000000001100000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FCI_IMM_12   = 0b00000000000000000001000000000000, 
-    FCI_IMM_6_2  = 0b00000000000000000000000001111100,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FCSS_IMM     = 0b00000000000000000001111110000000,
-    //               ....xxxx....xxxx....xxxx....xxxx
-    FCJ_IMM      = 0b00000000000000000001111111111100,
-    //               ....xxxx....xxxx....xxxx....xxxx
-};
-// clang-format off
-
-enum {
-    INST_UNKNOWN = 0,
-    INST_16 = 2,
-    INST_32 = 4,
-};
-
+#include "include/riscv_spec.h"
 
 namespace rv64emu {
 
@@ -382,6 +318,40 @@ const RvInst RvInstTable[] = {
 #undef XXX
 };
 
+Riscv::Riscv(const std::vector<IoHandlePrototype> &IoHandles,
+             rv64emu::State &State) {
+
+  m_Regs.reserve(32);
+
+  OpcodeEntry load = &Riscv::Load;
+  OpcodeEntry load_fp = &Riscv::LoadFp;
+  OpcodeEntry unimp = &Riscv::UnImp;
+  OpcodeEntry misc_mem = &Riscv::MiscMem;
+  OpcodeEntry auipc = &Riscv::AuiPc;
+  OpcodeEntry lui = &Riscv::Lui;
+  OpcodeEntry system = &Riscv::System;
+  OpcodeEntry amo = &Riscv::Amo;
+  OpcodeEntry jal = &Riscv::Jal;
+  OpcodeEntry nmsub = &Riscv::NMSub;
+  OpcodeEntry madd = &Riscv::MAdd;
+  OpcodeEntry msub = &Riscv::MSub;
+  OpcodeEntry store = &Riscv::Store;
+  OpcodeEntry store_fp = &Riscv::StoreFp;
+  OpcodeEntry branch = &Riscv::Branch;
+  OpcodeEntry jalr = &Riscv::Jalr;
+
+  // clang-format off
+// Table 19.1: RISC-V base opcode map, inst[1:0]=11
+  m_OpEntry = { 
+  /*      000     001       010     011       100     101     110     111*/
+  /*00*/  load,   load_fp,  unimp,  misc_mem, unimp,  auipc,  unimp,  unimp,
+  /*01*/  store,  store_fp, unimp,  amo,      unimp,  lui,    unimp,  unimp,
+  /*10*/  madd,   msub,     nmsub,  unimp,    unimp,  unimp,  unimp,  unimp,
+  /*11*/  branch, jalr,     unimp,  jal,      system, unimp,  unimp,  unimp      
+  };
+  // clang-format on
+}
+
 void Riscv::Reset(uint64_t Pc) {
   for (auto &Reg : m_Regs)
     Reg = 0;
@@ -406,8 +376,8 @@ void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {
   if ((Inst & 3) == 3) {
     uint32_t Idx = (Inst & INST_6_2) >> 2;
     this->m_InstLen = INST_32;
-    // auto OpcodeEntry = m_Opcode.GetOpcodeTable();
-    // OpcodeEntry[Idx];
+    auto OpcodeFunc = m_OpEntry[Idx];
+    OpcodeFunc(*this, Inst);
   }
   /* compressed extension instruction */
   else {

@@ -42,9 +42,10 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/include/elf.h
     ${CMAKE_SOURCE_DIR}/source/include/io.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv.h
+    ${CMAKE_SOURCE_DIR}/source/include/riscv_spec.h
     ${CMAKE_SOURCE_DIR}/source/include/state.h
     ${CMAKE_SOURCE_DIR}/source/include/syscall.h
-    ${CMAKE_SOURCE_DIR}/source/include/opcode.h
+    
     # Sources
     ${CMAKE_SOURCE_DIR}/source/main.cpp
     ${CMAKE_SOURCE_DIR}/source/global.cpp
@@ -52,9 +53,9 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/elf.cpp
     ${CMAKE_SOURCE_DIR}/source/io.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
+    ${CMAKE_SOURCE_DIR}/source/riscv_opcode.cpp
     ${CMAKE_SOURCE_DIR}/source/state.cpp
-    ${CMAKE_SOURCE_DIR}/source/syscall.cpp
-    ${CMAKE_SOURCE_DIR}/source/opcode.cpp
+    ${CMAKE_SOURCE_DIR}/source/syscall.cpp    
     )
 
 

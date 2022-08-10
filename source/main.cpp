@@ -6,7 +6,6 @@
 #include "include/elf.h"
 #include "include/global.h"
 #include "include/io.h"
-#include "include/opcode.h"
 #include "include/riscv.h"
 #include "include/state.h"
 
@@ -55,8 +54,6 @@ int main(int Argc, const char **Args) {
 
   /* Finalize the RISC-V runtime */
   // Release everything by RAII
-
-  rv64emu::Opcode m_Opcode;
 
   return 0;
 }
