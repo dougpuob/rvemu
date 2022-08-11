@@ -34,8 +34,16 @@ uint32_t Memory::FetchInst(uint64_t addr) {
 }
 
 uint64_t Memory::Read64(uint64_t addr) {
-  //
-  return 0;
+  const uint32_t addr_lo = addr & MASK_LO;
+  if (addr_lo <= 0xfffb) { /* test if this is within one chunk */
+    chunk_t *c;
+    if ((c = m_Mem[addr >> 16]))
+      return *(const uint64_t *)(c->data + addr_lo);
+    return 0u;
+  }
+  uint64_t dst = 0;
+  Read((uint8_t *)&dst, addr, 8);
+  return dst;
 }
 
 uint32_t Memory::Read32(uint64_t addr) {

@@ -319,7 +319,8 @@ const RvInst RvInstTable[] = {
 };
 
 Riscv::Riscv(const std::vector<IoHandlePrototype> &IoHandles,
-             rv64emu::State &State) {
+             rv64emu::State &State)
+    : m_State(State) {
 
   m_Regs.reserve(32);
 
@@ -329,6 +330,7 @@ Riscv::Riscv(const std::vector<IoHandlePrototype> &IoHandles,
   OpcodeEntry misc_mem = &Riscv::Op_misc_mem;
   OpcodeEntry auipc = &Riscv::Op_auipc;
   OpcodeEntry lui = &Riscv::Op_lui;
+  OpcodeEntry op = &Riscv::Op_op;
   OpcodeEntry system = &Riscv::Op_system;
   OpcodeEntry amo = &Riscv::Op_amo;
   OpcodeEntry jal = &Riscv::Op_jal;
@@ -345,7 +347,7 @@ Riscv::Riscv(const std::vector<IoHandlePrototype> &IoHandles,
   m_OpEntry = { 
   /*      000     001       010     011       100     101     110     111*/
   /*00*/  load,   load_fp,  unimp,  misc_mem, unimp,  auipc,  unimp,  unimp,
-  /*01*/  store,  store_fp, unimp,  amo,      unimp,  lui,    unimp,  unimp,
+  /*01*/  store,  store_fp, unimp,  amo,      op,     lui,    unimp,  unimp,
   /*10*/  madd,   msub,     nmsub,  unimp,    unimp,  unimp,  unimp,  unimp,
   /*11*/  branch, jalr,     unimp,  jal,      system, unimp,  unimp,  unimp      
   };

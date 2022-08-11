@@ -69,6 +69,7 @@ private:
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   std::vector<uint64_t> m_Regs;
   std::vector<OpcodeEntry> m_OpEntry;
+  State &m_State;
 
 public:
   Riscv(const std::vector<IoHandlePrototype> &IoHandles, rv64emu::State &State);
@@ -91,6 +92,16 @@ public:
 
   static inline uint32_t DecRd(uint32_t Inst);
   static inline uint32_t DecUimm(uint32_t Inst);
+  static inline uint32_t DecIimm(uint32_t Inst);
+  static inline uint32_t DecFunc3(uint32_t Inst);
+  static inline uint32_t DecFunc7(uint32_t Inst);
+  static inline uint32_t DecRs1(uint32_t Inst);
+  static inline uint32_t DecRs2(uint32_t Inst);
+  static inline uint32_t SignExtW(uint32_t Val);
+  static inline uint32_t SignExtH(uint32_t Val);
+  static inline uint32_t SignExtB(uint32_t Val);
+
+  void ExceptIllegalInstruction(uint32_t Inst);
 
   //
   // Opcode
@@ -104,6 +115,7 @@ public:
   bool Op_store(uint32_t Inst);    // 0b01'000
   bool Op_store_fp(uint32_t Inst); // 0b01'001
   bool Op_amo(uint32_t Inst);      // 0b01'011
+  bool Op_op(uint32_t Inst);       // 0b01'100
   bool Op_lui(uint32_t Inst);      // 0b01'101
   bool Op_madd(uint32_t Inst);     // 0b10'000
   bool Op_msub(uint32_t Inst);     // 0b10'001
