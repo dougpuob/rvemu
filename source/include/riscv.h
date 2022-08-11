@@ -66,7 +66,7 @@ private:
   int m_Cycles = 100;
   bool m_Halted = false;
   uint64_t m_Pc = 0;
-  uint8_t m_InstLen = 0;
+  InstLen m_InstLen = InstLen::INST_UNKNOWN;
   std::vector<uint64_t> m_Regs;
   std::vector<OpcodeEntry> m_OpEntry;
 
@@ -78,6 +78,7 @@ public:
   //
   void Reset(uint64_t Pc);
   void Step(int32_t Cycles, rv64emu::Memory &Mem);
+  bool IncPc();
   bool SetPc(uint64_t Pc);
   uint64_t GetPc();
   void SetReg(uint8_t Reg, uint64_t Val);
@@ -88,27 +89,29 @@ public:
   void Run(State &State);
   void Run(State &State, rv64emu::Elf &Elf);
 
+  static inline uint32_t DecRd(uint32_t Inst);
+  static inline uint32_t DecUimm(uint32_t Inst);
+
   //
   // Opcode
   //
-  bool UnImp(uint32_t Inst);
-  bool Load(uint32_t Inst);    // 0b00'000
-  bool LoadFp(uint32_t Inst);  // 0b00'001
-  bool MiscMem(uint32_t Inst); // 0b00'011
-  bool OpImm(uint32_t Inst);   // 0b00'100
-  bool AuiPc(uint32_t Inst);   // 0b00'101
-  bool Store(uint32_t Inst);   // 0b01'000
-  bool StoreFp(uint32_t Inst); // 0b01'001
-  bool Amo(uint32_t Inst);     // 0b01'011
-  bool Lui(uint32_t Inst);     // 0b01'101
-  bool MAdd(uint32_t Inst);    // 0b10'000
-  bool MSub(uint32_t Inst);    // 0b10'001
-  bool NMSub(uint32_t Inst);   // 0b10'010
-  // bool Fp(void* pRv, uint32_t Inst);      // 0b10'100
-  bool Branch(uint32_t Inst); // 0b11'000
-  bool Jalr(uint32_t Inst);   // 0b11'001
-  bool Jal(uint32_t Inst);    // 0b11'011
-  bool System(uint32_t Inst); // 0b11'100
+  bool Op_unimp(uint32_t Inst);
+  bool Op_load(uint32_t Inst);     // 0b00'000
+  bool Op_load_fp(uint32_t Inst);  // 0b00'001
+  bool Op_misc_mem(uint32_t Inst); // 0b00'011
+  bool Op_opimm(uint32_t Inst);    // 0b00'100
+  bool Op_auipc(uint32_t Inst);    // 0b00'101
+  bool Op_store(uint32_t Inst);    // 0b01'000
+  bool Op_store_fp(uint32_t Inst); // 0b01'001
+  bool Op_amo(uint32_t Inst);      // 0b01'011
+  bool Op_lui(uint32_t Inst);      // 0b01'101
+  bool Op_madd(uint32_t Inst);     // 0b10'000
+  bool Op_msub(uint32_t Inst);     // 0b10'001
+  bool Op_nmsub(uint32_t Inst);    // 0b10'010
+  bool Op_branch(uint32_t Inst);   // 0b11'000
+  bool Op_jalr(uint32_t Inst);     // 0b11'001
+  bool Op_jal(uint32_t Inst);      // 0b11'011
+  bool Op_system(uint32_t Inst);   // 0b11'100
 };
 
 } // namespace rv64emu

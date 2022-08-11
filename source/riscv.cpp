@@ -323,22 +323,22 @@ Riscv::Riscv(const std::vector<IoHandlePrototype> &IoHandles,
 
   m_Regs.reserve(32);
 
-  OpcodeEntry load = &Riscv::Load;
-  OpcodeEntry load_fp = &Riscv::LoadFp;
-  OpcodeEntry unimp = &Riscv::UnImp;
-  OpcodeEntry misc_mem = &Riscv::MiscMem;
-  OpcodeEntry auipc = &Riscv::AuiPc;
-  OpcodeEntry lui = &Riscv::Lui;
-  OpcodeEntry system = &Riscv::System;
-  OpcodeEntry amo = &Riscv::Amo;
-  OpcodeEntry jal = &Riscv::Jal;
-  OpcodeEntry nmsub = &Riscv::NMSub;
-  OpcodeEntry madd = &Riscv::MAdd;
-  OpcodeEntry msub = &Riscv::MSub;
-  OpcodeEntry store = &Riscv::Store;
-  OpcodeEntry store_fp = &Riscv::StoreFp;
-  OpcodeEntry branch = &Riscv::Branch;
-  OpcodeEntry jalr = &Riscv::Jalr;
+  OpcodeEntry load = &Riscv::Op_load;
+  OpcodeEntry load_fp = &Riscv::Op_load_fp;
+  OpcodeEntry unimp = &Riscv::Op_unimp;
+  OpcodeEntry misc_mem = &Riscv::Op_misc_mem;
+  OpcodeEntry auipc = &Riscv::Op_auipc;
+  OpcodeEntry lui = &Riscv::Op_lui;
+  OpcodeEntry system = &Riscv::Op_system;
+  OpcodeEntry amo = &Riscv::Op_amo;
+  OpcodeEntry jal = &Riscv::Op_jal;
+  OpcodeEntry nmsub = &Riscv::Op_nmsub;
+  OpcodeEntry madd = &Riscv::Op_madd;
+  OpcodeEntry msub = &Riscv::Op_msub;
+  OpcodeEntry store = &Riscv::Op_store;
+  OpcodeEntry store_fp = &Riscv::Op_store_fp;
+  OpcodeEntry branch = &Riscv::Op_branch;
+  OpcodeEntry jalr = &Riscv::Op_jalr;
 
   // clang-format off
 // Table 19.1: RISC-V base opcode map, inst[1:0]=11
@@ -375,7 +375,7 @@ void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {
   /* standard uncompressed instruction */
   if ((Inst & 3) == 3) {
     uint32_t Idx = (Inst & INST_6_2) >> 2;
-    this->m_InstLen = INST_32;
+    this->m_InstLen = InstLen::INST_32;
     auto OpcodeFunc = m_OpEntry[Idx];
     OpcodeFunc(*this, Inst);
   }
@@ -383,9 +383,14 @@ void Riscv::Step(int32_t Cycles, rv64emu::Memory &Mem) {
   else {
     Inst &= 0x0000FFFF;
     int16_t c_index = (Inst & FC_FUNC3) >> 11 | (Inst & FC_OPCODE);
-    this->m_InstLen = INST_16;
+    this->m_InstLen = InstLen::INST_16;
     // OpcodeEntry[Idx];
   }
+}
+
+bool Riscv::IncPc() {
+  m_Pc += (uint8_t)m_InstLen;
+  return true;
 }
 
 bool Riscv::SetPc(uint64_t Pc) {
