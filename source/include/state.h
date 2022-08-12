@@ -1,29 +1,34 @@
 #pragma once
 
-#include "io.h"
+#include "mem.h"
+#include <map>
+#include <unordered_map>
 #include <vector>
 
 struct chunk_t;
 
-namespace rv64emu {
+namespace rvemu {
 
-class State {
+class MachineState {
 private:
-  rv64emu::Memory m_Mem;
-  std::vector<FILE> m_FDs;
+  rvemu::Memory m_Mem;
+  std::unordered_map<int, void * /*FILE**/> m_FDs;
+
+  bool m_Halt = false;
+  uint32_t m_BreakAddress = 0;
+  uint64_t m_InstructionCounter = 0;
 
 public:
-  State() { m_FDs.resize(3); }
+  MachineState() {}
+  bool IsHalt() { return m_Halt; }
+  void Halt(bool Halt = true) { m_Halt = Halt; }
+  rvemu::Memory &GetMem() { return m_Mem; }
+  void SetBreakAddress(uint32_t Addr) { m_BreakAddress = Addr; }
+  uint32_t GetBreakAddress() { return m_BreakAddress; }
 
-  rv64emu::Memory &GetMem() {
-    //
-    return m_Mem;
-  }
+  void IncInstCounter() { m_InstructionCounter++; }
 
-  FILE GetFd(std::size_t Type) {
-    //
-    return m_FDs[Type];
-  }
+  std::unordered_map<int, void * /*FILE**/> &GetFd() { return m_FDs; }
 };
 
-} // namespace rv64emu
+} // namespace rvemu

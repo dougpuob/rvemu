@@ -1,110 +1,132 @@
 #pragma once
 
+#include "decode.h"
 #include "elf.h"
 #include "riscv_spec.h"
 #include "state.h"
+#include "syscall.h"
 
 #include <cstdint>
 #include <functional>
 #include <vector>
 
-struct riscv_t;
-typedef void *riscv_user_t;
-
-typedef uint32_t riscv_word_t;
-typedef uint16_t riscv_half_t;
-typedef uint8_t riscv_byte_t;
-typedef uint32_t riscv_exception_t;
-typedef float riscv_float_t;
-
-#define RV_NUM_REGS 32
+#define REGS_NUMB 32
 
 using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
 
-enum OpCodeType {
-  // R-Type
-  RType33 = 0b0110011, // 0x33
-  RType73 = 0b0111011, // 0x73
-  RType13 = 0b0010011, // 0x13
-  RType_ = 0b0011011,
-  RType_Jump = 0b1100011,
+namespace rvemu {
 
-  // I-Type
-  IType = 0b0000011,
+struct RvFields {
+  uint8_t opcode;
+  uint8_t rd;
+  uint8_t rs1;
+  uint8_t rs2;
 
-  // S-Type
-  SType = 0b0100011
+  int32_t imm;
+  uint32_t uimm;
+  uint32_t shamt;
 
+  uint8_t funct2;
+  uint8_t funct3;
+  uint8_t funct4;
+  uint8_t funct7;
+  uint8_t funct12;
+
+  uint32_t csr;
+
+  std::string inst_name;
+
+  // Exceptions
+  bool ExceptIllegalInstruction;
+  bool ExceptUnalignedInstruction;
+
+  RvFields() { Clear(); }
+
+  void Clear() {
+    opcode = 0;
+    rd = 0;
+    rs1 = 0;
+    rs2 = 0;
+
+    imm = 0;
+    uimm = 0;
+
+    funct3 = 0;
+    funct4 = 0;
+    funct7 = 0;
+
+    inst_name.clear();
+
+    // assertions
+    ExceptIllegalInstruction = false;
+    ExceptUnalignedInstruction = false;
+  }
 };
-
-// RISC-V emulator I/O interface
-struct riscv_io_t {
-  int a;
-  // // memory read interface
-  // riscv_mem_ifetch mem_ifetch;
-  // riscv_mem_read_w mem_read_w;
-  // riscv_mem_read_s mem_read_s;
-  // riscv_mem_read_b mem_read_b;
-  //
-  // // memory write interface
-  // riscv_mem_write_w mem_write_w;
-  // riscv_mem_write_s mem_write_s;
-  // riscv_mem_write_b mem_write_b;
-  //
-  // // system commands
-  // riscv_on_ecall on_ecall;
-  // riscv_on_ebreak on_ebreak;
-};
-
-namespace rv64emu {
 
 class Riscv {
 
-  using OpcodeEntry = std::function<bool(const Riscv, uint32_t Inst)>;
+  using OpcodeEntry16 = std::function<bool(Riscv &, uint16_t Inst)>;
+  using OpcodeEntry32 = std::function<bool(Riscv &, uint32_t Inst)>;
 
 private:
   int m_Cycles = 100;
-  bool m_Halted = false;
-  uint64_t m_Pc = 0;
+
+  uint32_t m_Pc = 0;
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
-  std::vector<uint64_t> m_Regs;
-  std::vector<OpcodeEntry> m_OpEntry;
-  State &m_State;
+  uint32_t m_JumpIncLen = 0;
+  uint32_t m_JumpNewLen = 0;
+
+  std::vector<uint32_t> m_Regs;
+  std::vector<OpcodeEntry32> m_Rv32OpcodeMap; // Table 25.1 RV opcode map
+  std::vector<OpcodeEntry16> Rv16OpcodeMap;   // Table 16.4 : RVC opcode map
+
+  Elf *m_Elf = nullptr;
+
+  SystemCall m_SysCall;
+  RvFields m_Fields;
+  DecodeInstruction16 m_DeInst16;
+  DecodeInstruction32 m_DeInst32;
+  MachineState m_State;
 
 public:
-  Riscv(const std::vector<IoHandlePrototype> &IoHandles, rv64emu::State &State);
+  Riscv();
+
+  //
+  // Debug
+  //
+  const char *GetInstStr() { return m_Fields.inst_name.c_str(); }
+  void SetInstStr(uint32_t Inst, const char *InstStr);
+  const RvFields &GetFields() { return m_Fields; };
+  void PrintInstInfo(uint32_t Pc, uint32_t Inst, const char *InstStr,
+                     const char *Sym);
 
   //
   // Instance
   //
   void Reset(uint64_t Pc);
-  void Step(int32_t Cycles, rv64emu::Memory &Mem);
+  uint32_t Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
+  bool Dispatch(uint32_t Inst);
   bool IncPc();
-  bool SetPc(uint64_t Pc);
-  uint64_t GetPc();
-  void SetReg(uint8_t Reg, uint64_t Val);
-  void SetReg(RvRegs Reg, uint64_t Val);
-  uint64_t GetReg(uint8_t Reg);
+  bool IncPc(uint32_t Imm);
+  bool SetPc(uint32_t Pc);
+  uint32_t GetPc();
+  void SetReg(uint8_t Reg, uint32_t Val);
+  void SetReg(AbiName Reg, uint32_t Val);
+  uint32_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();
-  void Run(State &State);
-  void Run(State &State, rv64emu::Elf &Elf);
+  void Run(rvemu::Elf *Elf);
 
-  static inline uint32_t DecRd(uint32_t Inst);
-  static inline uint32_t DecUimm(uint32_t Inst);
-  static inline uint32_t DecIimm(uint32_t Inst);
-  static inline uint32_t DecFunc3(uint32_t Inst);
-  static inline uint32_t DecFunc7(uint32_t Inst);
-  static inline uint32_t DecRs1(uint32_t Inst);
-  static inline uint32_t DecRs2(uint32_t Inst);
-  static inline uint32_t SignExtW(uint32_t Val);
-  static inline uint32_t SignExtH(uint32_t Val);
-  static inline uint32_t SignExtB(uint32_t Val);
+  uint32_t GetRegFile(RvReg RegFile);
+  void SetRegFile(RvReg RegFile, uint32_t Value);
 
   void ExceptIllegalInstruction(uint32_t Inst);
+  void ExceptInstructionAddressMisaligned(uint32_t Inst);
+  Memory &GetMem() { return m_State.GetMem(); }
+  MachineState &GetState() { return m_State; }
 
   //
-  // Opcode
+  // Opcode base
   //
   bool Op_unimp(uint32_t Inst);
   bool Op_load(uint32_t Inst);     // 0b00'000
@@ -124,6 +146,36 @@ public:
   bool Op_jalr(uint32_t Inst);     // 0b11'001
   bool Op_jal(uint32_t Inst);      // 0b11'011
   bool Op_system(uint32_t Inst);   // 0b11'100
+  bool Op_ebreak();
+  bool Op_ecall();
+
+  //
+  // Opcode compressed
+  //
+  bool Op_c_addi4spn(uint16_t Inst);
+  bool Op_c_fld(uint16_t Inst);
+  bool Op_c_lw(uint16_t Inst);
+  bool Op_c_ld(uint16_t Inst);
+  bool Op_c_fsd(uint16_t Inst);
+  bool Op_c_sw(uint16_t Inst);
+  bool Op_c_sd(uint16_t Inst);
+  bool Op_c_addi(uint16_t Inst);
+  bool Op_c_jal(uint16_t Inst);
+  bool Op_c_addiw(uint16_t Inst);
+  bool Op_c_li(uint16_t Inst);
+  bool Op_c_lui(uint16_t Inst);
+  bool Op_c_miscalu(uint16_t Inst);
+  bool Op_c_j(uint16_t Inst);
+  bool Op_c_beqz(uint16_t Inst);
+  bool Op_c_bnez(uint16_t Inst);
+  bool Op_c_slli(uint16_t Inst);
+  bool Op_c_fldsp(uint16_t Inst);
+  bool Op_c_ldsp(uint16_t Inst);
+  bool Op_c_lwsp(uint16_t Inst);
+  bool Op_c_crfmt(uint16_t Inst);
+  bool Op_c_fsdsp(uint16_t Inst);
+  bool Op_c_swsp(uint16_t Inst);
+  bool Op_c_sdsp(uint16_t Inst);
 };
 
-} // namespace rv64emu
+} // namespace rvemu

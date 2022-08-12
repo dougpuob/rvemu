@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-namespace rv64emu {
+namespace rvemu {
 class CmdArgs {
 public:
-  static bool Parse(const int Argc, const char **Args,
+  static bool Parse(const int Argc, char **Args,
                     std::vector<std::string> &Argv);
   static void PrintUsage(const std::string &filename);
 };
-} // namespace rv64emu
+} // namespace rvemu
