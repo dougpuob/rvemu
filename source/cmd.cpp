@@ -2,11 +2,11 @@
 #include <iostream>
 
 #include "include/cmd.h"
-#include "include/global.h"
+#include "include/config.h"
 
-namespace rv64emu {
+namespace rvemu {
 
-bool CmdArgs::Parse(const int Argc, const char **Args,
+bool CmdArgs::Parse(const int Argc, char **Args,
                     std::vector<std::string> &Argv) {
   Argv.clear();
 
@@ -24,6 +24,10 @@ bool CmdArgs::Parse(const int Argc, const char **Args,
         ConfigSingleton::getInst().opt_trace = true;
         continue;
       }
+      if (arg == "--test") {
+        ConfigSingleton::getInst().opt_unittest = true;
+        continue;
+      }
       /* otherwise, error */
       std::cerr << std::format("Unknown argument {}", arg) << std::endl;
       return false;
@@ -35,14 +39,14 @@ bool CmdArgs::Parse(const int Argc, const char **Args,
   return true;
 }
 
-void CmdArgs::PrintUsage(const std::string &filename) {
+void CmdArgs::PrintUsage(const std::string &FileName) {
   std::cerr << std::format(
                    "RV32I[MA] Emulator which loads an ELF file to execute.\n"
                    "Usage: {} [options] [filename]\n"
                    "Options:\n"
                    "  --trace : print executable trace\n",
-                   filename)
+                   FileName)
             << std::endl;
 }
 
-} // namespace rv64emu
+} // namespace rvemu
