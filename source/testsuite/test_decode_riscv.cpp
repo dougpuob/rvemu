@@ -1,6 +1,5 @@
-#include "test_quicktest.h"
 #include "riscv.h"
-
+#include "test_quicktest.h"
 
 namespace {
 
@@ -18,12 +17,12 @@ TEST_F(Riscv32Test, RType_sub) {
   uint8_t rs2 = 10;
   uint8_t funct7 = 32;
   std::string inst_name = "sub";
-      
+
   rvemu::Riscv Rv;
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
   if (Result) {
-    const rvemu::RvFields& Fields = Rv.GetFields();
+    const rvemu::RvFields &Fields = Rv.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
@@ -32,7 +31,6 @@ TEST_F(Riscv32Test, RType_sub) {
     EXPECT_EQ(inst_name, Fields.inst_name);
   }
 }
-
 
 // ----------------------------------------------------------------------------
 // I-Type
@@ -58,7 +56,6 @@ TEST_F(Riscv32Test, IType_addi) {
   }
 }
 
-
 // ----------------------------------------------------------------------------
 // S-Type
 // ----------------------------------------------------------------------------
@@ -69,7 +66,7 @@ TEST_F(Riscv32Test, SType_lw) {
   uint8_t rs1 = 2;
   int32_t imm = 0;
   std::string inst_name = "lw";
-  
+
   rvemu::Riscv Rv;
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -83,13 +80,11 @@ TEST_F(Riscv32Test, SType_lw) {
   }
 }
 
-
-
 // ----------------------------------------------------------------------------
 // B-Type
 // ----------------------------------------------------------------------------
 TEST_F(Riscv32Test, BType_bne_0x04079463) {
-  uint32_t Inst = 0x04079463; // 100d4:	04079463 bnez a5,0x1011c    
+  uint32_t Inst = 0x04079463; // 100d4:	04079463 bnez a5,0x1011c
   uint8_t funct3 = 1;
   uint8_t rs1 = 15;
   uint8_t rs2 = 0;
@@ -130,8 +125,6 @@ TEST_F(Riscv32Test, BType_bne_0x08059263) {
   }
 }
 
-
-
 // ----------------------------------------------------------------------------
 // U-Type
 // ----------------------------------------------------------------------------
@@ -152,7 +145,6 @@ TEST_F(Riscv32Test, UType_auipc) {
   }
 }
 
-
 // ----------------------------------------------------------------------------
 // J-Type
 // ----------------------------------------------------------------------------
@@ -161,7 +153,7 @@ TEST_F(Riscv32Test, JType_auipc) {
   uint8_t rd = 1;
   uint8_t imm = 124;
   std::string inst_name = "jal";
-  
+
   rvemu::Riscv Rv;
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -173,5 +165,4 @@ TEST_F(Riscv32Test, JType_auipc) {
   }
 }
 
-
-}
+} // namespace

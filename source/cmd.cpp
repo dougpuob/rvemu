@@ -18,16 +18,6 @@ bool CmdArgs::Parse(const int Argc, char **Args,
   for (int i = 1; i < Argv.size(); ++i) {
     const std::string &arg = Argv[i];
 
-    /* set the executable */
-    if (1 == i) {
-      if (!std::filesystem::exists(arg)) {
-        fprintf(stderr, "File is not exist (%s)\n", arg.c_str());
-        return false;
-      }
-      ConfigSingleton::getInst().opt_prog_name = arg;
-      continue;
-    }
-
     /* parse flags */
     if (arg[0] == '-') {
       if (arg == "--help")
@@ -40,6 +30,17 @@ bool CmdArgs::Parse(const int Argc, char **Args,
         ConfigSingleton::getInst().opt_unittest = true;
         continue;
       }
+
+      /* set the executable */
+      if (arg[i] != '-') {
+        if (!std::filesystem::exists(arg)) {
+          fprintf(stderr, "File is not exist (%s)\n", arg.c_str());
+          return false;
+        }
+        ConfigSingleton::getInst().opt_prog_name = arg;
+        continue;
+      }
+
       /* otherwise, error */
       fprintf(stderr, "Unknown argument %s\n", arg.c_str());
       return false;

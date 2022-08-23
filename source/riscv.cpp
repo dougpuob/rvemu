@@ -73,6 +73,7 @@ bool Riscv::Dispatch(uint32_t Inst) {
 
     const OpcodeEntry32 OpcodeFunc = m_Rv32OpcodeMap[Funct];
     Result = OpcodeFunc(*this, Inst);
+    assert(Result);
   }
   /* compressed extension instruction */
   else {
@@ -84,6 +85,7 @@ bool Riscv::Dispatch(uint32_t Inst) {
 
     const OpcodeEntry16 OpcodeFunc = Rv16OpcodeMap[Funct];
     Result = OpcodeFunc(*this, Inst);
+    assert(Result);
   }
 
   /* step over instruction */
@@ -110,7 +112,6 @@ uint32_t Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
 
   uint32_t Inst = Mem.FetchInst(Pc);
   bool Result = Dispatch(Inst);
-  assert((void("Exception at Step() function !!!"), Result));
 
   return Inst;
 }
@@ -141,6 +142,10 @@ void Riscv::SetInstStr(uint32_t Inst, const char *InstStr) {
   PrintInstInfo(Pc, Inst, InstStr, Sym);
 }
 
+uint32_t Riscv::GetRegFile(AbiName RegFile) {
+  return GetRegFile((RvReg)RegFile);
+}
+
 uint32_t Riscv::GetRegFile(RvReg RegFile) {
   if (Config::getInst().opt_trace) {
     printf("              ");
@@ -149,12 +154,11 @@ uint32_t Riscv::GetRegFile(RvReg RegFile) {
   return m_Regs[RegFile];
 }
 
-void Riscv::SetRegFile(RvReg RegFile, uint32_t Value) {
-  if (Config::getInst().opt_trace) {
-    printf("              ");
-    printf("RegFile[x%-2d] --> 0x%.8X\n", RegFile, m_Regs[RegFile]);
-  }
+void Riscv::SetRegFile(AbiName RegFile, uint32_t Value) {
+  SetRegFile((RvReg)RegFile, Value);
+}
 
+void Riscv::SetRegFile(RvReg RegFile, uint32_t Value) {
   m_Regs[RegFile] = Value;
 
   if (Config::getInst().opt_trace) {
@@ -187,20 +191,20 @@ uint32_t Riscv::GetPc() {
   return m_Pc;
 }
 
-void Riscv::SetReg(uint8_t Reg, uint32_t Val) {
-  if ((int)Reg < RV_NUM_REGS && Reg != (int)AbiName::zero)
-    m_Regs[(int)Reg] = Val;
-}
-
-void Riscv::SetReg(AbiName Reg, uint32_t Val) {
-  if ((int)Reg < RV_NUM_REGS && Reg != AbiName::zero)
-    m_Regs[(int)Reg] = Val;
-}
-
-uint32_t Riscv::GetReg(uint8_t Reg) {
-  //
-  return m_Regs[Reg];
-}
+// void Riscv::SetReg(uint8_t Reg, uint32_t Val) {
+//   if ((int)Reg < RV_NUM_REGS && Reg != (int)AbiName::zero)
+//     m_Regs[(int)Reg] = Val;
+// }
+//
+// void Riscv::SetReg(AbiName Reg, uint32_t Val) {
+//   if ((int)Reg < RV_NUM_REGS && Reg != AbiName::zero)
+//     m_Regs[(int)Reg] = Val;
+// }
+//
+// uint32_t Riscv::GetReg(uint8_t Reg) {
+//   //
+//   return m_Regs[Reg];
+// }
 
 void Riscv::Halt() { m_State.Halt(); }
 

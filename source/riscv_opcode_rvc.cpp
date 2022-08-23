@@ -14,7 +14,8 @@ bool Riscv::Op_c_addi4spn(uint16_t Inst) {
   m_Fields.imm = m_DeInst16.FetchImmCiwFmt_549623(Inst);
   m_Fields.rd = m_DeInst16.Fetch_04_02(Inst);
 
-  m_Regs[m_Fields.rd] = m_Regs[AbiName::sp] + m_Fields.imm;
+  const int32_t Offset = GetRegFile(AbiName::sp) + m_Fields.imm;
+  SetRegFile((RvReg)Offset, m_Fields.rd);
 
   return true;
 }
@@ -33,13 +34,15 @@ bool Riscv::Op_c_lw(uint16_t Inst) {
   m_Fields.rs1 = m_DeInst16.Fetch_09_07(Inst);
   m_Fields.imm = m_DeInst16.FetchImmClFmt_5326(Inst);
 
-  if (0b01000 /*C.LW*/ != m_Fields.funct3)
-    return false;
+  switch (m_Fields.funct3) {
+  case 0b010: { // C.LW
+    const uint32_t Addr = GetRegFile((RvReg)m_Fields.rs1) + m_Fields.imm;
+    m_State.GetMem().Read32(Addr);
+    return true;
+  }
+  }
 
-  const uint32_t Addr = m_Regs[m_Fields.rs1] + m_Fields.imm;
-  m_State.GetMem().Read32(Addr);
-
-  return true;
+  return false;
 }
 
 bool Riscv::Op_c_ld(uint16_t Inst) {
@@ -56,7 +59,30 @@ bool Riscv::Op_c_fsd(uint16_t Inst) {
 
 bool Riscv::Op_c_sw(uint16_t Inst) {
   SetInstStr(Inst, "c.sw");
-  assert(!"Op_c_sw() UNIMPLEMENTED!!");
+
+  m_Fields.rs2 = m_DeInst16.Fetch_04_02(Inst);
+  m_Fields.rs1 = m_DeInst16.Fetch_09_07(Inst);
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b101: // C.SQ
+    assert(!"c.sq UNIMPLEMENTED!!");
+    return false;
+
+  case 0b110: { // C.SW
+    // M[x[8+rs1’] + uimm][31:0] = x[8+rs2’]
+    m_Fields.imm = m_DeInst16.FetchImmCsFmt_5326(Inst);
+    uint32_t Addr = GetRegFile((RvReg)(8 + m_Fields.rs1)) + m_Fields.imm;
+    uint32_t Data = GetRegFile((RvReg)(8 + m_Fields.rs2));
+    m_State.GetMem().Write(Addr, (uint8_t *)&Data, 4);
+    return true;
+  }
+
+  case 0b111: // C.SD
+    assert(!"c.sd UNIMPLEMENTED!!");
+    return false;
+  }
+
   return false;
 }
 
@@ -66,8 +92,23 @@ bool Riscv::Op_c_sd(uint16_t Inst) {
 }
 
 bool Riscv::Op_c_addi(uint16_t Inst) {
-  SetInstStr(Inst, "c.addii");
-  assert(!"Op_c_addi() UNIMPLEMENTED!!");
+  SetInstStr(Inst, "c.addi");
+
+  m_Fields.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
+  m_Fields.rd = m_DeInst16.Fetch_11_07(Inst);
+  m_Fields.rs1 = m_Fields.rd;
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b000: //  C.ADDI
+    // x[rd] = x[rd] + sext(imm)
+    m_Regs[m_Fields.rd] = m_Regs[m_Fields.rs1] + m_Fields.imm;
+    return true;
+  case 0b001: //  C.ADDIW
+    // x[rd] = sext((x[rd] + sext(imm))[31:0])
+    return false;
+  }
+
   return false;
 }
 
@@ -206,7 +247,17 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
 
 bool Riscv::Op_c_j(uint16_t Inst) {
   SetInstStr(Inst, "c.j");
-  assert(!"Op_c_j() UNIMPLEMENTED!!");
+
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+  m_Fields.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b101: // C.J
+    // pc += sext(offset)
+    m_JumpIncLen = m_Fields.imm;
+    return true;
+  }
+
   return false;
 }
 
@@ -224,13 +275,47 @@ bool Riscv::Op_c_beqz(uint16_t Inst) {
 
 bool Riscv::Op_c_bnez(uint16_t Inst) {
   SetInstStr(Inst, "c.bnez");
-  assert(!"Op_c_bnez() UNIMPLEMENTED!!");
+  // funct3 imm rs1 ′ imm op
+
+  m_Fields.rs1 = m_DeInst16.Fetch_09_07(Inst);
+  m_Fields.imm = m_DeInst16.FetchImmCbFmt_84376215(Inst);
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b110: // C.BEQZ
+    // if (x[8+rs1’] == 0) pc += sext(offset)
+    if (0 == m_Regs[m_Fields.rs1 + 8])
+      m_JumpIncLen = m_Fields.imm;
+    return true;
+
+  case 0b111: // C.BNEZ
+    // if (x[8+rs1’] != 0) pc += sext(offset)
+    if (0 != m_Regs[m_Fields.rs1 + 8])
+      m_JumpIncLen = m_Fields.imm;
+    return true;
+  }
+
   return false;
 }
 
 bool Riscv::Op_c_slli(uint16_t Inst) {
   SetInstStr(Inst, "c.slli");
-  assert(!"Op_c_slli() UNIMPLEMENTED!!");
+
+  m_Fields.rs1 = m_DeInst16.Fetch_09_07(Inst);
+  m_Fields.rd = m_Fields.rs1;
+  if (AbiName::zero == m_Fields.rd)
+    return false;
+
+  m_Fields.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b000: // C.SLLI
+    // x[rd] = x[rd] << uimm
+    m_Regs[m_Fields.rd] = m_Fields.rs1 << m_Fields.imm;
+    return true;
+  }
+
   return false;
 }
 
@@ -248,7 +333,21 @@ bool Riscv::Op_c_ldsp(uint16_t Inst) {
 
 bool Riscv::Op_c_lwsp(uint16_t Inst) {
   SetInstStr(Inst, "c.lwsp");
-  assert(!"Op_c_lwsp() UNIMPLEMENTED!!");
+
+  m_Fields.imm = m_DeInst16.FetchImmCiFmt_54276(Inst);
+  m_Fields.rd = m_DeInst16.Fetch_11_07(Inst);
+  m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
+
+  switch (m_Fields.funct3) {
+  case 0b010: { // C.LWSP
+    // x[rd] = sext(M[x[2] + uimm][31:0])
+    uint32_t Addr = m_Regs[RvReg::x2] + m_Fields.imm;
+    uint32_t Data = m_State.GetMem().Read32(Addr);
+    m_Regs[m_Fields.rd] = Data;
+    return true;
+  }
+  }
+
   return false;
 }
 

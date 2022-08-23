@@ -110,15 +110,17 @@ public:
   bool IncPc(uint32_t Imm);
   bool SetPc(uint32_t Pc);
   uint32_t GetPc();
-  void SetReg(uint8_t Reg, uint32_t Val);
-  void SetReg(AbiName Reg, uint32_t Val);
-  uint32_t GetReg(uint8_t Reg);
+  // void SetReg(uint8_t Reg, uint32_t Val);
+  // void SetReg(AbiName Reg, uint32_t Val);
+  // uint32_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
 
   uint32_t GetRegFile(RvReg RegFile);
+  uint32_t GetRegFile(AbiName RegFile);
   void SetRegFile(RvReg RegFile, uint32_t Value);
+  void SetRegFile(AbiName RegFile, uint32_t Value);
 
   void ExceptIllegalInstruction(uint32_t Inst);
   void ExceptInstructionAddressMisaligned(uint32_t Inst);

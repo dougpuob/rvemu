@@ -59,6 +59,7 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/include/elf.h
     ${CMAKE_SOURCE_DIR}/source/include/elf_struct.h
     ${CMAKE_SOURCE_DIR}/source/include/mem.h
+    ${CMAKE_SOURCE_DIR}/source/include/regfile.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv_spec.h
     ${CMAKE_SOURCE_DIR}/source/include/decode.h
@@ -87,7 +88,8 @@ set(SOURCE_TESTS
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_quicktest.h
 
     # Sources
-    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_riscv.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_regfile.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_riscv.cpp    
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_instruction16.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_instruction32.cpp
     )
@@ -102,6 +104,8 @@ add_subdirectory(thirdparty/googletest)
 include(source/cmake/clang-format.cmake)
 clangformat_setup(
     ${SOURCE_FILES}
+    ${SOURCE_OSDEPS}
+    ${SOURCE_TESTS}
     )
 
 
