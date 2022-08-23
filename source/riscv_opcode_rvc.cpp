@@ -10,12 +10,10 @@ bool Riscv::Op_c_addi4spn(uint16_t Inst) {
   if (0b00000 /*C.ADDI4SPN*/ != m_Fields.funct3)
     return false;
 
-  // Inst[12:05] = nzuimm[5:4|9:6|2|3]
   m_Fields.imm = m_DeInst16.FetchImmCiwFmt_549623(Inst);
   m_Fields.rd = m_DeInst16.Fetch_04_02(Inst);
 
-  const int32_t Offset = GetRegFile(AbiName::sp) + m_Fields.imm;
-  SetRegFile((RvReg)Offset, m_Fields.rd);
+  m_Regs[m_Fields.rd] = m_Regs[AbiName::sp] + m_Fields.imm;
 
   return true;
 }
@@ -36,7 +34,7 @@ bool Riscv::Op_c_lw(uint16_t Inst) {
 
   switch (m_Fields.funct3) {
   case 0b010: { // C.LW
-    const uint32_t Addr = GetRegFile((RvReg)m_Fields.rs1) + m_Fields.imm;
+    const uint32_t Addr = m_Regs[m_Fields.rs1] + m_Fields.imm;
     m_State.GetMem().Read32(Addr);
     return true;
   }
@@ -72,8 +70,8 @@ bool Riscv::Op_c_sw(uint16_t Inst) {
   case 0b110: { // C.SW
     // M[x[8+rs1’] + uimm][31:0] = x[8+rs2’]
     m_Fields.imm = m_DeInst16.FetchImmCsFmt_5326(Inst);
-    uint32_t Addr = GetRegFile((RvReg)(8 + m_Fields.rs1)) + m_Fields.imm;
-    uint32_t Data = GetRegFile((RvReg)(8 + m_Fields.rs2));
+    uint32_t Addr = m_Regs[8 + m_Fields.rs1] + m_Fields.imm;
+    uint32_t Data = m_Regs[8 + m_Fields.rs2];
     m_State.GetMem().Write(Addr, (uint8_t *)&Data, 4);
     return true;
   }
@@ -203,8 +201,8 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     switch (funct) {
     case 0b000: // C.SUB
       SetInstStr(Inst, "c.sub");
-      this->m_Regs[m_Fields.rd + 8] =
-          this->m_Regs[m_Fields.rd + 8] - this->m_Regs[m_Fields.rs2 + 8];
+      m_Regs[m_Fields.rd + 8] =
+          m_Regs[m_Fields.rd + 8] - m_Regs[m_Fields.rs2 + 8];
       break;
 
     case 0b100: // C.SUBW
@@ -214,20 +212,20 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
 
     case 0b001: // C.XOR
       SetInstStr(Inst, "c.xor");
-      this->m_Regs[m_Fields.rd + 8] =
-          this->m_Regs[m_Fields.rd + 8] ^ this->m_Regs[m_Fields.rs2 + 8];
+      m_Regs[m_Fields.rd + 8] =
+          m_Regs[m_Fields.rd + 8] ^ m_Regs[m_Fields.rs2 + 8];
       break;
 
     case 0b010: // C.OR
       SetInstStr(Inst, "c.or");
-      this->m_Regs[m_Fields.rd + 8] =
-          this->m_Regs[m_Fields.rd + 8] | this->m_Regs[m_Fields.rs2 + 8];
+      m_Regs[m_Fields.rd + 8] =
+          m_Regs[m_Fields.rd + 8] | m_Regs[m_Fields.rs2 + 8];
       break;
 
     case 0b011: // C.AND
       SetInstStr(Inst, "c.and");
-      this->m_Regs[m_Fields.rd + 8] =
-          this->m_Regs[m_Fields.rd + 8] & this->m_Regs[m_Fields.rs2 + 8];
+      m_Regs[m_Fields.rd + 8] =
+          m_Regs[m_Fields.rd + 8] & m_Regs[m_Fields.rs2 + 8];
       break;
 
     case 0b111: // C.ADDW

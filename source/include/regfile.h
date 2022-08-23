@@ -122,6 +122,12 @@ public:
 
   RegFile(const std::vector<uint32_t> &Defaults) { m_Files = Defaults; }
 
+  uint32_t &operator[](uint32_t X) {
+    if (Config::getInst().opt_trace)
+      printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
+    return m_Files[X];
+  }
+
   uint32_t &operator[](RvReg X) {
     if (Config::getInst().opt_trace)
       printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
@@ -131,6 +137,12 @@ public:
   uint32_t &operator[](AbiName X) {
     if (Config::getInst().opt_trace)
       printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
+    return m_Files[X];
+  }
+
+  uint32_t operator[](uint32_t X) const {
+    if (Config::getInst().opt_trace)
+      printf("              RegFile[x%-2d] --> 0x%.8X\n", X, m_Files[X]);
     return m_Files[X];
   }
 

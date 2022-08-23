@@ -2,6 +2,7 @@
 
 #include "decode.h"
 #include "elf.h"
+#include "regfile.h"
 #include "riscv_spec.h"
 #include "state.h"
 #include "syscall.h"
@@ -76,7 +77,7 @@ private:
   uint32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
 
-  std::vector<uint32_t> m_Regs;
+  RegFile m_Regs;
   std::vector<OpcodeEntry32> m_Rv32OpcodeMap; // Table 25.1 RV opcode map
   std::vector<OpcodeEntry16> Rv16OpcodeMap;   // Table 16.4 : RVC opcode map
 
@@ -110,17 +111,9 @@ public:
   bool IncPc(uint32_t Imm);
   bool SetPc(uint32_t Pc);
   uint32_t GetPc();
-  // void SetReg(uint8_t Reg, uint32_t Val);
-  // void SetReg(AbiName Reg, uint32_t Val);
-  // uint32_t GetReg(uint8_t Reg);
   void Halt();
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
-
-  uint32_t GetRegFile(RvReg RegFile);
-  uint32_t GetRegFile(AbiName RegFile);
-  void SetRegFile(RvReg RegFile, uint32_t Value);
-  void SetRegFile(AbiName RegFile, uint32_t Value);
 
   void ExceptIllegalInstruction(uint32_t Inst);
   void ExceptInstructionAddressMisaligned(uint32_t Inst);

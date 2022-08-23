@@ -15,17 +15,17 @@ private:
   std::vector<FILE *> m_StdFds;
 
 private:
-  void Open(std::vector<uint32_t> &RvRegs);
-  void Write(std::vector<uint32_t> &RvRegs);
-  void Close(std::vector<uint32_t> &RvRegs);
-  void Read(std::vector<uint32_t> &RvRegs);
+  void Open(RegFile &RvRegs);
+  void Write(RegFile &RvRegs);
+  void Close(RegFile &RvRegs);
+  void Read(RegFile &RvRegs);
 
-  void Exit(std::vector<uint32_t> &RvRegs);
-  void Brk(std::vector<uint32_t> &RvRegs);
-  void GetTimeOfDay(std::vector<uint32_t> &RvRegs);
+  void Exit(RegFile &RvRegs);
+  void Brk(RegFile &RvRegs);
+  void GetTimeOfDay(RegFile &RvRegs);
 
-  void Lseek(std::vector<uint32_t> &RvRegs);
-  void Fstat(std::vector<uint32_t> &RvRegs);
+  void Lseek(RegFile &RvRegs);
+  void Fstat(RegFile &RvRegs);
 
 public:
   void InitStdFds();
@@ -37,7 +37,7 @@ public:
   }
 
   std::vector<FILE *> &GetStdFds() { return this->m_StdFds; }
-  void Handle(std::vector<uint32_t> &RvRegs);
+  void Handle(RegFile &RvRegs);
 };
 
 } // namespace rvemu

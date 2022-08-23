@@ -53,7 +53,7 @@ enum RvSysCall {
   getmainvars = 2011,
 };
 
-void SystemCall::Exit(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Exit(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
   pState->Halt();
 
@@ -61,7 +61,7 @@ void SystemCall::Exit(std::vector<uint32_t> &RvRegs) {
   fprintf(stdout, "ExitCode=%d(0x%X)\n", ExitCode, ExitCode);
 }
 
-void SystemCall::Brk(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Brk(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Inc = RvRegs[AbiName::a0];
@@ -71,13 +71,13 @@ void SystemCall::Brk(std::vector<uint32_t> &RvRegs) {
   RvRegs[AbiName::a0] = pState->GetBreakAddress();
 }
 
-void SystemCall::GetTimeOfDay(std::vector<uint32_t> &RvRegs) {}
+void SystemCall::GetTimeOfDay(RegFile &RvRegs) {}
 
-void SystemCall::Lseek(std::vector<uint32_t> &RvRegs) {}
+void SystemCall::Lseek(RegFile &RvRegs) {}
 
-void SystemCall::Fstat(std::vector<uint32_t> &RvRegs) {}
+void SystemCall::Fstat(RegFile &RvRegs) {}
 
-void SystemCall::Handle(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Handle(RegFile &RvRegs) {
   const uint32_t SysCall = RvRegs[AbiName::a7];
 
   switch (SysCall) {

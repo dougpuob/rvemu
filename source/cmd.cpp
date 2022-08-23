@@ -30,21 +30,21 @@ bool CmdArgs::Parse(const int Argc, char **Args,
         ConfigSingleton::getInst().opt_unittest = true;
         continue;
       }
-
-      /* set the executable */
-      if (arg[i] != '-') {
-        if (!std::filesystem::exists(arg)) {
-          fprintf(stderr, "File is not exist (%s)\n", arg.c_str());
-          return false;
-        }
-        ConfigSingleton::getInst().opt_prog_name = arg;
-        continue;
-      }
-
-      /* otherwise, error */
-      fprintf(stderr, "Unknown argument %s\n", arg.c_str());
-      return false;
     }
+
+    /* set the executable */
+    if (arg[i] != '-') {
+      if (!std::filesystem::exists(arg)) {
+        fprintf(stderr, "File is not exist (%s)\n", arg.c_str());
+        return false;
+      }
+      ConfigSingleton::getInst().opt_prog_name = arg;
+      continue;
+    }
+
+    /* otherwise, error */
+    fprintf(stderr, "Unknown argument %s\n", arg.c_str());
+    return false;
   }
 
   return true;

@@ -17,7 +17,7 @@ void SystemCall::InitStdFds() {
   m_StdFds.push_back((FILE *)GetStdHandle(STD_ERROR_HANDLE));
 }
 
-void SystemCall::Open(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Open(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Name_ = RvRegs[AbiName::a0];
@@ -34,7 +34,7 @@ void SystemCall::Open(std::vector<uint32_t> &RvRegs) {
   }
 }
 
-void SystemCall::Write(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Write(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = RvRegs[AbiName::a0];
@@ -57,7 +57,7 @@ void SystemCall::Write(std::vector<uint32_t> &RvRegs) {
   RvRegs[AbiName::a0] = dwBytesWritten;
 }
 
-void SystemCall::Close(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Close(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   const uint32_t Fd_ = RvRegs[AbiName::a0];
@@ -69,7 +69,7 @@ void SystemCall::Close(std::vector<uint32_t> &RvRegs) {
   RvRegs[AbiName::a0] = 0;
 }
 
-void SystemCall::Read(std::vector<uint32_t> &RvRegs) {
+void SystemCall::Read(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = RvRegs[AbiName::a0];

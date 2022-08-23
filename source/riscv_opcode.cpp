@@ -24,55 +24,55 @@ bool Riscv::Op_load(uint32_t Inst) {
   m_Fields.rs1 = m_DeInst32.Fetch_19_15(Inst);
   m_Fields.imm = m_DeInst32.FetchImmIType(Inst);
 
-  const uint32_t addr = GetRegFile((RvReg)m_Fields.rs1) + m_Fields.imm;
+  const uint32_t addr = m_Regs[m_Fields.rs1] + m_Fields.imm;
 
   switch (m_Fields.funct3) {
   case 0b000: { // lb
     SetInstStr(Inst, "lb");
     uint32_t val = m_State.GetMem().Read8(addr);
-    SetRegFile((RvReg)m_Fields.rd, m_DeInst32.SignExtB(val));
+    m_Regs[m_Fields.rd] = m_DeInst32.SignExtB(val);
     break;
   }
 
   case 0b100: { // lbu
     SetInstStr(Inst, "lbu");
     uint32_t val = m_State.GetMem().Read8(addr);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b001: { // lh
     SetInstStr(Inst, "lh");
     uint32_t val = m_State.GetMem().Read16(addr);
-    SetRegFile((RvReg)m_Fields.rd, m_DeInst32.SignExtH(val));
+    m_Regs[m_Fields.rd] = m_DeInst32.SignExtH(val);
     break;
   }
 
   case 0b101: { // lhu
     SetInstStr(Inst, "lhu");
     uint32_t val = m_State.GetMem().Read16(addr);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b010: { // lw
     SetInstStr(Inst, "lw");
     uint32_t val = m_State.GetMem().Read32(addr);
-    SetRegFile((RvReg)m_Fields.rd, m_DeInst32.SignExtW(val));
+    m_Regs[m_Fields.rd] = m_DeInst32.SignExtW(val);
     break;
   }
 
   case 0b110: { // lwu
     SetInstStr(Inst, "lwu");
     uint32_t val = m_State.GetMem().Read32(addr);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b011: { // ld
     SetInstStr(Inst, "ld");
     uint32_t val = m_State.GetMem().Read64(addr);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
@@ -106,41 +106,37 @@ bool Riscv::Op_opimm(uint32_t Inst) {
   case 0b000: { // ADDI
                 // ADDIW
     SetInstStr(Inst, "addi");
-    int32_t val = (int32_t)GetRegFile((RvReg)m_Fields.rs1) + m_Fields.imm;
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = m_Regs[m_Fields.rs1] + m_Fields.imm;
+    ;
     break;
   }
 
   case 0b001: { // SLLI
     SetInstStr(Inst, "slli");
     m_Fields.shamt = m_DeInst32.Fetch_24_20(Inst);
-    int32_t val = (int32_t)GetRegFile((RvReg)m_Fields.rs1) << m_Fields.shamt;
-    SetRegFile((RvReg)m_Fields.rd, val);
+    int32_t val = m_Regs[m_Fields.rs1] << m_Fields.shamt;
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b010: { // SLTI (set less than immediate)
     SetInstStr(Inst, "slti");
-    uint32_t val =
-        ((int32_t)GetRegFile((RvReg)m_Fields.rs1) < m_Fields.imm) ? 1 : 0;
-    SetRegFile((RvReg)m_Fields.rd, val);
+    uint32_t val = m_Regs[m_Fields.rs1] < (m_Fields.imm) ? 1 : 0;
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b011: { // SLTIU
     SetInstStr(Inst, "sltiu");
-    uint32_t val =
-        ((int32_t)(GetRegFile((RvReg)m_Fields.rs1) < (uint32_t)m_Fields.imm))
-            ? 1
-            : 0;
-    SetRegFile((RvReg)m_Fields.rd, val);
+    uint32_t val = ((int32_t)m_Regs[m_Fields.rs1] < m_Fields.imm) ? 1 : 0;
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b100: { // XORI
     SetInstStr(Inst, "xori");
-    uint32_t val = (GetRegFile((RvReg)m_Fields.rs1) ^ m_Fields.imm);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    uint32_t val = (m_Regs[m_Fields.rs1] ^ m_Fields.imm);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
@@ -153,26 +149,26 @@ bool Riscv::Op_opimm(uint32_t Inst) {
 
     if (0 == inst_30_30) { // SRLI (logical right shift)
       SetInstStr(Inst, "srli");
-      val = (GetRegFile((RvReg)m_Fields.rs1) >> m_Fields.imm);
+      val = m_Regs[m_Fields.rs1] >> m_Fields.imm;
     } else { // SRAI (arithmetic right shift)
       SetInstStr(Inst, "srai");
-      val = ((int32_t)GetRegFile((RvReg)m_Fields.rs1) >> m_Fields.imm);
+      val = ((int32_t)m_Regs[m_Fields.rs1] >> m_Fields.imm);
     }
-    SetRegFile((RvReg)m_Fields.rd, val);
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b110: { // ORI
     SetInstStr(Inst, "ori");
-    uint32_t val = (GetRegFile((RvReg)m_Fields.rs1) | m_Fields.imm);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    uint32_t val = m_Regs[m_Fields.rs1] | m_Fields.imm;
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
   case 0b111: { // ANDI
     SetInstStr(Inst, "andi");
-    uint32_t val = (GetRegFile((RvReg)m_Fields.rs1) & m_Fields.imm);
-    SetRegFile((RvReg)m_Fields.rd, val);
+    uint32_t val = m_Regs[m_Fields.rs1] & m_Fields.imm;
+    m_Regs[m_Fields.rd] = val;
     break;
   }
 
@@ -191,7 +187,7 @@ bool Riscv::Op_auipc(uint32_t Inst) {
   m_Fields.uimm = m_DeInst32.FetchImmUType(Inst);
   const uint32_t pc = this->GetPc();
   const uint32_t val = pc + m_Fields.uimm;
-  SetRegFile((RvReg)m_Fields.rd, val);
+  m_Regs[m_Fields.rd] = val;
   return true;
 }
 
@@ -202,8 +198,8 @@ bool Riscv::Op_store(uint32_t Inst) {
   m_Fields.rs2 = m_DeInst32.Fetch_24_20(Inst);
   m_Fields.imm = m_DeInst32.FetchImmSType(Inst);
 
-  uint32_t addr = GetRegFile((RvReg)m_Fields.rs1) + m_Fields.imm;
-  uint32_t data = GetRegFile((RvReg)m_Fields.rs2);
+  uint32_t addr = m_Regs[m_Fields.rs1] + m_Fields.imm;
+  uint32_t data = m_Regs[m_Fields.rs2];
 
   switch (m_Fields.funct3) {
   case 0b000: { // SB
@@ -259,68 +255,60 @@ bool Riscv::Op_op(uint32_t Inst) {
     switch (m_Fields.funct3) {
     case 0b000: { // ADD
       SetInstStr(Inst, "add");
-      uint32_t val = (int32_t)(GetRegFile((RvReg)m_Fields.rs1)) +
-                     (int32_t)(GetRegFile((RvReg)m_Fields.rs2));
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val =
+          (int32_t)m_Regs[m_Fields.rs1] + (int32_t)m_Regs[m_Fields.rs2];
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b001: { // SLL
       SetInstStr(Inst, "sll");
-      uint32_t val = GetRegFile((RvReg)m_Fields.rs1)
-                     << (GetRegFile((RvReg)m_Fields.rs2) & 0x1f);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = m_Regs[m_Fields.rs1] << (m_Regs[m_Fields.rs2] & 0x1f);
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b010: { // SLT
       SetInstStr(Inst, "slt");
-      uint32_t val = ((int32_t)(GetRegFile((RvReg)m_Fields.rs1)) <
-                      (int32_t)(GetRegFile((RvReg)m_Fields.rs2)))
-                         ? 1
-                         : 0;
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val =
+          ((int32_t)m_Regs[m_Fields.rs1] < (int32_t)m_Regs[m_Fields.rs2]) ? 1
+                                                                          : 0;
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b011: { // SLTU
       SetInstStr(Inst, "sltu");
-      uint32_t val =
-          GetRegFile((RvReg)m_Fields.rs1) < GetRegFile((RvReg)m_Fields.rs2) ? 1
-                                                                            : 0;
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = (m_Regs[m_Fields.rs1] < m_Regs[m_Fields.rs2]) ? 1 : 0;
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b100: { // XOR
       SetInstStr(Inst, "xor");
-      uint32_t val =
-          GetRegFile((RvReg)m_Fields.rs1) ^ GetRegFile((RvReg)m_Fields.rs2);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = m_Regs[m_Fields.rs1] ^ m_Regs[m_Fields.rs2];
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b101: { // SRL
       SetInstStr(Inst, "srl");
-      uint32_t val = GetRegFile((RvReg)m_Fields.rs1) >>
-                     (GetRegFile((RvReg)m_Fields.rs2) & 0x1f);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = m_Regs[m_Fields.rs1] >> (m_Regs[m_Fields.rs2] & 0x1f);
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b110: { // OR
       SetInstStr(Inst, "or");
-      uint32_t val =
-          GetRegFile((RvReg)m_Fields.rs1) | GetRegFile((RvReg)m_Fields.rs2);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = m_Regs[m_Fields.rs1] | m_Regs[m_Fields.rs2];
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b111: { // AND
       SetInstStr(Inst, "and");
-      uint32_t val =
-          GetRegFile((RvReg)m_Fields.rs1) & GetRegFile((RvReg)m_Fields.rs2);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val = m_Regs[m_Fields.rs1] & m_Regs[m_Fields.rs2];
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
@@ -336,15 +324,15 @@ bool Riscv::Op_op(uint32_t Inst) {
       SetInstStr(Inst, "sub");
       uint32_t val =
           (int32_t)(m_Regs[m_Fields.rs1]) - (int32_t)(m_Regs[m_Fields.rs2]);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
     case 0b101: { // SRA
       SetInstStr(Inst, "sra");
-      uint32_t val = ((int32_t)GetRegFile((RvReg)m_Fields.rs1)) >>
-                     (GetRegFile((RvReg)m_Fields.rs2) & 0x1f);
-      SetRegFile((RvReg)m_Fields.rd, val);
+      uint32_t val =
+          ((int32_t)m_Regs[m_Fields.rs1]) >> (m_Regs[m_Fields.rs2] & 0x1f);
+      m_Regs[m_Fields.rd] = val;
       break;
     }
 
@@ -362,7 +350,7 @@ bool Riscv::Op_lui(uint32_t Inst) {
 
   m_Fields.rd = m_DeInst32.Fetch_11_07(Inst);
   m_Fields.imm = m_DeInst32.FetchImmUType(Inst);
-  SetRegFile((RvReg)m_Fields.rd, m_Fields.imm);
+  m_Regs[m_Fields.rd] = m_Fields.imm;
   return true;
 }
 
@@ -395,35 +383,32 @@ bool Riscv::Op_branch(uint32_t Inst) {
   switch (m_Fields.funct3) {
   case 0b000: // BEQ
     SetInstStr(Inst, "beq");
-    jump = (GetRegFile((RvReg)m_Fields.rs1) == GetRegFile((RvReg)m_Fields.rs2));
+    jump = (m_Regs[m_Fields.rs1] == m_Regs[m_Fields.rs2]);
     break;
 
   case 0b001: // BNE
     SetInstStr(Inst, "bne");
-    jump = (GetRegFile((RvReg)m_Fields.rs1) !=
-            (int32_t)GetRegFile((RvReg)m_Fields.rs2));
+    jump = (m_Regs[m_Fields.rs1] != m_Regs[m_Fields.rs2]);
     break;
 
   case 0b100: // BLT
     SetInstStr(Inst, "blt");
-    jump = ((int32_t)GetRegFile((RvReg)m_Fields.rs1) <
-            (int32_t)GetRegFile((RvReg)m_Fields.rs2));
+    jump = ((int32_t)m_Regs[m_Fields.rs1] < (int32_t)m_Regs[m_Fields.rs2]);
     break;
 
   case 0b101: // BGE
     SetInstStr(Inst, "bge");
-    jump = ((int32_t)GetRegFile((RvReg)m_Fields.rs1) >=
-            (int32_t)GetRegFile((RvReg)m_Fields.rs2));
+    jump = ((int32_t)m_Regs[m_Fields.rs1] >= (int32_t)m_Regs[m_Fields.rs2]);
     break;
 
   case 0b110: // BLTU
     SetInstStr(Inst, "bgeu");
-    jump = (GetRegFile((RvReg)m_Fields.rs1) < GetRegFile((RvReg)m_Fields.rs2));
+    jump = (m_Regs[m_Fields.rs1] < m_Regs[m_Fields.rs2]);
     break;
 
   case 0b111: // BGEU
     SetInstStr(Inst, "bgeu");
-    jump = (GetRegFile((RvReg)m_Fields.rs1) >= GetRegFile((RvReg)m_Fields.rs2));
+    jump = (m_Regs[m_Fields.rs1] >= m_Regs[m_Fields.rs2]);
     break;
 
   default:
@@ -460,7 +445,7 @@ bool Riscv::Op_jal(uint32_t Inst) {
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (RvReg::x0 != m_Fields.rd) {
-    SetRegFile((RvReg)m_Fields.rd, ra);
+    m_Regs[m_Fields.rd] = ra;
   }
 
   // jump (increase jump)
@@ -492,11 +477,11 @@ bool Riscv::Op_jalr(uint32_t Inst) {
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (AbiName::zero != m_Fields.rd) {
-    SetRegFile((RvReg)m_Fields.rd, ra);
+    m_Regs[m_Fields.rd] = ra;
   }
 
   // jump (new location jump)
-  const uint32_t upper_target_addr = GetRegFile((RvReg)m_Fields.rs1);
+  const uint32_t upper_target_addr = m_Regs[m_Fields.rs1];
   m_JumpNewLen = (upper_target_addr + m_Fields.imm) & ~1u;
 
   return true;
@@ -520,18 +505,17 @@ bool Riscv::Op_system(uint32_t Inst) {
   m_Fields.rs1 = m_DeInst32.Fetch_19_15(Inst);
   m_Fields.imm = m_DeInst32.FetchImmIType(Inst);
 
-  bool bResult = false;
   switch (m_Fields.funct3) {
   case 0b000: { // ECALL & EBREAK
     switch (m_Fields.imm) {
     case 0b0: // ECALL
-      bResult = Op_ecall();
-      break;
+      SetInstStr(Inst, "ecall");
+      return Op_ecall();
     case 0b1: // EBREAK
-      bResult = Op_ebreak();
-      break;
+      SetInstStr(Inst, "ebreak");
+      return Op_ebreak();
     }
-    break;
+    return false;
   }
 
   case 0b001: { // CSRRW
@@ -568,7 +552,7 @@ bool Riscv::Op_system(uint32_t Inst) {
   }
   }
 
-  return bResult;
+  return false;
 }
 
 } // namespace rvemu

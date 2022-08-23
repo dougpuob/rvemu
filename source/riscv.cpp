@@ -9,7 +9,7 @@ using Config = ConfigSingleton;
 
 namespace rvemu {
 
-Riscv::Riscv() : m_Regs(REGS_NUMB) {
+Riscv::Riscv() {
 
   Reset(0);
   m_SysCall.Register(&m_State);
@@ -43,8 +43,8 @@ Riscv::Riscv() : m_Regs(REGS_NUMB) {
 }
 
 void Riscv::Reset(uint64_t Pc) {
-  for (auto &Reg : m_Regs)
-    Reg = 0;
+  for (int i = 0; i < m_Regs.size(); i++)
+    m_Regs[(RvReg)i] = 0;
 
   // set the reset address
   m_Pc = 0;
@@ -142,31 +142,6 @@ void Riscv::SetInstStr(uint32_t Inst, const char *InstStr) {
   PrintInstInfo(Pc, Inst, InstStr, Sym);
 }
 
-uint32_t Riscv::GetRegFile(AbiName RegFile) {
-  return GetRegFile((RvReg)RegFile);
-}
-
-uint32_t Riscv::GetRegFile(RvReg RegFile) {
-  if (Config::getInst().opt_trace) {
-    printf("              ");
-    printf("RegFile[x%-2d] --> 0x%.8X\n", RegFile, m_Regs[RegFile]);
-  }
-  return m_Regs[RegFile];
-}
-
-void Riscv::SetRegFile(AbiName RegFile, uint32_t Value) {
-  SetRegFile((RvReg)RegFile, Value);
-}
-
-void Riscv::SetRegFile(RvReg RegFile, uint32_t Value) {
-  m_Regs[RegFile] = Value;
-
-  if (Config::getInst().opt_trace) {
-    printf("              ");
-    printf("RegFile[x%-2d] <-- 0x%.8X\n", RegFile, m_Regs[RegFile]);
-  }
-}
-
 bool Riscv::IncPc() {
   m_Pc += (uint8_t)m_InstLen;
   return true;
@@ -186,32 +161,11 @@ bool Riscv::SetPc(uint32_t Pc) {
   return true;
 }
 
-uint32_t Riscv::GetPc() {
-  //
-  return m_Pc;
-}
-
-// void Riscv::SetReg(uint8_t Reg, uint32_t Val) {
-//   if ((int)Reg < RV_NUM_REGS && Reg != (int)AbiName::zero)
-//     m_Regs[(int)Reg] = Val;
-// }
-//
-// void Riscv::SetReg(AbiName Reg, uint32_t Val) {
-//   if ((int)Reg < RV_NUM_REGS && Reg != AbiName::zero)
-//     m_Regs[(int)Reg] = Val;
-// }
-//
-// uint32_t Riscv::GetReg(uint8_t Reg) {
-//   //
-//   return m_Regs[Reg];
-// }
+uint32_t Riscv::GetPc() { return m_Pc; }
 
 void Riscv::Halt() { m_State.Halt(); }
 
-bool Riscv::HasHalted() {
-  //
-  return m_State.IsHalt();
-}
+bool Riscv::HasHalted() { return m_State.IsHalt(); }
 
 void Riscv::Run(rvemu::Elf *Elf) {
   m_Elf = Elf;
