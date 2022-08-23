@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED   ON)
 set(CMAKE_CXX_EXTENSIONS          OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+
+#==============================================================================
+# Compiler options
+#==============================================================================
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4141")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244")
@@ -26,23 +30,27 @@ elseif(APPLE)
 endif()
 
 
+#==============================================================================
+# Source files - OS dependent
+#==============================================================================
 if(CMAKE_HOST_WIN32)
   set(SOURCE_OSDEPS
-        ${CMAKE_SOURCE_DIR}/source/syscall_win.cpp
-        )
-
+      ${CMAKE_SOURCE_DIR}/source/osdep/syscall_win.cpp
+      )
 elseif(CMAKE_HOST_APPLE)
   set(SOURCE_OSDEPS
-        ${CMAKE_SOURCE_DIR}/source/syscall_macos.cpp
-        )
-
+      ${CMAKE_SOURCE_DIR}/source/osdep/syscall_macos.cpp
+      )
 elseif(CMAKE_HOST_UNIX)
   set(SOURCE_OSDEPS
-    ${CMAKE_SOURCE_DIR}/source/syscall_linux.cpp
-    )
-
+	  ${CMAKE_SOURCE_DIR}/source/osdep/syscall_linux.cpp
+      )
 endif()
 
+
+#==============================================================================
+# Source files - Common
+#==============================================================================
 set(SOURCE_FILES
     # Headers
     ${CMAKE_SOURCE_DIR}/source/include/common.h
@@ -70,6 +78,10 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/syscall.cpp
     )
 
+
+#==============================================================================
+# Source files - TestSuite
+#==============================================================================
 set(SOURCE_TESTS
     # Headers
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_quicktest.h
@@ -80,12 +92,22 @@ set(SOURCE_TESTS
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_instruction32.cpp
     )
 
+# Integrate with google test
+add_subdirectory(thirdparty/googletest)
+
+
+#==============================================================================
 # Integrate with clang-format
+#==============================================================================
 include(source/cmake/clang-format.cmake)
 clangformat_setup(
     ${SOURCE_FILES}
     )
 
+
+#==============================================================================
+#
+#==============================================================================
 add_executable(
     ${CMAKE_PROJECT_NAME}
     ${SOURCE_FILES}
@@ -109,5 +131,3 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
-# Integrate with google test
-add_subdirectory(thirdparty/googletest)
