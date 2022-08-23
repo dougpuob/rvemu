@@ -452,7 +452,7 @@ struct DecodeInstruction16 : DecodeInstruction {
     const uint16_t uimm = (inst_05_05 << 5) | //
                           (inst_02_01 << 1) | //
                           (inst_07_06 << 6) | //
-                          (inst_04_03 << 2) | //
+                          (inst_04_03 << 3) | //
                           (inst_08_08 << 8);
 
     // Cast to sign integer

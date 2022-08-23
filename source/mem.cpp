@@ -38,23 +38,27 @@ uint32_t Memory::ReadStr(uint8_t *Dst, uint32_t Addr, uint32_t Max) {
   return len + 1;
 }
 
-uint32_t Memory::FetchInst(uint32_t Addr) {
-  const uint32_t AddrLo = Addr & MASK_LO;
+uint32_t Memory::FetchInst(uint32_t Pc) {
+  m_ConsumedPCs.push_back(Pc);
+
+  const uint32_t AddrLo = Pc & MASK_LO;
   assert((AddrLo & 1) == 0);
 
-  if (/*PC=*/0x000133d8 == Addr) {
+  if (/*PC=*/0x000101cc == Pc) {
     int a = 0;
   }
 
-  uint32_t StartBlock = Addr >> 16;
+  uint32_t StartBlock = Pc >> 16;
   chunk_t *Chunk = this->m_Mem[StartBlock];
   assert(Chunk);
 
-  uint32_t Inst = *(const uint32_t *)(Chunk->data + AddrLo);
+  const uint32_t Inst = *(const uint32_t *)(Chunk->data + AddrLo);
   if ((0 == Inst)) {
-    printf("\nZERO Instruction !!! (PC=0x%.8X)\n", Addr);
+    printf("\nZERO Instruction !!! (PC=0x%.8X)\n", Pc);
     assert((0 != Inst));
   }
+
+  m_ConsumedInsts.push_back(Inst);
 
   return Inst;
 }

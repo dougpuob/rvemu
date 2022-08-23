@@ -191,9 +191,6 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     break;
   }
   case 0b11: {
-    //    vv <-- Inst[06:05]
-    // 0bxxx <-- funct
-    //   ^   <-- Inst[12:12]
     uint16_t funct = 0;
     funct |= ((0b01 << 12) & Inst) >> 10; // Inst[12:12]
     funct |= ((0b11 << 5) & Inst) >> 5;   // Inst[06:05]
@@ -201,9 +198,8 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     switch (funct) {
     case 0b000: // C.SUB
       SetInstStr(Inst, "c.sub");
-      m_Regs[m_Fields.rd + 8] =
-          m_Regs[m_Fields.rd + 8] - m_Regs[m_Fields.rs2 + 8];
-      break;
+      m_Regs[m_Fields.rd + 8] -= m_Regs[m_Fields.rs2 + 8];
+      return true;
 
     case 0b100: // C.SUBW
       SetInstStr(Inst, "c.subw");
@@ -212,21 +208,21 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
 
     case 0b001: // C.XOR
       SetInstStr(Inst, "c.xor");
-      m_Regs[m_Fields.rd + 8] =
-          m_Regs[m_Fields.rd + 8] ^ m_Regs[m_Fields.rs2 + 8];
-      break;
+      // x[8+rd’] = x[8+rd’] ^ x[8+rs2’]
+      m_Regs[m_Fields.rd + 8] ^= m_Regs[m_Fields.rs2 + 8];
+      return true;
 
     case 0b010: // C.OR
       SetInstStr(Inst, "c.or");
-      m_Regs[m_Fields.rd + 8] =
-          m_Regs[m_Fields.rd + 8] | m_Regs[m_Fields.rs2 + 8];
-      break;
+      // x[8+rd’] = x[8+rd’] | x[8+rs2’]
+      m_Regs[m_Fields.rd + 8] |= m_Regs[m_Fields.rs2 + 8];
+      return true;
 
     case 0b011: // C.AND
       SetInstStr(Inst, "c.and");
-      m_Regs[m_Fields.rd + 8] =
-          m_Regs[m_Fields.rd + 8] & m_Regs[m_Fields.rs2 + 8];
-      break;
+      // x[8+rd’] = x[8+rd’] & x[8+rs2’]
+      m_Regs[m_Fields.rd + 8] &= m_Regs[m_Fields.rs2 + 8];
+      return true;
 
     case 0b111: // C.ADDW
       SetInstStr(Inst, "c.addw");
@@ -235,12 +231,9 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     }
     break;
   }
-  default: {
-    assert(!"should not be reachable !!!");
-  }
   }
 
-  return true;
+  return false;
 }
 
 bool Riscv::Op_c_j(uint16_t Inst) {
