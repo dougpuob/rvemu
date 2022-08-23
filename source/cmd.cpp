@@ -1,5 +1,6 @@
-#include <format>
+#include <filesystem>
 #include <iostream>
+#include <stdio.h>
 
 #include "include/cmd.h"
 #include "include/config.h"
@@ -16,6 +17,17 @@ bool CmdArgs::Parse(const int Argc, char **Args,
   /* parse each argument in turn */
   for (int i = 1; i < Argv.size(); ++i) {
     const std::string &arg = Argv[i];
+
+    /* set the executable */
+    if (1 == i) {
+      if (!std::filesystem::exists(arg)) {
+        fprintf(stderr, "File is not exist (%s)\n", arg.c_str());
+        return false;
+      }
+      ConfigSingleton::getInst().opt_prog_name = arg;
+      continue;
+    }
+
     /* parse flags */
     if (arg[0] == '-') {
       if (arg == "--help")
@@ -29,24 +41,21 @@ bool CmdArgs::Parse(const int Argc, char **Args,
         continue;
       }
       /* otherwise, error */
-      std::cerr << std::format("Unknown argument {}", arg) << std::endl;
+      fprintf(stderr, "Unknown argument %s\n", arg.c_str());
       return false;
     }
-    /* set the executable */
-    ConfigSingleton::getInst().opt_prog_name = arg;
   }
 
   return true;
 }
 
 void CmdArgs::PrintUsage(const std::string &FileName) {
-  std::cerr << std::format(
-                   "RV32I[MA] Emulator which loads an ELF file to execute.\n"
-                   "Usage: {} [options] [filename]\n"
-                   "Options:\n"
-                   "  --trace : print executable trace\n",
-                   FileName)
-            << std::endl;
+  fprintf(stderr,
+          "RV32I[MA] Emulator which loads an ELF file to execute.\n"
+          "Usage: %s [options] [filename]\n"
+          "Options:\n"
+          "  --trace : print executable trace\n\n",
+          FileName.c_str());
 }
 
 } // namespace rvemu

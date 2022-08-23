@@ -121,7 +121,7 @@ const char *Elf::GetStrTab() {
   if (!Shdr)
     return NULL;
 
-  return (const char *)(m_RawData.data() + +Shdr->sh_offset);
+  return (const char *)(m_RawData.data() + Shdr->sh_offset);
 }
 
 const Elf32_Shdr *Elf::GetSectionHeader(const char *Name) {
@@ -160,10 +160,8 @@ const rvemu::Elf32_Sym *Elf::GetSymbol(const char *Name) {
 void Elf::PrintSymbols() {
   if (Config::getInst().opt_trace) {
     std::cout << "Symbols ..." << std::endl;
-    for (auto &Sym : m_Symbols) {
-      std::cout << std::format("  [{:#08x}] ={}", Sym.first, Sym.second)
-                << std::endl;
-    }
+    for (auto &Sym : m_Symbols)
+      fprintf(stdout, "  [0x%.8X]=%s\n", Sym.first, Sym.second.c_str());
     std::cout << std::endl << std::endl;
   }
 }
