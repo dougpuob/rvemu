@@ -240,13 +240,12 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
 }
 
 bool Riscv::Op_c_j(uint16_t Inst) {
-  SetInstStr(Inst, "c.j");
-
   m_Fields.funct3 = m_DeInst16.Fetch_15_13(Inst);
   m_Fields.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
 
   switch (m_Fields.funct3) {
   case 0b101: // C.J
+    SetInstStr(Inst, "c.j");
     // pc += sext(offset)
     m_JumpIncLen = m_Fields.imm;
     return true;

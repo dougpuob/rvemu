@@ -109,6 +109,42 @@ enum AbiName {
   t6 = RvReg::x31,
 };
 
+enum class RvField : int {
+  ra = 0,
+  rd,
+  rs1,
+  rs2,
+  shamt,
+  funct2,
+  funct3,
+  funct4,
+  funct6,
+  funct7,
+  imm,
+  uimm,
+  max
+};
+
+class Field {
+private:
+  std::vector<uint32_t> m_Files;
+
+public:
+  Field() {
+    m_Files.resize((int)RvField::max);
+    for (int i = 0; i < m_Files.size(); i++)
+      m_Files[i] = 0;
+  }
+
+  void Clear() {
+    for (auto &File : m_Files)
+      File = 0;
+  }
+
+  uint32_t &operator[](RvField F) { return m_Files[(int)F]; }
+  uint32_t operator[](RvField F) const { return m_Files[(int)F]; }
+};
+
 class RegFile {
 private:
   std::vector<uint32_t> m_Files;

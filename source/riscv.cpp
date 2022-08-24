@@ -61,7 +61,6 @@ void Riscv::Reset(uint64_t Pc) {
 }
 
 bool Riscv::Dispatch(uint32_t Inst) {
-
   bool Result = false;
 
   /* standard uncompressed instruction */
