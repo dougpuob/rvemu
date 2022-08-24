@@ -34,7 +34,10 @@ public:
   uint16_t Read16(uint32_t addr);
   uint8_t Read8(uint32_t addr);
   void Read(uint8_t *dst, uint32_t addr, uint32_t size);
-  void Write(uint32_t addr, uint8_t *src, uint32_t size);
+  void Write8(uint32_t addr, uint8_t data);
+  void Write16(uint32_t addr, uint16_t data);
+  void Write32(uint32_t addr, uint32_t data);
+  void Write(uint32_t addr, void *src, uint32_t size);
   void Fill(uint32_t addr, uint32_t size, uint8_t val);
 };
 

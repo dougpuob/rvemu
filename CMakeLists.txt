@@ -43,7 +43,7 @@ elseif(CMAKE_HOST_APPLE)
       )
 elseif(CMAKE_HOST_UNIX)
   set(SOURCE_OSDEPS
-	  ${CMAKE_SOURCE_DIR}/source/osdep/syscall_linux.cpp
+    ${CMAKE_SOURCE_DIR}/source/osdep/syscall_linux.cpp
       )
 endif()
 
@@ -88,9 +88,22 @@ set(SOURCE_TESTS
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_quicktest.h
 
     # Sources
+    #
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_regfile.cpp
-    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_riscv.cpp    
-    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst.cpp    
+    #
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_arithmetic.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_branch.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_jump.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_load.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_store.cpp
+    #
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32i_arithmetic.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32i_branch.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32i_jump.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32i_load.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32i_store.cpp
+    #
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst_rv32i.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst_rv32c.cpp
     )

@@ -127,22 +127,22 @@ enum class RvField : int {
 
 class Field {
 private:
-  std::vector<uint32_t> m_Files;
+  std::vector<uint32_t> m_Data;
 
 public:
   Field() {
-    m_Files.resize((int)RvField::max);
-    for (int i = 0; i < m_Files.size(); i++)
-      m_Files[i] = 0;
+    m_Data.resize((int)RvField::max);
+    for (int i = 0; i < m_Data.size(); i++)
+      m_Data[i] = 0;
   }
 
   void Clear() {
-    for (auto &File : m_Files)
+    for (auto &File : m_Data)
       File = 0;
   }
 
-  uint32_t &operator[](RvField F) { return m_Files[(int)F]; }
-  uint32_t operator[](RvField F) const { return m_Files[(int)F]; }
+  uint32_t &operator[](RvField F) { return m_Data[(int)F]; }
+  uint32_t operator[](RvField F) const { return m_Data[(int)F]; }
 };
 
 class RegFile {

@@ -17,6 +17,14 @@ TEST_F(DecodeInstruction32Test, FetchImmIType_JARL) {
   EXPECT_EQ(Answer, Imm);
 }
 
+TEST_F(DecodeInstruction32Test, FetchImmIType_ADDI) {
+  uint32_t Inst = 0x4d840793; // 0x4d840793
+  int32_t Answer = 1240;
+
+  int32_t Imm = this->FetchImmIType(Inst);
+  EXPECT_EQ(Answer, Imm);
+}
+
 // ----------------------------------------------------------------------------
 // J-Type
 // ----------------------------------------------------------------------------

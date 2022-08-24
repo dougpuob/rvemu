@@ -17,14 +17,16 @@ using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
 
 namespace rvemu {
 
-struct RvFields {
+struct RvPreFetchBuf {
   uint8_t opcode;
   uint8_t rd;
   uint8_t rs1;
   uint8_t rs2;
 
-  int32_t imm;
-  uint32_t uimm;
+  union {
+    int32_t imm;
+    uint32_t uimm;
+  };
   uint32_t shamt;
 
   uint8_t funct2;
@@ -37,11 +39,15 @@ struct RvFields {
 
   std::string inst_name;
 
+  // Load & Store
+  uint64_t addr;
+  uint64_t data;
+
   // Exceptions
   bool ExceptIllegalInstruction;
   bool ExceptUnalignedInstruction;
 
-  RvFields() { Clear(); }
+  RvPreFetchBuf() { Clear(); }
 
   void Clear() {
     opcode = 0;
@@ -49,12 +55,10 @@ struct RvFields {
     rs1 = 0;
     rs2 = 0;
 
-    imm = 0;
-    uimm = 0;
+    imm = shamt = 0;
 
-    funct3 = 0;
-    funct4 = 0;
-    funct7 = 0;
+    funct2 = funct3 = funct4 = funct7 = funct12 = 0;
+    addr = data = 0;
 
     inst_name.clear();
 
@@ -74,7 +78,7 @@ private:
 
   uint32_t m_Pc = 0;
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
-  uint32_t m_JumpIncLen = 0;
+  int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
 
   RegFile m_Regs;
@@ -84,7 +88,7 @@ private:
   Elf *m_Elf = nullptr;
 
   SystemCall m_SysCall;
-  RvFields m_Fields;
+  RvPreFetchBuf m_PFB;
   DecodeInstruction16 m_DeInst16;
   DecodeInstruction32 m_DeInst32;
   MachineState m_State;
@@ -101,9 +105,10 @@ public:
   //
   // Debug
   //
-  const char *GetInstStr() { return m_Fields.inst_name.c_str(); }
+  const char *GetInstStr() { return m_PFB.inst_name.c_str(); }
   void SetInstStr(uint32_t Inst, const char *InstStr);
-  const RvFields &GetFields() { return m_Fields; };
+  const RvPreFetchBuf &GetFields() { return m_PFB; };
+  RegFile &GetRegFile() { return m_Regs; };
   void PrintInstInfo(uint32_t Pc, uint32_t Inst, const char *InstStr,
                      const char *Sym);
 
@@ -114,21 +119,24 @@ public:
   uint32_t Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
   bool Dispatch(uint32_t Inst);
   bool IncPc();
-  bool IncPc(uint32_t Imm);
+  bool IncPc(int32_t Imm);
   bool SetPc(uint32_t Pc);
   uint32_t GetPc();
   void Halt();
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
 
+  // Exceptions
   void ExceptIllegalInstruction(uint32_t Inst);
   void ExceptInstructionAddressMisaligned(uint32_t Inst);
+  void ExceptStoreMisaligned(uint32_t Inst);
+  void ExceptLoadMisaligned(uint32_t Inst);
+
+  // Data members
   Memory &GetMem() { return m_State.GetMem(); }
   MachineState &GetState() { return m_State; }
 
-  //
-  // Opcode base
-  //
+  // RV32I instructions
   bool Op_unimp(uint32_t Inst);
   bool Op_load(uint32_t Inst);     // 0b00'000
   bool Op_load_fp(uint32_t Inst);  // 0b00'001
@@ -150,9 +158,7 @@ public:
   bool Op_ebreak();
   bool Op_ecall();
 
-  //
-  // Opcode compressed
-  //
+  // RV32C instructions
   bool Op_c_addi4spn(uint16_t Inst);
   bool Op_c_fld(uint16_t Inst);
   bool Op_c_lw(uint16_t Inst);

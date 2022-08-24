@@ -65,6 +65,7 @@ bool Riscv::Dispatch(uint32_t Inst) {
 
   /* standard uncompressed instruction */
   if ((Inst & 3) == 3) {
+    m_DeInst32.SetValue(Inst);
     const uint16_t Funct_04_02 = (Inst & 0b00000000'00011100);
     const uint16_t Funct_06_05 = (Inst & 0b00000000'01100000);
     uint32_t Funct = (Funct_06_05 >> 2) | (Funct_04_02 >> 2);
@@ -77,6 +78,7 @@ bool Riscv::Dispatch(uint32_t Inst) {
   /* compressed extension instruction */
   else {
     Inst &= 0x0000FFFF;
+    m_DeInst16.SetValue(Inst);
     const uint16_t Funct_01_00 = (Inst & 0b00000000'00000011); // opcode
     const uint16_t Funct_15_13 = (Inst & 0b11100000'00000000); // funct3
     const uint16_t Funct = (Funct_01_00 << 3) | (Funct_15_13 >> 13);
@@ -107,14 +109,16 @@ bool Riscv::Dispatch(uint32_t Inst) {
 }
 
 uint32_t Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
-  m_Fields.Clear();
-
-  if (/*PC=*/0x000101d8 == Pc) {
-    int a = 0;
-  }
+  m_PFB.Clear();
 
   m_DbgConsumedPCs.push_back(Pc);
   uint32_t Inst = Mem.FetchInst(Pc);
+
+  if ((0x00011914 == Pc) && //
+      (0x14F72423 == Inst)  //
+  ) {
+    printf("inst=0x%X", Inst);
+  }
 
   m_DbgConsumedInsts.push_back(Inst);
   bool Result = Dispatch(Inst);
@@ -138,7 +142,7 @@ void Riscv::PrintInstInfo(uint32_t Pc, uint32_t Inst, const char *InstStr,
 }
 
 void Riscv::SetInstStr(uint32_t Inst, const char *InstStr) {
-  m_Fields.inst_name = InstStr;
+  m_PFB.inst_name = InstStr;
 
   const uint32_t Pc = GetPc();
   char *Sym = nullptr;
@@ -153,7 +157,7 @@ bool Riscv::IncPc() {
   return true;
 }
 
-bool Riscv::IncPc(uint32_t Imm) {
+bool Riscv::IncPc(int32_t Imm) {
   m_Pc += Imm;
   // TODO: check PC alignment
   return true;
@@ -187,6 +191,29 @@ void Riscv::Run(rvemu::Elf *Elf) {
     uint32_t Inst = Step(CyclesPerStep, Pc, m_State.GetMem());
     m_State.IncInstCounter();
   }
+}
+
+void Riscv::ExceptIllegalInstruction(uint32_t Inst) {
+  m_PFB.ExceptIllegalInstruction = true;
+  assert(!"ExceptIllegalInstruction");
+}
+
+void Riscv::ExceptInstructionAddressMisaligned(uint32_t Inst) {
+  m_PFB.ExceptUnalignedInstruction = true;
+  assert(!"ExceptInstructionAddressMisaligned");
+}
+
+void Riscv::ExceptLoadMisaligned(uint32_t Inst) {
+  assert(!"ExceptLoadMisaligned");
+}
+
+void Riscv::ExceptStoreMisaligned(uint32_t Inst) {
+  assert(!"ExceptStoreMisaligned");
+}
+
+bool Riscv::Op_unimp(uint32_t Inst) {
+  assert(!"Unimplemented opcode !!!");
+  return false;
 }
 
 } // namespace rvemu
