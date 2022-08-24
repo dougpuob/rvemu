@@ -75,8 +75,7 @@ uint32_t Memory::Read32(uint32_t Addr) {
     if ((Chunk = m_Mem[Addr >> 16])) {
       uint32_t Data = *(const uint32_t *)(Chunk->data + AddrLo);
       if (Config::getInst().opt_trace) {
-        printf("              ");
-        printf("Mem[0x%.8X] --> 0x%.8X\n", Addr, Data);
+        printf("              Mem[0x%.8X] --> 0x%.8X\n", Addr, Data);
       }
       return Data;
     }
@@ -85,8 +84,7 @@ uint32_t Memory::Read32(uint32_t Addr) {
   uint32_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 4);
   if (Config::getInst().opt_trace) {
-    printf("              ");
-    printf("Mem[0x%.8X] --> 0x%8X ??\n", Addr, Dst);
+    printf("              Mem[0x%.8X] --> 0x%8X ??\n", Addr, Dst);
   }
   return Dst;
 }
@@ -98,8 +96,7 @@ uint16_t Memory::Read16(uint32_t Addr) {
     if ((Chunk = m_Mem[Addr >> 16])) {
       uint16_t Data = *(const uint16_t *)(Chunk->data + AddrLo);
       if (Config::getInst().opt_trace) {
-        printf("              ");
-        printf("Mem[0x%.8X] --> 0x%.4X\n", Addr, Data);
+        printf("              Mem[0x%.8X] --> 0x%.4X\n", Addr, Data);
       }
       return Data;
     }
@@ -108,8 +105,7 @@ uint16_t Memory::Read16(uint32_t Addr) {
   uint16_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 2);
   if (Config::getInst().opt_trace) {
-    printf("              ");
-    printf("Mem[0x%.8X] --> 0x%4X ??\n", Addr, Dst);
+    printf("              Mem[0x%.8X] --> 0x%4X ??\n", Addr, Dst);
   }
   return Dst;
 }
@@ -119,8 +115,7 @@ uint8_t Memory::Read8(uint32_t Addr) {
   if ((Chunk = m_Mem[Addr >> 16])) {
     uint8_t Data = *(Chunk->data + (Addr & 0xffff));
     if (Config::getInst().opt_trace) {
-      printf("              ");
-      printf("Mem[0x%.8X] --> 0x%.2X\n", Addr, Data);
+      printf("              Mem[0x%.8X] --> 0x%.2X\n", Addr, Data);
     }
     return Data;
   }
@@ -167,8 +162,7 @@ void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
     } else {
       Chunk->data[NewAddr & 0xffff] = Src[i];
       if (Config::getInst().opt_trace && Size <= 8) {
-        printf("              ");
-        printf("Mem[0x%.8X] <-- 0x%.2X\n", NewAddr, Src[i]);
+        printf("              Mem[0x%.8X] <-- 0x%.2X\n", NewAddr, Src[i]);
       }
     }
   }
