@@ -1,6 +1,9 @@
 #pragma once
 
+#include <array>
+#include <cassert>
 #include <cstdint>
+#include <utility>
 
 namespace rvemu {
 // clang-format off
@@ -69,8 +72,40 @@ namespace rvemu {
 // clang-format on
 
 struct DecodeInstruction {
+private:
+  uint32_t m_Inst;
+
+public:
+  DecodeInstruction() = default;
+  DecodeInstruction(uint32_t Inst) : m_Inst(Inst) {}
+
+  uint32_t GetValue() { return m_Inst; }
+  void SetValue(uint32_t Val) { m_Inst = Val; }
+
   bool CheckAligned2Bytes(uint32_t Pc) { return (0 != Pc % 2); }
   bool CheckAligned4Bytes(uint32_t Pc) { return (0 != Pc % 4); }
+
+  // uint32_t operator[](std::pair<uint32_t, uint32_t> BitRangeHiLo) const {
+  //   uint32_t Hi = BitRangeHiLo.first;
+  //   uint32_t Lo = BitRangeHiLo.second;
+  //   uint32_t Val = m_Inst;
+  //   Val = (Val << (32 - Hi)) >> (32 - Hi);
+  //   Val = (Val >> Lo);
+  //   return Val;
+  // }
+
+  inline uint32_t operator[](std::array<int, 2> BitRangeHiLo) const {
+    int Hi = BitRangeHiLo[0];
+    assert(Hi < 32);
+
+    int Lo = BitRangeHiLo[1];
+    assert(Lo < 32);
+
+    uint32_t Val = m_Inst;
+    Val = (Val << (31 - Hi)) >> (31 - Hi);
+    Val = (Val >> Lo);
+    return Val;
+  }
 };
 
 struct DecodeInstruction16 : DecodeInstruction {

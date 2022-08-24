@@ -73,8 +73,8 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/elf.cpp
     ${CMAKE_SOURCE_DIR}/source/mem.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
-    ${CMAKE_SOURCE_DIR}/source/riscv_opcode.cpp
-    ${CMAKE_SOURCE_DIR}/source/riscv_opcode_rvc.cpp
+    ${CMAKE_SOURCE_DIR}/source/riscv_rv32c.cpp
+    ${CMAKE_SOURCE_DIR}/source/riscv_rv32i.cpp
     ${CMAKE_SOURCE_DIR}/source/state.cpp
     ${CMAKE_SOURCE_DIR}/source/syscall.cpp
     )
@@ -90,8 +90,9 @@ set(SOURCE_TESTS
     # Sources
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_regfile.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_riscv.cpp    
-    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_instruction16.cpp
-    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_instruction32.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst.cpp    
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst_rv32i.cpp
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_decode_inst_rv32c.cpp
     )
 
 # Integrate with google test

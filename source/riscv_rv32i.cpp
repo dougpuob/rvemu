@@ -121,7 +121,7 @@ bool Riscv::Op_opimm(uint32_t Inst) {
 
   case 0b010: { // SLTI (set less than immediate)
     SetInstStr(Inst, "slti");
-    uint32_t val = m_Regs[m_Fields.rs1] < (m_Fields.imm) ? 1 : 0;
+    uint32_t val = (int32_t)m_Regs[m_Fields.rs1] < (m_Fields.imm) ? 1 : 0;
     m_Regs[m_Fields.rd] = val;
     break;
   }
