@@ -39,14 +39,8 @@ uint32_t Memory::ReadStr(uint8_t *Dst, uint32_t Addr, uint32_t Max) {
 }
 
 uint32_t Memory::FetchInst(uint32_t Pc) {
-  m_ConsumedPCs.push_back(Pc);
-
   const uint32_t AddrLo = Pc & MASK_LO;
   assert((AddrLo & 1) == 0);
-
-  if (/*PC=*/0x000101cc == Pc) {
-    int a = 0;
-  }
 
   uint32_t StartBlock = Pc >> 16;
   chunk_t *Chunk = this->m_Mem[StartBlock];
@@ -57,8 +51,6 @@ uint32_t Memory::FetchInst(uint32_t Pc) {
     printf("\nZERO Instruction !!! (PC=0x%.8X)\n", Pc);
     assert((0 != Inst));
   }
-
-  m_ConsumedInsts.push_back(Inst);
 
   return Inst;
 }

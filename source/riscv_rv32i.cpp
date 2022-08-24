@@ -430,14 +430,14 @@ bool Riscv::Op_jal(uint32_t Inst) {
   m_Fields.imm = m_DeInst32.FetchImmJType(Inst);
 
   // The J-immediate encodes a signed offset in multiples of 2 bytes.
-  if (m_DeInst32.CheckAligned2Bytes(m_Fields.imm))
+  if (!m_DeInst32.Is2BytesAligned(m_Fields.imm))
     return false;
 
   // Instruction-address-misaligned exception,
   // if the target address is not aligned to a four-byte boundary.
   const uint32_t pc = GetPc();
   const uint32_t link_pc = pc + m_Fields.imm;
-  if (m_DeInst32.CheckAligned4Bytes(link_pc))
+  if (!m_DeInst32.Is4BytesAligned(link_pc))
     ExceptInstructionAddressMisaligned(link_pc);
 
   // return address
@@ -465,24 +465,24 @@ bool Riscv::Op_jalr(uint32_t Inst) {
   m_Fields.rs1 = m_DeInst32.Fetch_19_15(Inst);
   m_Fields.imm = m_DeInst32.FetchImmIType(Inst);
 
-  // Instruction-address-misaligned exception,
-  // if the target address is not aligned to a four-byte boundary.
-  const uint32_t pc = GetPc();
-  const uint32_t link_pc = pc + m_Fields.imm;
-  if (m_DeInst32.CheckAligned4Bytes(link_pc))
-    ExceptInstructionAddressMisaligned(link_pc);
+  // t=pc+4;
+  // pc=(x[rs1]+sext(offset))&~1;
+  // x[rd]=t
 
   // return address
-  const uint32_t ra = pc + (uint32_t)m_InstLen; // x[rd] = pc+4;
+  const uint32_t ra = GetPc() + (uint32_t)m_InstLen; // x[rd] = pc+4;
+
+  // jump (new location jump)
+  const uint32_t upper_target_addr = m_Regs[m_Fields.rs1];
+  m_JumpNewLen = (upper_target_addr + m_Fields.imm) & ~1u;
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (AbiName::zero != m_Fields.rd) {
     m_Regs[m_Fields.rd] = ra;
   }
 
-  // jump (new location jump)
-  const uint32_t upper_target_addr = m_Regs[m_Fields.rs1];
-  m_JumpNewLen = (upper_target_addr + m_Fields.imm) & ~1u;
+  if (!m_DeInst32.Is2BytesAligned(m_JumpNewLen))
+    ExceptInstructionAddressMisaligned(m_JumpNewLen);
 
   return true;
 }

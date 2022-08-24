@@ -51,7 +51,7 @@ void Riscv::Reset(uint64_t Pc) {
   // rv->inst_len = INST_UNKNOWN;
 
   // set the default stack pointer
-  m_Regs[AbiName::sp] = 0xFFFFfff0;
+  m_Regs[AbiName::sp] = 0xFFFFF000;
 
   // reset the csrs
   // rv->csr_cycle = 0;
@@ -110,7 +110,14 @@ bool Riscv::Dispatch(uint32_t Inst) {
 uint32_t Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
   m_Fields.Clear();
 
+  if (/*PC=*/0x000101d8 == Pc) {
+    int a = 0;
+  }
+
+  m_DbgConsumedPCs.push_back(Pc);
   uint32_t Inst = Mem.FetchInst(Pc);
+
+  m_DbgConsumedInsts.push_back(Inst);
   bool Result = Dispatch(Inst);
 
   return Inst;
@@ -154,9 +161,6 @@ bool Riscv::IncPc(uint32_t Imm) {
 }
 
 bool Riscv::SetPc(uint32_t Pc) {
-  if (Pc & 3)
-    return false;
-
   m_Pc = Pc;
   return true;
 }

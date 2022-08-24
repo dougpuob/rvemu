@@ -89,6 +89,12 @@ private:
   DecodeInstruction32 m_DeInst32;
   MachineState m_State;
 
+  //
+  // Debug information
+  //
+  std::vector<uint32_t> m_DbgConsumedInsts;
+  std::vector<uint32_t> m_DbgConsumedPCs;
+
 public:
   Riscv();
 

@@ -172,23 +172,27 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     m_Fields.uimm = m_DeInst16.Fetch_06_02(Inst);
     if (0 == m_Fields.uimm) { // C.SRLI64
       SetInstStr(Inst, "c.srli64");
+      return false;
     } else { // C.SRLI
       SetInstStr(Inst, "c.srli");
+      return false;
     }
-    break;
   }
   case 0b01: {
     m_Fields.uimm = m_DeInst16.Fetch_06_02(Inst);
     if (0 == m_Fields.uimm) { // C.SRAI64
       SetInstStr(Inst, "c.srai64");
+      return false;
     } else { // C.SRAI
       SetInstStr(Inst, "c.srai");
+      return false;
     }
-    break;
   }
-  case 0b10: {
-    // C.ANDI
-    break;
+  case 0b10: { // C.ANDI
+    SetInstStr(Inst, "c.andi");
+    // x[8+rd’] = x[8+rd’] & sext(imm)
+    m_Regs[m_Fields.rd + 8] &= m_Fields.imm;
+    return true;
   }
   case 0b11: {
     uint16_t funct = 0;
@@ -227,9 +231,8 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     case 0b111: // C.ADDW
       SetInstStr(Inst, "c.addw");
       assert(!"rv64/128c instructions for c.addw");
-      break;
+      return false;
     }
-    break;
   }
   }
 

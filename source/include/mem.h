@@ -10,8 +10,6 @@ typedef struct {
 
 class Memory {
 private:
-  std::vector<uint32_t> m_ConsumedInsts;
-  std::vector<uint32_t> m_ConsumedPCs;
   std::vector<chunk_t *> m_Mem;
   const uint32_t MASK_LO = 0xffff;
   const uint32_t MASK_HI = ~(0xffff);

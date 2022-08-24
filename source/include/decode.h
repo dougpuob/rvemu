@@ -82,8 +82,8 @@ public:
   uint32_t GetValue() { return m_Inst; }
   void SetValue(uint32_t Val) { m_Inst = Val; }
 
-  bool CheckAligned2Bytes(uint32_t Pc) { return (0 != Pc % 2); }
-  bool CheckAligned4Bytes(uint32_t Pc) { return (0 != Pc % 4); }
+  inline bool Is2BytesAligned(uint32_t Pc) { return (!(Pc & 0b01)); }
+  inline bool Is4BytesAligned(uint32_t Pc) { return (!(Pc & 0b11)); }
 
   // uint32_t operator[](std::pair<uint32_t, uint32_t> BitRangeHiLo) const {
   //   uint32_t Hi = BitRangeHiLo.first;
