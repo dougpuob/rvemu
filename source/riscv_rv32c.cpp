@@ -16,7 +16,7 @@ bool Riscv::Op_c_addi4spn(uint16_t Inst) {
   m_PFB.uimm = m_DeInst16.FetchImmCiwFmt_549623(Inst);
 
   // x[8+rd'] = x[2] + uimm
-  m_Regs[m_PFB.rd] = m_Regs[AbiName::sp] + m_PFB.uimm;
+  m_Regs.Set(m_PFB.rd) = m_Regs.Get(AbiName::sp) + m_PFB.uimm;
 
   return true;
 }
@@ -38,9 +38,9 @@ bool Riscv::Op_c_lw(uint16_t Inst) {
   switch (m_PFB.funct3) {
   case 0b010: { // C.LW
     // x[8+rd'] = sext(M[x[8+rs1'] + uimm][31:0])
-    m_PFB.addr = m_Regs[8 + m_PFB.rs1] + m_PFB.uimm;
+    m_PFB.addr = (int64_t)(m_Regs.Get(8 + m_PFB.rs1) + m_PFB.uimm);
     m_PFB.data = m_State.GetMem().Read32(m_PFB.addr);
-    m_Regs[8 + m_PFB.rd] = m_PFB.data;
+    m_Regs.Set(8 + m_PFB.rd) = m_PFB.data;
     return true;
   }
   }
@@ -75,8 +75,8 @@ bool Riscv::Op_c_sw(uint16_t Inst) {
   case 0b110: { // C.SW
     // M[x[8+rs1'] + uimm][31:0] = x[8+rs2']
     m_PFB.uimm = m_DeInst16.FetchImmCsFmt_5326(Inst);
-    m_PFB.addr = m_Regs[8 + m_PFB.rs1] + m_PFB.uimm;
-    m_PFB.data = m_Regs[8 + m_PFB.rs2];
+    m_PFB.addr = (int64_t)(m_Regs.Get(8 + m_PFB.rs1) + m_PFB.uimm);
+    m_PFB.data = m_Regs.Get(8 + m_PFB.rs2);
     m_State.GetMem().Write(m_PFB.addr, (uint8_t *)&m_PFB.data, 4);
     return true;
   }
@@ -105,7 +105,7 @@ bool Riscv::Op_c_addi(uint16_t Inst) {
   switch (m_PFB.funct3) {
   case 0b000: //  C.ADDI
     // x[rd] = x[rd] + sext(imm)
-    m_Regs[m_PFB.rd] += m_PFB.imm;
+    m_Regs.Set(m_PFB.rd) += m_PFB.imm;
     return true;
   }
 
@@ -117,7 +117,7 @@ bool Riscv::Op_c_jal(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
 
   // x[1] = pc+2; pc += sext(offset)
-  m_Regs[AbiName::ra] = GetPc() + (uint16_t)(InstLen::INST_16);
+  m_Regs.Set(AbiName::ra) = GetPc() + (uint16_t)(InstLen::INST_16);
   m_JumpIncLen = m_DeInst16.SignExtend16(m_PFB.imm);
 
   return true;
@@ -130,7 +130,7 @@ bool Riscv::Op_c_addiw(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = sext((x[rd] + sext(imm))[31:0])
-  m_Regs[m_PFB.rd] = m_Regs[m_PFB.rd] + m_PFB.imm;
+  m_Regs.Set(m_PFB.rd) = m_Regs.Get(m_PFB.rd) + m_PFB.imm;
 
   return true;
 }
@@ -145,7 +145,7 @@ bool Riscv::Op_c_li(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = sext(imm)
-  this->m_Regs[m_PFB.rd] = m_PFB.imm;
+  this->m_Regs.Set(m_PFB.rd) = m_PFB.imm;
 
   return true;
 }
@@ -159,7 +159,7 @@ bool Riscv::Op_c_lui(uint16_t Inst) {
     m_PFB.imm = m_DeInst16.FetchImmCiFmt_546875(Inst);
     SetInstStr(Inst, "c.addi16sp");
     // x[2] = x[2] + sext(imm)
-    m_Regs[AbiName::sp] += m_PFB.imm;
+    m_Regs.Set(AbiName::sp) = m_Regs.Get(AbiName::sp) + m_PFB.imm;
     return true;
   }
   // c.lui
@@ -169,7 +169,7 @@ bool Riscv::Op_c_lui(uint16_t Inst) {
         (0 != m_PFB.imm)) {
       SetInstStr(Inst, "c.lui");
       // x[rd] = sext(imm[17:12] << 12)
-      m_Regs[m_PFB.rd] = m_PFB.imm;
+      m_Regs.Set(m_PFB.rd) = m_PFB.imm;
       return true;
     }
   }
@@ -221,7 +221,7 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     SetInstStr(Inst, "c.andi");
     m_PFB.imm = m_DeInst16.FetchImmCbFmt_540(Inst);
     // x[8+rd'] = x[8+rd'] & sext(imm)
-    m_Regs[8 + m_PFB.rd] &= m_PFB.imm;
+    m_Regs.Set(8 + m_PFB.rd) = m_Regs.Get(8 + m_PFB.rd) & m_PFB.imm;
     return true;
   }
   case 0b11: {
@@ -233,7 +233,8 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     case 0b000: // C.SUB
       SetInstStr(Inst, "c.sub");
       // x[8+rd'] = x[8+rd'] - x[8+rs2']
-      m_Regs[8 + m_PFB.rd] -= m_Regs[8 + m_PFB.rs2];
+      m_Regs.Set(8 + m_PFB.rd) =
+          m_Regs.Get(8 + m_PFB.rd) - m_Regs.Get(8 + m_PFB.rs2);
       return true;
 
     case 0b100: // C.SUBW
@@ -244,19 +245,22 @@ bool Riscv::Op_c_miscalu(uint16_t Inst) {
     case 0b001: // C.XOR
       SetInstStr(Inst, "c.xor");
       // x[8+rd'] = x[8+rd'] ^ x[8+rs2']
-      m_Regs[8 + m_PFB.rd] ^= m_Regs[8 + m_PFB.rs2];
+      m_Regs.Set(8 + m_PFB.rd) =
+          m_Regs.Get(8 + m_PFB.rd) ^ m_Regs.Get(8 + m_PFB.rs2);
       return true;
 
     case 0b010: // C.OR
       SetInstStr(Inst, "c.or");
       // x[8+rd'] = x[8+rd'] | x[8+rs2']
-      m_Regs[8 + m_PFB.rd] |= m_Regs[8 + m_PFB.rs2];
+      m_Regs.Set(8 + m_PFB.rd) =
+          m_Regs.Get(8 + m_PFB.rd) | m_Regs.Get(8 + m_PFB.rs2);
       return true;
 
     case 0b011: // C.AND
       SetInstStr(Inst, "c.and");
       // x[8+rd'] = x[8+rd'] & x[8+rs2']
-      m_Regs[8 + m_PFB.rd] &= m_Regs[8 + m_PFB.rs2];
+      m_Regs.Set(8 + m_PFB.rd) =
+          m_Regs.Get(8 + m_PFB.rd) & m_Regs.Get(8 + m_PFB.rs2);
       return true;
 
     case 0b111: // C.ADDW
@@ -292,7 +296,7 @@ bool Riscv::Op_c_beqz(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCbFmt_84376215(Inst);
 
   // if (x[8+rs1'] == 0) pc += sext(offset)
-  if (rvemu::AbiName::zero == m_Regs[8 + m_PFB.rs1])
+  if (rvemu::AbiName::zero == m_Regs.Get(8 + m_PFB.rs1))
     m_JumpIncLen = m_PFB.imm;
 
   return true;
@@ -306,7 +310,7 @@ bool Riscv::Op_c_bnez(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCbFmt_84376215(Inst);
 
   // if (x[8+rs1'] != 0) pc += sext(offset)
-  if (rvemu::AbiName::zero != m_Regs[8 + m_PFB.rs1])
+  if (rvemu::AbiName::zero != m_Regs.Get(8 + m_PFB.rs1))
     m_JumpIncLen = m_PFB.imm;
 
   return true;
@@ -323,7 +327,7 @@ bool Riscv::Op_c_slli(uint16_t Inst) {
   m_PFB.shamt = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = x[rd] << uimm
-  m_Regs[m_PFB.rd] <<= m_PFB.shamt;
+  m_Regs.Set(m_PFB.rd) = m_Regs.Get(m_PFB.rd) << m_PFB.shamt;
 
   return true;
 }
@@ -359,9 +363,9 @@ bool Riscv::Op_c_lwsp(uint16_t Inst) {
   switch (m_PFB.funct3) {
   case 0b010: { // C.LWSP
     // x[rd] = sext(M[x[2] + uimm][31:0])
-    m_PFB.addr = m_Regs[RvReg::x2] + m_PFB.imm;
+    m_PFB.addr = (int64_t)(m_Regs.Get(RvReg::x2) + m_PFB.imm);
     m_PFB.data = m_State.GetMem().Read32(m_PFB.addr);
-    m_Regs[m_PFB.rd] = m_PFB.data;
+    m_Regs.Set(m_PFB.rd) = m_PFB.data;
     return true;
   }
   }
@@ -386,14 +390,14 @@ bool Riscv::Op_c_crfmt(uint16_t Inst) { // J[AL]R/MV/ADD
   case 0b010: // C.JR
     SetInstStr(Inst, "c.jr");
     // pc = x[rs1]
-    if (rvemu::AbiName::zero != m_Regs[m_PFB.rs1])
-      m_JumpNewLen = m_Regs[m_PFB.rs1];
+    if (rvemu::AbiName::zero != m_Regs.Get(m_PFB.rs1))
+      m_JumpNewLen = m_Regs.Get(m_PFB.rs1);
     return true;
 
   case 0b011: // C.MV
     SetInstStr(Inst, "c.mv");
     // x[rd] = x[rs2]
-    m_Regs[m_PFB.rd] = m_Regs[m_PFB.rs2];
+    m_Regs.Set(m_PFB.rd) = m_Regs.Get(m_PFB.rs2);
     return true;
 
   case 0b100: // C.EBREAK
@@ -404,14 +408,14 @@ bool Riscv::Op_c_crfmt(uint16_t Inst) { // J[AL]R/MV/ADD
   case 0b110: // C.JALR
     SetInstStr(Inst, "c.jalr");
     // t = pc+2; pc = x[rs1]; x[1] = t
-    m_Regs[RvReg::x1] = GetPc() + (int32_t)m_InstLen;
-    m_JumpNewLen = m_Regs[m_PFB.rs1];
+    m_Regs.Set(RvReg::x1) = GetPc() + (int32_t)m_InstLen;
+    m_JumpNewLen = m_Regs.Get(m_PFB.rs1);
     return true;
 
   case 0b111: // C.ADD
     SetInstStr(Inst, "c.add");
     // x[rd] = x[rd] + x[rs2]
-    m_Regs[m_PFB.rd] += m_Regs[m_PFB.rs2];
+    m_Regs.Set(m_PFB.rd) = m_Regs.Get(m_PFB.rd) + m_Regs.Get(m_PFB.rs2);
     return true;
   }
 
@@ -431,8 +435,8 @@ bool Riscv::Op_c_swsp(uint16_t Inst) {
   m_PFB.rs2 = m_DeInst16[{6, 2}];
 
   // M[x[2] + uimm][31:0] = x[rs2]
-  m_PFB.addr = m_Regs[AbiName::sp] + m_PFB.uimm;
-  m_PFB.data = m_Regs[m_PFB.rs2];
+  m_PFB.addr = (int64_t)(m_Regs.Get(AbiName::sp) + m_PFB.uimm);
+  m_PFB.data = m_Regs.Get(m_PFB.rs2);
   m_State.GetMem().Write(m_PFB.addr, (uint8_t *)&m_PFB.data, 4);
 
   return true;

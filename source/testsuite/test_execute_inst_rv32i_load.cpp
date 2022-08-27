@@ -18,7 +18,7 @@ TEST_F(RV32I_Load, lh) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x1383C;
+  Reg.Set(rs1) = 0x1383C;
   Rv.GetMem().Write16(addr, data);
 
   bool Result = Rv.Dispatch(Inst);
@@ -53,7 +53,7 @@ TEST_F(RV32I_Load, lw) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x13CE8;
+  Reg.Set(rs1) = 0x13CE8;
   Rv.GetMem().Write32(addr, data);
 
   bool Result = Rv.Dispatch(Inst);
@@ -88,7 +88,7 @@ TEST_F(RV32I_Load, lbu) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x12494;
+  Reg.Set(rs1) = 0x12494;
   Rv.GetMem().Write8(addr, data);
 
   bool Result = Rv.Dispatch(Inst);
@@ -123,7 +123,7 @@ TEST_F(RV32I_Load, lhu) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x1383C;
+  Reg.Set(rs1) = 0x1383C;
   Rv.GetMem().Write16(addr, data);
 
   bool Result = Rv.Dispatch(Inst);

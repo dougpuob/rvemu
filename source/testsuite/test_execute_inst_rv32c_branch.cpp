@@ -17,7 +17,7 @@ TEST_F(RV32C_Branch, c_bnez__0xE315_Condition_is_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1 + 8] = condition;
+  Reg.Set(rs1 + 8) = condition;
 
   const uint32_t NextPc = Rv.GetPc() + (int)InstLen::INST_16;
 
@@ -46,7 +46,7 @@ TEST_F(RV32C_Branch, c_bnez__0xE315_Condition_is_NOT_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1 + 8] = condition;
+  Reg.Set(rs1 + 8) = condition;
 
   const uint32_t NextPc = Rv.GetPc() + imm;
 
@@ -78,7 +78,7 @@ TEST_F(RV32C_Branch, c_beqz__0xD179_Condition_is_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1 + 8] = condition;
+  Reg.Set(rs1 + 8) = condition;
 
   const uint32_t NextPc = Rv.GetPc() + imm;
 
@@ -107,7 +107,7 @@ TEST_F(RV32C_Branch, c_beqz__0xD179_Condition_is_NOT_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1 + 8] = condition;
+  Reg.Set(rs1 + 8) = condition;
 
   const uint32_t NextPc = Rv.GetPc() + (int)InstLen::INST_16;
 

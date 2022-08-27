@@ -17,7 +17,7 @@ TEST_F(RV32C_Arithmetic, c_addi16sp__0x7139) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[rvemu::AbiName::sp] = 0xFFFFEFF0;
+  Reg.Set(rvemu::AbiName::sp) = 0xFFFFEFF0;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -30,7 +30,7 @@ TEST_F(RV32C_Arithmetic, c_addi16sp__0x7139) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(0xFFFFEFB0, Reg[rd]);
+    EXPECT_EQ(0xFFFFEFB0, Reg.Get(rd));
   }
 }
 
@@ -59,7 +59,7 @@ TEST_F(RV32C_Arithmetic, c_add__0x97B6) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(Reg[rd], Reg[rs1] + Reg[rs2]);
+    EXPECT_EQ(Reg.Get(rd), Reg.Get(rs1) + Reg.Get(rs2));
   }
 }
 
@@ -86,7 +86,7 @@ TEST_F(RV32C_Arithmetic, c_addi4spn__0x004C) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(0xFFFFF004, Reg[rd]);
+    EXPECT_EQ(0xFFFFF004, Reg.Get(rd));
   }
 }
 
@@ -113,7 +113,7 @@ TEST_F(RV32C_Arithmetic, c_addi__0x0705) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(1, Reg[rd]);
+    EXPECT_EQ(1, Reg.Get(rd));
   }
 }
 
@@ -130,8 +130,8 @@ TEST_F(RV32C_Arithmetic, c_sub__0x8E09) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[8 + rs1] = 81284;
-  Reg[8 + rs2] = 81196;
+  Reg.Set(8 + rs1) = 81284;
+  Reg.Set(8 + rs2) = 81196;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -145,7 +145,7 @@ TEST_F(RV32C_Arithmetic, c_sub__0x8E09) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(88, Reg[8 + rd]);
+    EXPECT_EQ(88, Reg.Get(8 + rd));
   }
 }
 
@@ -162,7 +162,7 @@ TEST_F(RV32C_Arithmetic, c_andi__0x8A3D) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[8 + rd] = 84;
+  Reg.Set(8 + rd) = 84;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -176,7 +176,7 @@ TEST_F(RV32C_Arithmetic, c_andi__0x8A3D) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(4, Reg[8 + rd]);
+    EXPECT_EQ(4, Reg.Get(8 + rd));
   }
 }
 
@@ -193,8 +193,8 @@ TEST_F(RV32C_Arithmetic, c_or__0x8F75) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[8 + rs1] = 0;
-  Reg[8 + rs2] = 0xFFFFDFFF;
+  Reg.Set(8 + rs1) = 0;
+  Reg.Set(8 + rs2) = 0xFFFFDFFF;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -208,7 +208,7 @@ TEST_F(RV32C_Arithmetic, c_or__0x8F75) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(0, Reg[8 + rd]);
+    EXPECT_EQ(0, Reg.Get(8 + rd));
   }
 }
 
@@ -225,7 +225,7 @@ TEST_F(RV32C_Arithmetic, c_slli__0x068A) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[rd] = 11;
+  Reg.Set(rd) = 11;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -239,7 +239,7 @@ TEST_F(RV32C_Arithmetic, c_slli__0x068A) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(44, Reg[rd]);
+    EXPECT_EQ(44, Reg.Get(rd));
   }
 }
 

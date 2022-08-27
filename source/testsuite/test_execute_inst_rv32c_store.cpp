@@ -16,13 +16,13 @@ TEST_F(RV32C_Store, c_sw__0xC30C) {
   const std::string inst_name = "c.sw";
 
   const uint32_t addr = 0x13D30;
-  const uint8_t data = 0x5a5b5c5d;
+  const uint32_t data = 0x5a5b5c5d;
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[8 + rs1] = 0x13D30;
-  Reg[8 + rs2] = data;
+  Reg.Set(8 + rs1) = 0x13D30;
+  Reg.Set(8 + rs2) = data;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -50,13 +50,13 @@ TEST_F(RV32C_Store, c_sw__0xC70C) {
   const std::string inst_name = "c.sw";
 
   const uint32_t addr = 0x13D38;
-  const uint8_t data = 0x5a5b5c5d;
+  const uint32_t data = 0x5a5b5c5d;
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[8 + rs1] = 0x13D30;
-  Reg[8 + rs2] = data;
+  Reg.Set(8 + rs1) = 0x13D30;
+  Reg.Set(8 + rs2) = data;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -88,8 +88,8 @@ TEST_F(RV32C_Store, c_swsp__0xC422) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  const uint32_t addr = Reg[rvemu::AbiName::sp] + imm;
-  const uint32_t data = Reg[rs2];
+  const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
+  const uint32_t data = Reg.Get(rs2);
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);
 
@@ -119,8 +119,8 @@ TEST_F(RV32C_Store, c_swsp__0xC04A) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  const uint32_t addr = Reg[rvemu::AbiName::sp] + imm;
-  const uint32_t data = Reg[rs2];
+  const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
+  const uint32_t data = Reg.Get(rs2);
 
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);
@@ -151,10 +151,10 @@ TEST_F(RV32C_Store, c_swsp__0xC606) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg[rs2] = 0x5a5b5c5d;
+  Reg.Set(rs2) = 0x5a5b5c5d;
 
-  const uint32_t addr = Reg[rvemu::AbiName::sp] + imm;
-  const uint32_t data = Reg[rs2];
+  const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
+  const uint32_t data = Reg.Get(rs2);
 
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);

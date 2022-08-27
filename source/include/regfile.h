@@ -1,7 +1,8 @@
 #pragma once
 #include "config.h"
+#include <array>
+#include <cassert>
 #include <vector>
-
 namespace rvemu {
 
 using Config = ConfigSingleton;
@@ -125,6 +126,8 @@ enum class RvField : int {
   max
 };
 
+enum class RW : int { R = 0, W };
+
 class Field {
 private:
   std::vector<uint32_t> m_Data;
@@ -152,49 +155,72 @@ private:
 public:
   RegFile() {
     m_Files.resize(32);
-    for (int i = 0; i < m_Files.size(); i++)
-      m_Files[i] = 0;
+    clear();
   }
 
   RegFile(const std::vector<uint32_t> &Defaults) { m_Files = Defaults; }
 
-  uint32_t &operator[](uint32_t X) {
-    if (Config::getInst().opt_trace)
-      printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
-    return m_Files[X];
-  }
+  // uint32_t &operator[](uint32_t X) {
+  //   if (Config::getInst().opt_trace)
+  //     printf("              RegFile[x%-2d] <--> 0x%.8X\n", X, m_Files[X]);
+  //   assert(X != 0);
+  //   return m_Files[X];
+  // }
 
-  uint32_t &operator[](RvReg X) {
-    if (Config::getInst().opt_trace)
-      printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
-    return m_Files[X];
-  }
+  // uint32_t &operator[](RvReg X) {
+  //   if (Config::getInst().opt_trace)
+  //     printf("              RegFile[x%-2d] <--> 0x%.8X\n", X, m_Files[X]);
+  //   assert(X != 0);
+  //   return m_Files[X];
+  // }
 
-  uint32_t &operator[](AbiName X) {
-    if (Config::getInst().opt_trace)
-      printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
-    return m_Files[X];
-  }
+  // uint32_t &operator[](AbiName X) {
+  //   if (Config::getInst().opt_trace)
+  //     printf("              RegFile[x%-2d] <--> 0x%.8X\n", X, m_Files[X]);
+  //   assert(X != 0);
+  //   return m_Files[X];
+  // }
 
-  uint32_t operator[](uint32_t X) const {
+  template <typename T> inline const uint32_t Get(T X) const {
     if (Config::getInst().opt_trace)
       printf("              RegFile[x%-2d] --> 0x%.8X\n", X, m_Files[X]);
+
+    if (0 == X) {
+      int a = 0;
+    }
+    // assert(X != 0);
     return m_Files[X];
   }
 
-  uint32_t operator[](RvReg X) const {
+  template <typename T> inline uint32_t &Set(T X) {
     if (Config::getInst().opt_trace)
-      printf("              RegFile[x%-2d] --> 0x%.8X\n", X, m_Files[X]);
+      printf("              RegFile[x%-2d] <-- 0x%.8X\n", X, m_Files[X]);
+
+    if (0 == X) {
+      int a = 0;
+    }
+    // assert(X != 0);
     return m_Files[X];
   }
 
-  uint32_t operator[](AbiName X) const {
-    if (Config::getInst().opt_trace)
-      printf("              RegFile[x%-2d] --> 0x%.8X\n", X, m_Files[X]);
-    return m_Files[X];
-  }
+  // uint32_t &operator[](std::array<uint32_t /*RW*/, 2> X) {
+  //   rvemu::RvReg Reg = (rvemu::RvReg)X[1];
+  //   if (Config::getInst().opt_trace) {
+  //     if (RW::R == (RW)X[0])
+  //       printf("              RegFile[x%-2d] --> 0x%.8X\n", X,
+  //       m_Files[X[1]]);
+  //     else
+  //       printf("              RegFile[x%-2d] <-- 0x%.8X\n", X,
+  //       m_Files[X[1]]);
+  //   }
+  //   return m_Files[Reg];
+  // }
 
   size_t size() const { return m_Files.size(); }
+  void clear() {
+    for (int i = 0; i < m_Files.size(); i++)
+      m_Files[i] = 0;
+  }
 };
 
 } // namespace rvemu

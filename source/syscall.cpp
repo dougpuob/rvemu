@@ -57,18 +57,18 @@ void SystemCall::Exit(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
   pState->Halt();
 
-  uint32_t ExitCode = RvRegs[AbiName::a0];
+  uint32_t ExitCode = RvRegs.Get(AbiName::a0);
   fprintf(stdout, "ExitCode=%d(0x%X)\n", ExitCode, ExitCode);
 }
 
 void SystemCall::Brk(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
-  uint32_t Inc = RvRegs[AbiName::a0];
+  uint32_t Inc = RvRegs.Get(AbiName::a0);
   if (Inc)
     pState->SetBreakAddress(Inc);
 
-  RvRegs[AbiName::a0] = pState->GetBreakAddress();
+  RvRegs.Set(AbiName::a0) = pState->GetBreakAddress();
 }
 
 void SystemCall::GetTimeOfDay(RegFile &RvRegs) {}
@@ -77,44 +77,44 @@ void SystemCall::Lseek(RegFile &RvRegs) {}
 
 void SystemCall::Fstat(RegFile &RvRegs) {}
 
-void SystemCall::Handle(RegFile &RvRegs) {
-  const uint32_t SysCall = RvRegs[AbiName::a7];
+void SystemCall::Handle(RegFile &Reg) {
+  const uint32_t SysCall = Reg.Get(AbiName::a7);
 
   switch (SysCall) {
   case RvSysCall::close:
-    this->Close(RvRegs);
+    this->Close(Reg);
     break;
 
   case RvSysCall::lseek:
-    this->Lseek(RvRegs);
+    this->Lseek(Reg);
     break;
 
   case RvSysCall::read:
-    this->Read(RvRegs);
+    this->Read(Reg);
     break;
 
   case RvSysCall::write:
-    this->Write(RvRegs);
+    this->Write(Reg);
     break;
 
   case RvSysCall::fstat:
-    this->Fstat(RvRegs);
+    this->Fstat(Reg);
     break;
 
   case RvSysCall::gettimeofday:
-    this->GetTimeOfDay(RvRegs);
+    this->GetTimeOfDay(Reg);
     break;
 
   case RvSysCall::brk:
-    this->Brk(RvRegs);
+    this->Brk(Reg);
     break;
 
   case RvSysCall::open:
-    this->Open(RvRegs);
+    this->Open(Reg);
     break;
 
   case RvSysCall::exit:
-    this->Exit(RvRegs);
+    this->Exit(Reg);
     break;
 
   default:

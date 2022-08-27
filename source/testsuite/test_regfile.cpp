@@ -7,7 +7,7 @@ TEST(RegFile, Default) {
   rvemu::RegFile Reg;
   EXPECT_EQ(32, Reg.size());
   for (int i = 0; i < Reg.size(); i++)
-    EXPECT_EQ(0, Reg[(rvemu::RvReg)i]);
+    EXPECT_EQ(0, Reg.Get(i));
 }
 
 TEST(RegFile, CmzVals_RvReg) {
@@ -19,7 +19,7 @@ TEST(RegFile, CmzVals_RvReg) {
   EXPECT_EQ(32, Reg.size());
 
   for (int i = 0; i < Reg.size(); i++)
-    EXPECT_EQ(CmzVals[i], Reg[(rvemu::RvReg)i]);
+    EXPECT_EQ(CmzVals[i], Reg.Get(i));
 }
 
 TEST(RegFile, CmzVals_AbiName) {
@@ -31,39 +31,39 @@ TEST(RegFile, CmzVals_AbiName) {
   EXPECT_EQ(32, Reg.size());
 
   for (int i = 0; i < Reg.size(); i++)
-    EXPECT_EQ(CmzVals[i], Reg[(rvemu::AbiName)i]);
+    EXPECT_EQ(CmzVals[i], Reg.Get(i));
 }
 
 TEST(RegFile, AbiName_a0) {
   rvemu::RegFile Reg;
   EXPECT_EQ(32, Reg.size());
 
-  Reg[rvemu::AbiName::a0] = 0xAABBCCDD;
-  EXPECT_EQ(Reg[rvemu::AbiName::a0], 0xAABBCCDD);
+  Reg.Set(rvemu::AbiName::a0) = 0xAABBCCDD;
+  EXPECT_EQ(Reg.Get(rvemu::AbiName::a0), 0xAABBCCDD);
 }
 
 TEST(RegFile, AbiName_t6) {
   rvemu::RegFile Reg;
   EXPECT_EQ(32, Reg.size());
 
-  Reg[rvemu::AbiName::t6] = 0xAABBCCDD;
-  EXPECT_EQ(Reg[rvemu::AbiName::t6], 0xAABBCCDD);
+  Reg.Set(rvemu::AbiName::t6) = 0xAABBCCDD;
+  EXPECT_EQ(Reg.Get(rvemu::AbiName::t6), 0xAABBCCDD);
 }
 
-TEST(RegFile, RvReg_x0) {
+TEST(RegFile, RvReg_x1) {
   rvemu::RegFile Reg;
   EXPECT_EQ(32, Reg.size());
 
-  Reg[rvemu::RvReg::x0] = 0xAABBCCDD;
-  EXPECT_EQ(Reg[rvemu::RvReg::x0], 0xAABBCCDD);
+  Reg.Set(rvemu::RvReg::x1) = 0xAABBCCDD;
+  EXPECT_EQ(Reg.Get(rvemu::RvReg::x1), 0xAABBCCDD);
 }
 
 TEST(RegFile, RvReg_x31) {
   rvemu::RegFile Reg;
   EXPECT_EQ(32, Reg.size());
 
-  Reg[rvemu::RvReg::x31] = 0xAABBCCDD;
-  EXPECT_EQ(Reg[rvemu::RvReg::x31], 0xAABBCCDD);
+  Reg.Set(rvemu::RvReg::x31) = 0xAABBCCDD;
+  EXPECT_EQ(Reg.Get(rvemu::RvReg::x31), 0xAABBCCDD);
 }
 
 } // namespace

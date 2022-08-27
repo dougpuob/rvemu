@@ -18,8 +18,8 @@ TEST_F(RV32I_Store, SType_store__sb) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x13D2C;
-  Reg[rs2] = data;
+  Reg.Set(rs1) = 0x13D2C;
+  Reg.Set(rs2) = data;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -53,8 +53,8 @@ TEST_F(RV32I_Store, SType_store__sh) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x1383C;
-  Reg[rs2] = data;
+  Reg.Set(rs1) = 0x1383C;
+  Reg.Set(rs2) = data;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -88,8 +88,8 @@ TEST_F(RV32I_Store, SType_store__sw) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x134E8;
-  Reg[rs2] = data;
+  Reg.Set(rs1) = 0x134E8;
+  Reg.Set(rs2) = data;
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);

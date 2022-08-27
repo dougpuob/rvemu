@@ -134,7 +134,7 @@ TEST_F(DecodeInstruction16Test, FetchImmCbFmt_84376215__0xEB19) {
 
 TEST_F(DecodeInstruction16Test, FetchImmCbFmt_84376215__0xFBD9) {
   uint32_t Inst = 0xFBD9; // c.bnez
-  int16_t Answer = 4294967190;
+  uint32_t Answer = 4294967190;
 
   int16_t Imm = this->FetchImmCbFmt_84376215(Inst);
   EXPECT_EQ(Answer, Imm);

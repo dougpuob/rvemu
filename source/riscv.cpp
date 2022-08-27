@@ -43,15 +43,14 @@ Riscv::Riscv() {
 }
 
 void Riscv::Reset(uint64_t Pc) {
-  for (int i = 0; i < m_Regs.size(); i++)
-    m_Regs[(RvReg)i] = 0;
+  this->m_Regs.clear();
 
   // set the reset address
   m_Pc = 0;
   // rv->inst_len = INST_UNKNOWN;
 
   // set the default stack pointer
-  m_Regs[AbiName::sp] = 0xFFFFF000;
+  m_Regs.Set(AbiName::sp) = 0xFFFFF000;
 
   // reset the csrs
   // rv->csr_cycle = 0;
@@ -114,8 +113,8 @@ uint32_t Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
   m_DbgConsumedPCs.push_back(Pc);
   uint32_t Inst = Mem.FetchInst(Pc);
 
-  if ((0x00011914 == Pc) && //
-      (0x14F72423 == Inst)  //
+  if ((0x00010178 == Pc) && //
+      (0x00090B63 == Inst)  //
   ) {
     printf("inst=0x%X", Inst);
   }

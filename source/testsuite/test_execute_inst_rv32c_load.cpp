@@ -19,9 +19,9 @@ TEST_F(RV32C_Load, c_lw__0x43D8) {
   rvemu::RegFile &Reg = Rv.GetRegFile();
   rvemu::Memory &Mem = Rv.GetMem();
 
-  Reg[8 + rs1] = 0x13634;
+  Reg.Set(8 + rs1) = 0x13634;
 
-  const uint32_t addr = Reg[8 + rs1] + imm;
+  const uint32_t addr = Reg.Get(8 + rs1) + imm;
   const uint32_t data = 0x5a5b5c5d;
 
   Mem.Write32(addr, data);
@@ -66,7 +66,7 @@ TEST_F(RV32C_Load, c_li__0x4601) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(0, Reg[rd]);
+    EXPECT_EQ(0, Reg.Get(rd));
   }
 }
 
@@ -93,7 +93,7 @@ TEST_F(RV32C_Load, c_lui__0x67C9) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(0x12000, Reg[rd]);
+    EXPECT_EQ(0x12000, Reg.Get(rd));
   }
 }
 
@@ -110,7 +110,7 @@ TEST_F(RV32C_Load, c_lwsp__0x40B2) {
   rvemu::RegFile &Reg = Rv.GetRegFile();
   rvemu::Memory &Mem = Rv.GetMem();
 
-  const uint32_t addr = Reg[rvemu::AbiName::sp] + imm;
+  const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
   const uint32_t data = 0x5a5b5c5d;
 
   Mem.Write32(addr, data);

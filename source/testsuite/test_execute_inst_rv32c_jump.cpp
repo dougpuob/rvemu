@@ -61,7 +61,7 @@ TEST_F(RV32C_Jump, c_jal__0x288D) {
 
     // Information in memory
     EXPECT_EQ(NextPc, Rv.GetPc());
-    EXPECT_EQ(NextRegX1, Reg[rvemu::x1]);
+    EXPECT_EQ(NextRegX1, Reg.Get(rvemu::x1));
   }
 }
 
@@ -93,7 +93,7 @@ TEST_F(RV32C_Jump, c_jalr__0x9782) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(NextPc, Reg[rvemu::AbiName::ra]);
+    EXPECT_EQ(NextPc, Reg.Get(rvemu::AbiName::ra));
   }
 }
 
@@ -122,7 +122,7 @@ TEST_F(RV32C_Jump, c_mv__0x872A) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(Reg[rs2], Reg[rd]);
+    EXPECT_EQ(Reg.Get(rs2), Reg.Get(rd));
   }
 }
 
@@ -136,7 +136,7 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x00; // Conditional when the Reg[x1] is ZERO
+  Reg.Set(rs1) = 0x00; // Conditional when the Reg[x1] is ZERO
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -148,7 +148,7 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_ZERO) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_NE(Reg[rs1], Rv.GetPc());
+    EXPECT_NE(Reg.Get(rs1), Rv.GetPc());
   }
 }
 
@@ -159,7 +159,7 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_NOT_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg[rs1] = 0x5A; // Conditional when the Reg[x1] is NOT ZERO
+  Reg.Set(rs1) = 0x5A; // Conditional when the Reg[x1] is NOT ZERO
 
   bool Result = Rv.Dispatch(Inst);
   EXPECT_TRUE(Result);
@@ -171,7 +171,7 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_NOT_ZERO) {
     EXPECT_EQ(inst_name, PFB.inst_name);
 
     // Information in memory
-    EXPECT_EQ(Reg[rs1], Rv.GetPc());
+    EXPECT_EQ(Reg.Get(rs1), Rv.GetPc());
   }
 }
 
