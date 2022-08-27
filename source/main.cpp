@@ -48,7 +48,8 @@ int main(int Argc, char **Args) {
   }
 
   /* Print symbols */
-  Elf.PrintSymbols();
+  if (Config::getInst().opt_trace || Config::getInst().opt_tracelog)
+    Elf.PrintSymbols();
 
   /* Initialize the program counter */
   const uint32_t EntryPoint = Elf.GetEntry();

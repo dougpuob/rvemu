@@ -21,19 +21,19 @@ TEST_F(RV32C_Store, c_sw__0xC30C) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg.Set(8 + rs1) = 0x13D30;
-  Reg.Set(8 + rs2) = data;
+  Reg.Set(8 + rs1, 0x13D30);
+  Reg.Set(8 + rs2, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -55,19 +55,19 @@ TEST_F(RV32C_Store, c_sw__0xC70C) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg.Set(8 + rs1) = 0x13D30;
-  Reg.Set(8 + rs2) = data;
+  Reg.Set(8 + rs1, 0x13D30);
+  Reg.Set(8 + rs2, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -93,15 +93,15 @@ TEST_F(RV32C_Store, c_swsp__0xC422) {
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -125,15 +125,15 @@ TEST_F(RV32C_Store, c_swsp__0xC04A) {
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -151,7 +151,7 @@ TEST_F(RV32C_Store, c_swsp__0xC606) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  Reg.Set(rs2) = 0x5a5b5c5d;
+  Reg.Set(rs2, 0x5a5b5c5d);
 
   const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
   const uint32_t data = Reg.Get(rs2);
@@ -159,15 +159,15 @@ TEST_F(RV32C_Store, c_swsp__0xC606) {
   rvemu::Memory &mem = Rv.GetMem();
   mem.Write32(addr, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);

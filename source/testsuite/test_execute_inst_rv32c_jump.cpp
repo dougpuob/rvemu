@@ -1,3 +1,4 @@
+#include "regfile.h"
 #include "riscv.h"
 #include "test_quicktest.h"
 
@@ -19,14 +20,14 @@ TEST_F(RV32C_Jump, c_j__0xB749) {
   const uint32_t Pc = Rv.GetPc();
   const uint32_t NextPc = Pc + imm;
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(NextPc, Rv.GetPc());
@@ -48,16 +49,16 @@ TEST_F(RV32C_Jump, c_jal__0x288D) {
 
   const uint32_t Pc = Rv.GetPc();
   const uint32_t NextPc = Pc + imm;
-  const uint32_t NextRegX1 = Pc + (int)InstLen::INST_16;
+  const uint32_t NextRegX1 = Pc + (int)rvemu::InstLen::INST_16;
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(NextPc, Rv.GetPc());
@@ -76,11 +77,11 @@ TEST_F(RV32C_Jump, c_jalr__0x9782) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  const uint32_t NextPc = Rv.GetPc() + (int)InstLen::INST_16;
+  const uint32_t NextPc = Rv.GetPc() + (int)rvemu::InstLen::INST_16;
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
@@ -90,7 +91,7 @@ TEST_F(RV32C_Jump, c_jalr__0x9782) {
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(rvemu::AbiName::zero, rs2);
     EXPECT_EQ(rvemu::AbiName::zero, PFB.rs2);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(NextPc, Reg.Get(rvemu::AbiName::ra));
@@ -110,16 +111,16 @@ TEST_F(RV32C_Jump, c_mv__0x872A) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(rd, PFB.rd);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(Reg.Get(rs2), Reg.Get(rd));
@@ -136,16 +137,16 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg.Set(rs1) = 0x00; // Conditional when the Reg[x1] is ZERO
+  Reg.Set(rs1, 0x00); // Conditional when the Reg[x1] is ZERO
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_NE(Reg.Get(rs1), Rv.GetPc());
@@ -159,16 +160,16 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_NOT_ZERO) {
 
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
-  Reg.Set(rs1) = 0x5A; // Conditional when the Reg[x1] is NOT ZERO
+  Reg.Set(rs1, 0x5A); // Conditional when the Reg[x1] is NOT ZERO
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(Reg.Get(rs1), Rv.GetPc());

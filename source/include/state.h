@@ -20,13 +20,12 @@ private:
 
 public:
   MachineState() {}
+
   bool IsHalt() { return m_Halt; }
   void Halt(bool Halt = true) { m_Halt = Halt; }
   rvemu::Memory &GetMem() { return m_Mem; }
   void SetBreakAddress(uint32_t Addr) { m_BreakAddress = Addr; }
   uint32_t GetBreakAddress() { return m_BreakAddress; }
-
-  void IncInstCounter() { m_InstructionCounter++; }
 
   std::unordered_map<int, void * /*FILE**/> &GetFd() { return m_FDs; }
 };

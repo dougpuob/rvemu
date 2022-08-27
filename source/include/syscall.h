@@ -1,6 +1,6 @@
 #pragma once
 
-#include "riscv_spec.h"
+#include "regfile.h"
 #include "state.h"
 #include <functional>
 #include <map>
@@ -15,17 +15,17 @@ private:
   std::vector<FILE *> m_StdFds;
 
 private:
-  void Open(RegFile &RvRegs);
-  void Write(RegFile &RvRegs);
-  void Close(RegFile &RvRegs);
-  void Read(RegFile &RvRegs);
+  int Open(RegFile &RvRegs);
+  int Write(RegFile &RvRegs);
+  int Close(RegFile &RvRegs);
+  int Read(RegFile &RvRegs);
 
-  void Exit(RegFile &RvRegs);
-  void Brk(RegFile &RvRegs);
-  void GetTimeOfDay(RegFile &RvRegs);
+  int Exit(RegFile &RvRegs);
+  int Brk(RegFile &RvRegs);
+  int GetTimeOfDay(RegFile &RvRegs);
 
-  void Lseek(RegFile &RvRegs);
-  void Fstat(RegFile &RvRegs);
+  int Lseek(RegFile &RvRegs);
+  int Fstat(RegFile &RvRegs);
 
 public:
   void InitStdFds();
@@ -35,9 +35,9 @@ public:
     InitStdFds();
     return true;
   }
-
+  const char *GetName(uint32_t SyscallNumb);
   std::vector<FILE *> &GetStdFds() { return this->m_StdFds; }
-  void Handle(RegFile &RvRegs);
+  int Handle(RegFile &Reg, uint32_t SysCall);
 };
 
 } // namespace rvemu

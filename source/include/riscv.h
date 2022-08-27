@@ -2,18 +2,15 @@
 
 #include "decode.h"
 #include "elf.h"
+#include "record.h"
 #include "regfile.h"
-#include "riscv_spec.h"
+#include "riscv_define.h"
 #include "state.h"
 #include "syscall.h"
 
 #include <cstdint>
 #include <functional>
 #include <vector>
-
-#define REGS_NUMB 32
-
-using IoHandlePrototype = std::function<uint64_t(void *, uint64_t)>;
 
 namespace rvemu {
 
@@ -26,6 +23,7 @@ struct RvPreFetchBuf {
   union {
     int32_t imm;
     uint32_t uimm;
+    uint32_t offset;
   };
   uint32_t shamt;
 
@@ -41,7 +39,10 @@ struct RvPreFetchBuf {
 
   // Load & Store
   uint64_t addr;
-  uint64_t data;
+  union {
+    uint32_t data;
+    uint64_t data64;
+  };
 
   // Exceptions
   bool ExceptIllegalInstruction;
@@ -70,53 +71,63 @@ struct RvPreFetchBuf {
 
 class Riscv {
 
-  using OpcodeEntry16 = std::function<bool(Riscv &, uint16_t Inst)>;
+  using OpcodeEntry16 = std::function<bool(Riscv &, uint32_t Inst)>;
   using OpcodeEntry32 = std::function<bool(Riscv &, uint32_t Inst)>;
 
 private:
   int m_Cycles = 100;
 
+  /* Register File */
+  RegFile m_RegI;
+  RegFile m_RegF;
   uint32_t m_Pc = 0;
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
 
-  RegFile m_Regs;
-  std::vector<OpcodeEntry32> m_Rv32OpcodeMap; // Table 25.1 RV opcode map
-  std::vector<OpcodeEntry16> Rv16OpcodeMap;   // Table 16.4 : RVC opcode map
+  // The floating-point control and status register, fcsr, is a RISC-V control
+  // and status register (CSR). It is a 32-bit read/write register that selects
+  // the dynamic rounding mode for floating-point arithmetic operations and
+  // holds the accrued exception flags, as shown in Figure 11.2.
+  uint32_t m_fcsr;
 
-  Elf *m_Elf = nullptr;
-
+  /* IO & System Calls */
+  MachineState m_State;
   SystemCall m_SysCall;
+
+  /* Instructions */
   RvPreFetchBuf m_PFB;
   DecodeInstruction16 m_DeInst16;
   DecodeInstruction32 m_DeInst32;
-  MachineState m_State;
+  std::vector<OpcodeEntry32> m_OpcodeMap_Rv32I; // Table 25.1 RV opcode map
+  std::vector<OpcodeEntry16> m_OpcodeMap_Rv32C; // Table 16.4 RVC opcode map
 
-  //
-  // Debug information
-  //
-  std::vector<uint32_t> m_DbgConsumedInsts;
-  std::vector<uint32_t> m_DbgConsumedPCs;
+  /* Trace information */
+  Elf *m_Elf = nullptr;
+  RecordInst *m_pRecInst = nullptr;
+  int64_t m_InstCount = 0;
+  bool m_EnabledTrace = false;
+  bool m_EnabledTraceLog = false;
+  std::vector<RecordInst> m_Records;
+  std::string m_ExitCodeMsg;
+  std::string m_MessageBuffer;
 
 public:
   Riscv();
 
-  //
-  // Debug
-  //
-  const char *GetInstStr() { return m_PFB.inst_name.c_str(); }
-  void SetInstStr(uint32_t Inst, const char *InstStr);
-  const RvPreFetchBuf &GetFields() { return m_PFB; };
-  RegFile &GetRegFile() { return m_Regs; };
-  void PrintInstInfo(uint32_t Pc, uint32_t Inst, const char *InstStr,
-                     const char *Sym);
+  /* Trace information */
+  const char *GetRegName(uint32_t Idx);
+  const char *GetRegName(RvReg R);
+  const char *GetRegName(AbiName A);
+  void PrintRecord(const RecordInst &RecordInst);
+  const RecordInst *GetRecordInst() { return m_pRecInst; }
+  void GetPcForLog(const SymbolData &SymData, uint32_t Pc, std::string &StrBuf);
+  RecordInst &FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
+                             const char *Name);
 
-  //
-  // Instance
-  //
+  /* Machine instance */
   void Reset(uint64_t Pc);
-  uint32_t Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
+  bool Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
   bool Dispatch(uint32_t Inst);
   bool IncPc();
   bool IncPc(int32_t Imm);
@@ -125,40 +136,42 @@ public:
   void Halt();
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
+  const RvPreFetchBuf &GetFields() { return m_PFB; };
+  RegFile &GetRegFile() { return m_RegI; };
 
-  // Exceptions
+  /* Exception */
   void ExceptIllegalInstruction(uint32_t Inst);
   void ExceptInstructionAddressMisaligned(uint32_t Inst);
   void ExceptStoreMisaligned(uint32_t Inst);
   void ExceptLoadMisaligned(uint32_t Inst);
 
-  // Data members
+  /* I/O & System Calls */
   Memory &GetMem() { return m_State.GetMem(); }
   MachineState &GetState() { return m_State; }
 
-  // RV32I instructions
+  /* RV32I instructions */
   bool Op_unimp(uint32_t Inst);
-  bool Op_load(uint32_t Inst);     // 0b00'000
-  bool Op_load_fp(uint32_t Inst);  // 0b00'001
-  bool Op_misc_mem(uint32_t Inst); // 0b00'011
-  bool Op_opimm(uint32_t Inst);    // 0b00'100
-  bool Op_auipc(uint32_t Inst);    // 0b00'101
-  bool Op_store(uint32_t Inst);    // 0b01'000
-  bool Op_store_fp(uint32_t Inst); // 0b01'001
-  bool Op_amo(uint32_t Inst);      // 0b01'011
-  bool Op_op(uint32_t Inst);       // 0b01'100
-  bool Op_lui(uint32_t Inst);      // 0b01'101
-  bool Op_madd(uint32_t Inst);     // 0b10'000
-  bool Op_msub(uint32_t Inst);     // 0b10'001
-  bool Op_nmsub(uint32_t Inst);    // 0b10'010
-  bool Op_branch(uint32_t Inst);   // 0b11'000
-  bool Op_jalr(uint32_t Inst);     // 0b11'001
-  bool Op_jal(uint32_t Inst);      // 0b11'011
-  bool Op_system(uint32_t Inst);   // 0b11'100
-  bool Op_ebreak();
-  bool Op_ecall();
+  bool Op_load(uint32_t Inst);
+  bool Op_load_fp(uint32_t Inst);
+  bool Op_misc_mem(uint32_t Inst);
+  bool Op_opimm(uint32_t Inst);
+  bool Op_auipc(uint32_t Inst);
+  bool Op_store(uint32_t Inst);
+  bool Op_store_fp(uint32_t Inst);
+  bool Op_amo(uint32_t Inst);
+  bool Op_op(uint32_t Inst);
+  bool Op_lui(uint32_t Inst);
+  bool Op_madd(uint32_t Inst);
+  bool Op_msub(uint32_t Inst);
+  bool Op_nmsub(uint32_t Inst);
+  bool Op_branch(uint32_t Inst);
+  bool Op_jalr(uint32_t Inst);
+  bool Op_jal(uint32_t Inst);
+  bool Op_system(uint32_t Inst);
+  bool Op_ebreak(uint32_t Inst);
+  bool Op_ecall(uint32_t Inst);
 
-  // RV32C instructions
+  /* RV32C instructions */
   bool Op_c_addi4spn(uint16_t Inst);
   bool Op_c_fld(uint16_t Inst);
   bool Op_c_lw(uint16_t Inst);
@@ -179,7 +192,7 @@ public:
   bool Op_c_fldsp(uint16_t Inst);
   bool Op_c_ldsp(uint16_t Inst);
   bool Op_c_lwsp(uint16_t Inst);
-  bool Op_c_crfmt(uint16_t Inst);
+  bool Op_c_cr(uint16_t Inst);
   bool Op_c_fsdsp(uint16_t Inst);
   bool Op_c_swsp(uint16_t Inst);
   bool Op_c_sdsp(uint16_t Inst);

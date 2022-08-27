@@ -251,7 +251,7 @@ struct DecodeInstruction16 : DecodeInstruction {
   // sign extend an 8 bit value
   inline uint32_t SignExtend8(uint32_t x) { return (int32_t)((int8_t)x); }
 
-  inline int16_t FetchImmCiFmt_54276(uint32_t Inst) {
+  inline uint16_t FetchImmCiFmt_54276(uint32_t Inst) {
     // INST[06:02]
     const uint16_t inst_07_06 = Fetch_03_02(Inst);
     const uint16_t inst_04_02 = Fetch_06_04(Inst);
@@ -264,9 +264,9 @@ struct DecodeInstruction16 : DecodeInstruction {
                           (inst_05_05 << 5);
 
     // Cast to sign integer
-    const int16_t imm = ((int16_t)(uimm << (15 - 7))) >> (15 - 7);
+    // const int16_t imm = ((int16_t)(uimm << (15 - 7))) >> (15 - 7);
 
-    return imm;
+    return uimm;
   }
 
   inline int16_t FetchImmCiFmt_54386(uint32_t Inst) {
@@ -321,7 +321,7 @@ struct DecodeInstruction16 : DecodeInstruction {
     return imm;
   }
 
-  inline int16_t FetchImmCiFmt_546875(uint32_t Inst) {
+  inline uint32_t FetchImmCiFmt_946875(uint32_t Inst) {
     // INST[06:02]
     const uint16_t inst_05_05 = Fetch_02_02(Inst);
     const uint16_t inst_08_07 = Fetch_04_03(Inst);
@@ -338,10 +338,32 @@ struct DecodeInstruction16 : DecodeInstruction {
                           (inst_09_09 << 9);
 
     // Cast to sign integer ??
-    const int16_t imm = ((int16_t)(uimm << (15 - 9))) >> (15 - 9);
+    const uint32_t imm = ((int32_t)(uimm << (31 - 9))) >> (31 - 9);
 
     return imm;
   }
+
+  // inline int16_t FetchImmCiFmt_546875(uint32_t Inst) {
+  //   // INST[06:02]
+  //   const uint16_t inst_05_05 = Fetch_02_02(Inst);
+  //   const uint16_t inst_08_07 = Fetch_04_03(Inst);
+  //   const uint16_t inst_06_06 = Fetch_05_05(Inst);
+  //   const uint16_t inst_04_04 = Fetch_06_06(Inst);
+  //   // INST[12:12]
+  //   const uint16_t inst_09_09 = Fetch_12_12(Inst);
+
+  //  // Combine them
+  //  const uint16_t uimm = (inst_05_05 << 5) | //
+  //                        (inst_08_07 << 7) | //
+  //                        (inst_06_06 << 6) | //
+  //                        (inst_04_04 << 4) | //
+  //                        (inst_09_09 << 9);
+
+  //  // Cast to sign integer ??
+  //  const int16_t imm = ((int16_t)uimm << (15 - 9)) >> (15 - 9);
+
+  //  return imm;
+  //}
 
   inline int32_t FetchImmCiFmt_171612(uint32_t Inst) {
     // INST[06:02]
@@ -369,7 +391,7 @@ struct DecodeInstruction16 : DecodeInstruction {
                           (inst_05_02 << 2);
 
     // Cast to sign integer
-    const int32_t imm = ((int32_t)uimm << (15 - 7)) >> (15 - 7);
+    const int32_t imm = ((int32_t)(uimm << (15 - 7))) >> (15 - 7);
 
     return imm;
   }
@@ -487,11 +509,11 @@ struct DecodeInstruction16 : DecodeInstruction {
     const uint16_t inst_08_08 = Fetch_12_12(Inst);
 
     // Combine them
-    const int16_t uimm = (inst_05_05 << 5) | //
-                         (inst_02_01 << 1) | //
-                         (inst_07_06 << 6) | //
-                         (inst_04_03 << 3) | //
-                         (inst_08_08 << 8);
+    const uint16_t uimm = (inst_05_05 << 5) | //
+                          (inst_02_01 << 1) | //
+                          (inst_07_06 << 6) | //
+                          (inst_04_03 << 3) | //
+                          (inst_08_08 << 8);
 
     // Cast to sign integer
     const int16_t imm = ((int16_t)(uimm << (15 - 8))) >> (15 - 8);

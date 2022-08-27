@@ -9,9 +9,9 @@ using Config = ConfigSingleton;
 
 namespace rvemu {
 
-static chunk_t *allocateChunk() {
-  chunk_t *chunks = new chunk_t;
-  memset(chunks, 0, sizeof(chunk_t));
+static Chunk *allocateChunk() {
+  Chunk *chunks = new Chunk;
+  memset(chunks, 0, sizeof(Chunk));
   return chunks;
 }
 
@@ -43,7 +43,7 @@ uint32_t Memory::FetchInst(uint32_t Pc) {
   assert((AddrLo & 1) == 0);
 
   uint32_t StartBlock = Pc >> 16;
-  chunk_t *Chunk = this->m_Mem[StartBlock];
+  Chunk *Chunk = this->m_Mem[StartBlock];
   assert(Chunk);
 
   const uint32_t Inst = *(const uint32_t *)(Chunk->data + AddrLo);
@@ -64,99 +64,74 @@ uint64_t Memory::Read64(uint32_t Addr) {
 uint32_t Memory::Read32(uint32_t Addr) {
   uint32_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 4);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] --> 0x%.8X\n", Addr, Dst);
-  }
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]->0x%.8X", Addr, Dst);
+
   return Dst;
 }
 
 uint16_t Memory::Read16(uint32_t Addr) {
   uint16_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 2);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] --> 0x%.4X\n", Addr, Dst);
-  }
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]->0x%.4X", Addr, Dst);
+
   return Dst;
 }
 
 uint8_t Memory::Read8(uint32_t Addr) {
   uint8_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 1);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] --> 0x%.2X\n", Addr, Dst);
-  }
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]->0x%.2X", Addr, Dst);
   return Dst;
 }
 
 void Memory::Read(uint8_t *Dst, uint32_t Addr, uint32_t Size) {
-  const uint32_t Block = Addr >> 16;
-  const uint32_t Offset = (Addr & MASK_LO);
-  chunk_t *Chunk = m_Mem[Block];
-  if (Chunk) {
-    const uint8_t *Src = Chunk->data + Offset;
-    memcpy(Dst, Src, Size);
+  for (int i = 0; i < Size; i++) {
+    const uint32_t Index = Addr >> 16;
+    const uint32_t Offset = (Addr & MASK_LO);
+    if (nullptr == m_Mem[Index])
+      m_Mem[Index] = (Chunk *)calloc(1, sizeof(Chunk));
+    Dst[i] = m_Mem[Index]->data[Offset + i];
   }
 }
 
 void Memory::Write8(uint32_t addr, uint8_t data) {
   Write(addr, &data, 1);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] <-- 0x%.2X\n", addr, data);
-  }
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.2X", addr, data);
 }
 
 void Memory::Write16(uint32_t addr, uint16_t data) {
-  Write(addr, &data, 2);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] <-- 0x%.4X\n", addr, data);
-  }
+  Write(addr, (uint8_t *)&data, 2);
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.4X", addr, data);
 }
 
 void Memory::Write32(uint32_t addr, uint32_t data) {
-  Write(addr, &data, 4);
-  if (Config::getInst().opt_trace) {
-    printf("              Mem[0x%.8X] <-- 0x%.8X\n", addr, data);
-  }
+  Write(addr, (uint8_t *)&data, 4);
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.8X", addr, data);
 }
 
-void Memory::Write(uint32_t Addr, void *Src, uint32_t Size) {
-  uint32_t Block = Addr >> 16;
-  chunk_t *Chunk = m_Mem[Block];
-  if (!Chunk) {
-    Chunk = (chunk_t *)malloc(sizeof(chunk_t));
-    if (Chunk) {
-      memset(Chunk->data, 0, sizeof(Chunk->data));
-      m_Mem[Block] = Chunk;
-    }
-
-    if (Config::getInst().opt_trace) {
-      printf("              Prepare new chunk for 0x%.8X\n", Addr);
-    }
-  }
-
-  if (Chunk) {
-    const uint32_t Offset = Addr & 0xffff;
-    uint8_t *Dst = Chunk->data + Offset;
-    memcpy(Dst, Src, Size);
+void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
+  for (int i = 0; i < Size; i++) {
+    const uint32_t Index = Addr >> 16;
+    const uint32_t Offset = (Addr & MASK_LO);
+    if (nullptr == m_Mem[Index])
+      m_Mem[Index] = (Chunk *)calloc(1, sizeof(Chunk));
+    m_Mem[Index]->data[Offset + i] = Src[i];
   }
 }
 
 void Memory::Fill(uint32_t Addr, uint32_t Size, uint8_t Val) {
-  for (uint32_t i = 0; i < Size; ++i) {
-    uint32_t NewAddr = Addr + i;
-    uint32_t StartBlock = NewAddr >> 16;
-
-    chunk_t *Chunk = m_Mem[StartBlock];
-    if (!Chunk) {
-      Chunk = (chunk_t *)malloc(sizeof(chunk_t));
-      if (Chunk) {
-        memset(Chunk->data, 0, sizeof(chunk_t));
-        m_Mem[StartBlock] = Chunk;
-      }
-    }
-    if (Chunk) {
-      Chunk->data[NewAddr & 0xffff] = Val;
-    }
+  for (int i = 0; i < Size; i++) {
+    const uint32_t Index = Addr >> 16;
+    const uint32_t Offset = (Addr & MASK_LO);
+    if (nullptr == m_Mem[Index])
+      m_Mem[Index] = (Chunk *)calloc(1, sizeof(Chunk));
+    m_Mem[Index]->data[Offset + i] = Val;
   }
 }
 

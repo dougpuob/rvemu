@@ -1,9 +1,10 @@
 #pragma once
 
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+#include "common.h"
 #include "mem.h"
 
 struct chunk_t;
@@ -17,7 +18,7 @@ private:
 private:
   struct Elf32_Ehdr *m_Hdr;
   std::vector<uint8_t> m_RawData;
-  std::map<uintptr_t, std::string> m_Symbols;
+  std::unordered_map<uintptr_t, SymbolData> m_Symbols;
 
   bool Load32(rvemu::Memory &Mem);
   bool Load64(rvemu::Memory &Mem);
@@ -27,7 +28,8 @@ public:
   bool IsValid();
   bool Load(rvemu::Memory &Mem);
   uint32_t GetEntry();
-  const char *FindSymbol(uint32_t Pc);
+  // const char *FindSymbol(uint32_t Pc);
+  SymbolData FindSymbol(uint32_t Pc);
   const char *GetShString(int Index);
   const char *GetStrTab();
   const struct Elf32_Sym *GetSymbol(const char *Name);

@@ -53,73 +53,101 @@ enum RvSysCall {
   getmainvars = 2011,
 };
 
-void SystemCall::Exit(RegFile &RvRegs) {
+const char *SystemCall::GetName(uint32_t SyscallNumb) {
+  // clang-format off
+  switch(SyscallNumb) {
+  case getcwd:        return "getcwd";
+  case dup:           return "dup";
+  case fcntl:         return "fcntl";
+  case faccessat:     return "faccessat";
+  case chdir:         return "chdir";
+  case openat:        return "openat";
+  case close:         return "close";
+  case getdents:      return "getdents";
+  case lseek:         return "lseek";
+  case read:          return "read";
+  case write:         return "write";
+  case writev:        return "writev";
+  case pread:         return "pread";
+  case pwrite:        return "pwrite";
+  case fstatat:       return "fstatat";
+  case fstat:         return "fstat";
+  case exit:          return "exit";
+  case exit_group:    return "exit_group";
+  case kill:          return "kill";
+  case rt_sigaction:  return "rt_sigaction";
+  case times:         return "times";
+  case uname:         return "uname";
+  case gettimeofday:  return "gettimeofday";
+  case getpid:        return "getpid";
+  case getuid:        return "getuid";
+  case geteuid:       return "geteuid";
+  case getgid:        return "getgid";
+  case getegid:       return "getegid";
+  case brk:           return "brk";
+  case munmap:        return "munmap";
+  case mremap:        return "mremap";
+  case mmap:          return "mmap";
+  case open:          return "open";
+  case link:          return "link";
+  case unlink:        return "unlink";
+  case mkdir:         return "mkdir";
+  case access:        return "access";
+  case stat:          return "stat";
+  case lstat:         return "lstat";
+  case time:          return "time";
+  case getmainvars:   return "getmainvars";
+}
+  // clang-format on
+  return nullptr;
+}
+
+int SystemCall::Exit(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
   pState->Halt();
 
   uint32_t ExitCode = RvRegs.Get(AbiName::a0);
-  fprintf(stdout, "ExitCode=%d(0x%X)\n", ExitCode, ExitCode);
+  return ExitCode;
 }
 
-void SystemCall::Brk(RegFile &RvRegs) {
+int SystemCall::Brk(RegFile &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Inc = RvRegs.Get(AbiName::a0);
   if (Inc)
     pState->SetBreakAddress(Inc);
 
-  RvRegs.Set(AbiName::a0) = pState->GetBreakAddress();
+  const uint32_t Val = pState->GetBreakAddress();
+  RvRegs.Set(AbiName::a0, Val);
+  return 0;
 }
 
-void SystemCall::GetTimeOfDay(RegFile &RvRegs) {}
+int SystemCall::GetTimeOfDay(RegFile &RvRegs) { return -1; }
 
-void SystemCall::Lseek(RegFile &RvRegs) {}
+int SystemCall::Lseek(RegFile &RvRegs) { return -1; }
 
-void SystemCall::Fstat(RegFile &RvRegs) {}
+int SystemCall::Fstat(RegFile &RvRegs) { return -1; }
 
-void SystemCall::Handle(RegFile &Reg) {
-  const uint32_t SysCall = Reg.Get(AbiName::a7);
+int SystemCall::Handle(RegFile &Reg, uint32_t SysCall) {
 
   switch (SysCall) {
-  case RvSysCall::close:
-    this->Close(Reg);
-    break;
-
-  case RvSysCall::lseek:
-    this->Lseek(Reg);
-    break;
-
-  case RvSysCall::read:
-    this->Read(Reg);
-    break;
-
-  case RvSysCall::write:
-    this->Write(Reg);
-    break;
-
-  case RvSysCall::fstat:
-    this->Fstat(Reg);
-    break;
-
-  case RvSysCall::gettimeofday:
-    this->GetTimeOfDay(Reg);
-    break;
-
-  case RvSysCall::brk:
-    this->Brk(Reg);
-    break;
-
-  case RvSysCall::open:
-    this->Open(Reg);
-    break;
-
-  case RvSysCall::exit:
-    this->Exit(Reg);
-    break;
-
+  // clang-format off
+  case RvSysCall::close:        return this->Close(Reg);
+  case RvSysCall::lseek:        return this->Lseek(Reg);
+  case RvSysCall::read:         return this->Read(Reg);
+  case RvSysCall::write:        return this->Write(Reg);
+  case RvSysCall::fstat:        return this->Fstat(Reg);
+  case RvSysCall::gettimeofday: return this->GetTimeOfDay(Reg);
+  case RvSysCall::brk:          return this->Brk(Reg);
+  case RvSysCall::open:         return this->Open(Reg);
+  case RvSysCall::exit:         return this->Exit(Reg);
+    // clang-format on
   default:
     assert(!"Unknown system call !!!");
+    return -1;
   }
+
+  return -2;
 }
 
 } // namespace rvemu

@@ -19,16 +19,16 @@ TEST_F(RV32I_Arithmetic, RType_sub) {
   std::string inst_name = "sub";
 
   rvemu::Riscv Rv;
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(rs2, Fields.rs2);
     EXPECT_EQ(funct7, Fields.funct7);
-    EXPECT_EQ(inst_name, Fields.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
   }
 }
 
@@ -44,15 +44,15 @@ TEST_F(RV32I_Arithmetic, IType_addi) {
   std::string inst_name = "addi";
 
   rvemu::Riscv Rv;
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(imm, Fields.imm);
-    EXPECT_EQ(inst_name, Fields.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
   }
 }
 

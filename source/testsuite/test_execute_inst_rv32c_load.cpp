@@ -19,22 +19,22 @@ TEST_F(RV32C_Load, c_lw__0x43D8) {
   rvemu::RegFile &Reg = Rv.GetRegFile();
   rvemu::Memory &Mem = Rv.GetMem();
 
-  Reg.Set(8 + rs1) = 0x13634;
+  Reg.Set(8 + rs1, 0x13634);
 
   const uint32_t addr = Reg.Get(8 + rs1) + imm;
   const uint32_t data = 0x5a5b5c5d;
 
   Mem.Write32(addr, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -55,15 +55,15 @@ TEST_F(RV32C_Load, c_li__0x4601) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(0, Reg.Get(rd));
@@ -82,15 +82,15 @@ TEST_F(RV32C_Load, c_lui__0x67C9) {
   rvemu::Riscv Rv;
   rvemu::RegFile &Reg = Rv.GetRegFile();
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(0x12000, Reg.Get(rd));
@@ -115,15 +115,15 @@ TEST_F(RV32C_Load, c_lwsp__0x40B2) {
 
   Mem.Write32(addr, data);
 
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, PFB.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);

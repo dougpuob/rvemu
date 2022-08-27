@@ -12,13 +12,13 @@ TEST_F(RV32I_Jump, UType_auipc) {
   std::string inst_name = "auipc";
 
   rvemu::Riscv Rv;
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(uimm, Fields.uimm);
-    EXPECT_EQ(inst_name, Fields.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
   }
 }
 
@@ -29,13 +29,13 @@ TEST_F(RV32I_Jump, JType_auipc) {
   std::string inst_name = "jal";
 
   rvemu::Riscv Rv;
-  bool Result = Rv.Dispatch(Inst);
-  EXPECT_TRUE(Result);
-  if (Result) {
+  bool Status = Rv.Dispatch(Inst);
+  EXPECT_TRUE(Status);
+  if (Status) {
     const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(imm, Fields.imm);
-    EXPECT_EQ(inst_name, Fields.inst_name);
+    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
   }
 }
 

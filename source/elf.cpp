@@ -67,10 +67,11 @@ Elf::Elf(const std::string &FilePath) {
                                                Shdr->sh_offset + Shdr->sh_size);
     const char *StrTab = GetStrTab();
     for (; Sym < End; ++Sym) { /* try to find the symbol */
+      SymbolData SymData;
+
       if (NULL == Sym->st_name)
         continue;
-      const char *SymName = StrTab + Sym->st_name;
-      const uintptr_t Key = (uintptr_t)(Sym->st_value);
+
       switch (ELF_ST_TYPE(Sym->st_info)) { /* add to the symbol table */
       case STT_NOTYPE:
       case STT_OBJECT:
@@ -78,8 +79,14 @@ Elf::Elf(const std::string &FilePath) {
       case STT_SECTION:
       case STT_FILE:
       case STT_COMMON:
-      case STT_TLS:
-        m_Symbols[Key] = SymName;
+      case STT_TLS: {
+        const uintptr_t Key = (uintptr_t)(Sym->st_value);
+        SymData.Name = StrTab + Sym->st_name;
+        SymData.Size = Sym->st_size;
+        SymData.Start = Key;
+        SymData.Index = Sym->st_shndx;
+        m_Symbols[Key] = SymData;
+      }
       }
     }
   }
@@ -158,12 +165,10 @@ const rvemu::Elf32_Sym *Elf::GetSymbol(const char *Name) {
 }
 
 void Elf::PrintSymbols() {
-  if (Config::getInst().opt_trace) {
-    std::cout << "Symbols ..." << std::endl;
-    for (auto &Sym : m_Symbols)
-      fprintf(stdout, "  [0x%.8X]=%s\n", Sym.first, Sym.second.c_str());
-    std::cout << std::endl << std::endl;
-  }
+  std::cout << "Symbols ..." << std::endl;
+  for (auto &Sym : m_Symbols)
+    fprintf(stdout, "  [0x%llu]=%s\n", Sym.first, Sym.second.Name.c_str());
+  std::cout << std::endl << std::endl;
 }
 
 bool Elf::Load(rvemu::Memory &Mem) {
@@ -244,11 +249,35 @@ uint32_t Elf::GetEntry() {
   return m_Hdr->e_entry;
 }
 
-const char *Elf::FindSymbol(uint32_t Pc) {
-  auto &Val = m_Symbols[Pc];
-  if (!Val.empty())
-    return Val.c_str();
-  return "";
+// const char *Elf::FindSymbol(uint32_t Pc) {
+//   if (m_Symbols.empty())
+//     return nullptr;
+//
+//   if (m_Symbols.end() == m_Symbols.find(Pc))
+//     return nullptr;
+//
+//   auto &Val = m_Symbols[Pc];
+//   if (!Val.Name.empty())
+//     return Val.Name.c_str();
+//
+//   return nullptr;
+// }
+
+SymbolData Elf::FindSymbol(uint32_t Pc) {
+
+  for (int i = 0; i < m_Symbols.size(); i++) {
+    const SymbolData &Sym = m_Symbols[i];
+    const uint32_t Start = Sym.Start;
+    const uint32_t End = Sym.Start + Sym.Size;
+    if ((Pc >= Start) && (Pc < End)) {
+      SymbolData NewSym = Sym;
+      NewSym.Offset = Pc - Start;
+      return NewSym;
+    }
+  }
+
+  SymbolData EmptySym;
+  return EmptySym;
 }
 
 } // namespace rvemu

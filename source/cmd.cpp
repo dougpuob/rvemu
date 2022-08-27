@@ -26,6 +26,10 @@ bool CmdArgs::Parse(const int Argc, char **Args,
         ConfigSingleton::getInst().opt_trace = true;
         continue;
       }
+      if (arg == "--tracelog") {
+        ConfigSingleton::getInst().opt_tracelog = true;
+        continue;
+      }
       if (arg == "--test") {
         ConfigSingleton::getInst().opt_unittest = true;
         continue;

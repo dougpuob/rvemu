@@ -10,55 +10,133 @@ bool Riscv::Op_load(uint32_t Inst) {
   m_PFB.rs1 = m_DeInst32.Fetch_19_15(Inst);
   m_PFB.imm = m_DeInst32.FetchImmIType(Inst);
 
-  m_PFB.addr = m_Regs.Get(m_PFB.rs1) + m_PFB.imm;
-
   switch (m_PFB.funct3) {
   case 0b000: { // lb
-    SetInstStr(Inst, "lb");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lb");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read8(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_DeInst32.SignExtB(m_PFB.data);
+    const uint32_t Val = m_DeInst32.SignExtB(m_PFB.data);
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b100: { // lbu
-    SetInstStr(Inst, "lbu");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lbu");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read8(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_PFB.data;
+    m_RegI.Set(m_PFB.rd, m_PFB.data);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b001: { // lh
-    SetInstStr(Inst, "lh");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lh");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read16(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_DeInst32.SignExtH(m_PFB.data);
+    const uint32_t Val = m_DeInst32.SignExtH(m_PFB.data);
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b101: { // lhu
-    SetInstStr(Inst, "lhu");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lhu");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read16(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_PFB.data;
+    m_RegI.Set(m_PFB.rd, m_PFB.data);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b010: { // lw
-    SetInstStr(Inst, "lw");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lw");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read32(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_DeInst32.SignExtW(m_PFB.data);
+    const uint32_t Val = m_DeInst32.SignExtW(m_PFB.data);
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b110: { // lwu
-    SetInstStr(Inst, "lwu");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lwu");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read32(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_PFB.data;
+    m_RegI.Set(m_PFB.rd, m_PFB.data);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
   case 0b011: { // ld
-    SetInstStr(Inst, "ld");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ld");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
     m_PFB.data = m_State.GetMem().Read64(m_PFB.addr);
-    m_Regs.Set(m_PFB.rd) = m_PFB.data;
+    m_RegI.Set(m_PFB.rd, m_PFB.data);
+
+    Record.Result = OpResult::Executed;
     break;
   }
 
@@ -70,13 +148,13 @@ bool Riscv::Op_load(uint32_t Inst) {
 }
 
 bool Riscv::Op_load_fp(uint32_t Inst) {
-  SetInstStr(Inst, "load_fp");
+  // SetInstStr(Inst, "load_fp");
   assert(!"UNIMPLEMENTED!!! rv32i load_fp");
   return false;
 }
 
 bool Riscv::Op_misc_mem(uint32_t Inst) {
-  SetInstStr(Inst, "misc_mem");
+  // SetInstStr(Inst, "misc_mem");
   assert(!"UNIMPLEMENTED!!! rv32i misc_mem");
   return false;
 }
@@ -90,70 +168,98 @@ bool Riscv::Op_opimm(uint32_t Inst) {
 
   switch (m_PFB.funct3) {
   case 0b000: { // ADDI
-    SetInstStr(Inst, "addi");
-    m_Regs.Set(m_PFB.rd) = m_Regs.Get(m_PFB.rs1) + m_PFB.imm;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "addi");
+
+    const uint32_t Val = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b001: { // SLLI
-    SetInstStr(Inst, "slli");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slli");
+
     m_PFB.shamt = m_DeInst32.Fetch_24_20(Inst);
-    int32_t val = m_Regs.Get(m_PFB.rs1) << m_PFB.shamt;
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    const int32_t Val = m_RegI.Get(m_PFB.rs1) << m_PFB.shamt;
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b010: { // SLTI (set less than immediate)
-    SetInstStr(Inst, "slti");
-    uint32_t val = (int32_t)m_Regs.Get(m_PFB.rs1) < (m_PFB.imm) ? 1 : 0;
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slti");
+
+    const uint32_t Val = (int32_t)m_RegI.Get(m_PFB.rs1) < (m_PFB.imm) ? 1 : 0;
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b011: { // SLTIU
-    SetInstStr(Inst, "sltiu");
-    uint32_t val = ((int32_t)m_Regs.Get(m_PFB.rs1) < m_PFB.imm) ? 1 : 0;
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sltiu");
+
+    const uint32_t Val = (m_RegI.Get(m_PFB.rs1) < (uint32_t)m_PFB.imm) ? 1 : 0;
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b100: { // XORI
-    SetInstStr(Inst, "xori");
-    uint32_t val = (m_Regs.Get(m_PFB.rs1) ^ m_PFB.imm);
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "xori");
+
+    const uint32_t Val = (m_RegI.Get(m_PFB.rs1) ^ m_PFB.imm);
+    m_RegI.Set(m_PFB.rd, Val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b101: { // SRAI/SRLI
     uint32_t inst_30_30 = m_DeInst32.Fetch_30_30(Inst);
-    uint32_t val = 0;
+    uint32_t Val = 0;
 
     // the shift amount is encoded in the lower 5 bits of the I-immediate field.
     m_PFB.imm = m_PFB.imm & 0b11111;
 
     if (0 == inst_30_30) { // SRLI (logical right shift)
-      SetInstStr(Inst, "srli");
-      val = m_Regs.Get(m_PFB.rs1) >> m_PFB.imm;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "srli");
+
+      Val = m_RegI.Get(m_PFB.rs1) >> m_PFB.imm;
+
+      Record.Result = OpResult::Executed;
     } else { // SRAI (arithmetic right shift)
-      SetInstStr(Inst, "srai");
-      val = ((int32_t)m_Regs.Get(m_PFB.rs1) >> m_PFB.imm);
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "srai");
+
+      Val = ((int32_t)m_RegI.Get(m_PFB.rs1) >> m_PFB.imm);
+
+      Record.Result = OpResult::Executed;
     }
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    m_RegI.Set(m_PFB.rd, Val);
+    return true;
   }
 
   case 0b110: { // ORI
-    SetInstStr(Inst, "ori");
-    uint32_t val = m_Regs.Get(m_PFB.rs1) | m_PFB.imm;
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ori");
+
+    uint32_t val = m_RegI.Get(m_PFB.rs1) | m_PFB.imm;
+    m_RegI.Set(m_PFB.rd, val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b111: { // ANDI
-    SetInstStr(Inst, "andi");
-    uint32_t val = m_Regs.Get(m_PFB.rs1) & m_PFB.imm;
-    m_Regs.Set(m_PFB.rd) = val;
-    break;
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "andi");
+
+    uint32_t val = m_RegI.Get(m_PFB.rs1) & m_PFB.imm;
+    m_RegI.Set(m_PFB.rd, val);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   default:
@@ -161,17 +267,19 @@ bool Riscv::Op_opimm(uint32_t Inst) {
     return false;
   }
 
-  return true;
+  return false;
 }
 
 bool Riscv::Op_auipc(uint32_t Inst) {
-  SetInstStr(Inst, "auipc");
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "auipc");
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.uimm = m_DeInst32.FetchImmUType(Inst);
   const uint32_t pc = this->GetPc();
   const uint32_t val = pc + m_PFB.uimm;
-  m_Regs.Set(m_PFB.rd) = val;
+  m_RegI.Set(m_PFB.rd, val);
+
+  Record.Result = OpResult::Executed;
   return true;
 }
 
@@ -182,46 +290,83 @@ bool Riscv::Op_store(uint32_t Inst) {
   m_PFB.rs2 = m_DeInst32.Fetch_24_20(Inst);
   m_PFB.imm = m_DeInst32.FetchImmSType(Inst);
 
-  m_PFB.addr = (int64_t)(m_Regs.Get(m_PFB.rs1) + m_PFB.imm);
-  m_PFB.data = m_Regs.Get(m_PFB.rs2);
-
   switch (m_PFB.funct3) {
   case 0b000: { // SB
-    SetInstStr(Inst, "sb");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sb");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = (int64_t)(m_RegI.Get(m_PFB.rs1) + m_PFB.imm);
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
+    m_PFB.data = m_RegI.Get(m_PFB.rs2);
+
     // M[x[rs1] + sext(offset)] = x[rs2] [7:0]
-    m_State.GetMem().Write(m_PFB.addr, (uint8_t *)&m_PFB.data, 1);
-    break;
+    m_State.GetMem().Write8(m_PFB.addr, (uint8_t)m_PFB.data);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b001: { // SH
-    SetInstStr(Inst, "sh");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sh");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = (int64_t)(m_RegI.Get(m_PFB.rs1) + m_PFB.imm);
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
+    m_PFB.data = m_RegI.Get(m_PFB.rs2);
+
     // M[x[rs1] + sext(offset)] = x[rs2][15:0]
-    m_State.GetMem().Write(m_PFB.addr, (uint8_t *)&m_PFB.data, 2);
-    break;
+    m_State.GetMem().Write16(m_PFB.addr, (uint16_t)m_PFB.data);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   case 0b010: { // SW
-    SetInstStr(Inst, "sw");
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sw");
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
+
+    m_PFB.addr = (int64_t)(m_RegI.Get(m_PFB.rs1) + m_PFB.imm);
+
+    if (m_EnabledTraceLog)
+      Record.AddLog("addr:0x%.8x", m_PFB.addr);
+
+    m_PFB.data = m_RegI.Get(m_PFB.rs2);
+
     // M[x[rs1] + sext(offset)] = x[rs2][31:0]
-    m_State.GetMem().Write(m_PFB.addr, (uint8_t *)&m_PFB.data, 4);
-    break;
+    m_State.GetMem().Write32(m_PFB.addr, (uint32_t)m_PFB.data);
+
+    Record.Result = OpResult::Executed;
+    return true;
   }
 
   default:
     assert(!"Op_store");
+    return false;
   }
 
-  return true;
+  return false;
 }
 
 bool Riscv::Op_store_fp(uint32_t Inst) {
-  SetInstStr(Inst, "store_fp");
+  // SetInstStr(Inst, "store_fp");
   assert(!"UNIMPLEMENTED!!! rv32i store_fp");
   return false;
 }
 
 bool Riscv::Op_amo(uint32_t Inst) {
-  SetInstStr(Inst, "amo");
+  // SetInstStr(Inst, "amo");
   assert(!"UNIMPLEMENTED!!! rv32i amo");
   return false;
 }
@@ -238,90 +383,124 @@ bool Riscv::Op_op(uint32_t Inst) {
   case 0b0000000:
     switch (m_PFB.funct3) {
     case 0b000: { // ADD
-      SetInstStr(Inst, "add");
-      uint32_t val =
-          (int32_t)m_Regs.Get(m_PFB.rs1) + (int32_t)m_Regs.Get(m_PFB.rs2);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "add");
+
+      const uint32_t val =
+          (int32_t)m_RegI.Get(m_PFB.rs1) + (int32_t)m_RegI.Get(m_PFB.rs2);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b001: { // SLL
-      SetInstStr(Inst, "sll");
-      uint32_t val = m_Regs.Get(m_PFB.rs1) << (m_Regs.Get(m_PFB.rs2) & 0x1f);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sll");
+
+      const uint32_t val = m_RegI.Get(m_PFB.rs1)
+                           << (m_RegI.Get(m_PFB.rs2) & 0x1f);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b010: { // SLT
-      SetInstStr(Inst, "slt");
-      uint32_t val =
-          ((int32_t)m_Regs.Get(m_PFB.rs1) < (int32_t)m_Regs.Get(m_PFB.rs2)) ? 1
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slt");
+
+      const uint32_t val =
+          ((int32_t)m_RegI.Get(m_PFB.rs1) < (int32_t)m_RegI.Get(m_PFB.rs2)) ? 1
                                                                             : 0;
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b011: { // SLTU
-      SetInstStr(Inst, "sltu");
-      uint32_t val = (m_Regs.Get(m_PFB.rs1) < m_Regs.Get(m_PFB.rs2)) ? 1 : 0;
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sltu");
+
+      const uint32_t val =
+          (m_RegI.Get(m_PFB.rs1) < m_RegI.Get(m_PFB.rs2)) ? 1 : 0;
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b100: { // XOR
-      SetInstStr(Inst, "xor");
-      uint32_t val = m_Regs.Get(m_PFB.rs1) ^ m_Regs.Get(m_PFB.rs2);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "xor");
+
+      const uint32_t val = m_RegI.Get(m_PFB.rs1) ^ m_RegI.Get(m_PFB.rs2);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b101: { // SRL
-      SetInstStr(Inst, "srl");
-      uint32_t val = m_Regs.Get(m_PFB.rs1) >> (m_Regs.Get(m_PFB.rs2) & 0x1f);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "srl");
+
+      const uint32_t val =
+          m_RegI.Get(m_PFB.rs1) >> (m_RegI.Get(m_PFB.rs2) & 0x1f);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b110: { // OR
-      SetInstStr(Inst, "or");
-      uint32_t val = m_Regs.Get(m_PFB.rs1) | m_Regs.Get(m_PFB.rs2);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "or");
+
+      const uint32_t val = m_RegI.Get(m_PFB.rs1) | m_RegI.Get(m_PFB.rs2);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b111: { // AND
-      SetInstStr(Inst, "and");
-      uint32_t val = m_Regs.Get(m_PFB.rs1) & m_Regs.Get(m_PFB.rs2);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "and");
+
+      const uint32_t val = m_RegI.Get(m_PFB.rs1) & m_RegI.Get(m_PFB.rs2);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     default:
       // rv_except_illegal_inst(rv, inst);
+      assert(false);
       return false;
     }
-    break;
 
   case 0b0100000:
     switch (m_PFB.funct3) {
     case 0b000: { // SUB
-      SetInstStr(Inst, "sub");
-      uint32_t val =
-          (int32_t)(m_Regs.Get(m_PFB.rs1)) - (int32_t)(m_Regs.Get(m_PFB.rs2));
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sub");
+
+      const uint32_t val =
+          (int32_t)(m_RegI.Get(m_PFB.rs1)) - (int32_t)(m_RegI.Get(m_PFB.rs2));
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     case 0b101: { // SRA
-      SetInstStr(Inst, "sra");
-      uint32_t val =
-          ((int32_t)m_Regs.Get(m_PFB.rs1)) >> (m_Regs.Get(m_PFB.rs2) & 0x1f);
-      m_Regs.Set(m_PFB.rd) = val;
-      break;
+      RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sra");
+
+      const uint32_t val =
+          ((int32_t)m_RegI.Get(m_PFB.rs1)) >> (m_RegI.Get(m_PFB.rs2) & 0x1f);
+      m_RegI.Set(m_PFB.rd, val);
+
+      Record.Result = OpResult::Executed;
+      return true;
     }
 
     default:
       // rv_except_illegal_inst(rv, inst);
+      assert(false);
       return false;
     }
   }
@@ -330,28 +509,30 @@ bool Riscv::Op_op(uint32_t Inst) {
 }
 
 bool Riscv::Op_lui(uint32_t Inst) {
-  SetInstStr(Inst, "lui");
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lui");
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.imm = m_DeInst32.FetchImmUType(Inst);
-  m_Regs.Set(m_PFB.rd) = m_PFB.imm;
+  m_RegI.Set(m_PFB.rd, m_PFB.imm);
+
+  Record.Result = OpResult::Executed;
   return true;
 }
 
 bool Riscv::Op_madd(uint32_t Inst) {
-  SetInstStr(Inst, "madd");
+  // SetInstStr(Inst, "madd");
   assert(!"UNIMPLEMENTED!!! rv32i madd");
   return false;
 }
 
 bool Riscv::Op_msub(uint32_t Inst) {
-  SetInstStr(Inst, "msub");
+  // SetInstStr(Inst, "msub");
   assert(!"UNIMPLEMENTED!!! rv32i msub");
   return false;
 }
 
 bool Riscv::Op_nmsub(uint32_t Inst) {
-  SetInstStr(Inst, "nmsub");
+  // SetInstStr(Inst, "nmsub");
   assert(!"UNIMPLEMENTED!!! rv32i nmsub");
   return false;
 }
@@ -365,49 +546,118 @@ bool Riscv::Op_branch(uint32_t Inst) {
   bool jump = false;
 
   switch (m_PFB.funct3) {
-  case 0b000: // BEQ
-    SetInstStr(Inst, "beq");
-    jump = (m_Regs.Get(m_PFB.rs1) == m_Regs.Get(m_PFB.rs2));
-    break;
+  case 0b000: { // BEQ
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "beq");
 
-  case 0b001: // BNE
-    SetInstStr(Inst, "bne");
-    jump = (m_Regs.Get(m_PFB.rs1) != m_Regs.Get(m_PFB.rs2));
-    break;
+    jump = (m_RegI.Get(m_PFB.rs1) == m_RegI.Get(m_PFB.rs2));
 
-  case 0b100: // BLT
-    SetInstStr(Inst, "blt");
-    jump = ((int32_t)m_Regs.Get(m_PFB.rs1) < (int32_t)m_Regs.Get(m_PFB.rs2));
-    break;
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
 
-  case 0b101: // BGE
-    SetInstStr(Inst, "bge");
-    jump = ((int32_t)m_Regs.Get(m_PFB.rs1) >= (int32_t)m_Regs.Get(m_PFB.rs2));
-    break;
+    Record.Result = OpResult::Executed;
+    return true;
+  }
 
-  case 0b110: // BLTU
-    SetInstStr(Inst, "bgeu");
-    jump = (m_Regs.Get(m_PFB.rs1) < m_Regs.Get(m_PFB.rs2));
-    break;
+  case 0b001: { // BNE
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "bne");
 
-  case 0b111: // BGEU
-    SetInstStr(Inst, "bgeu");
-    jump = (m_Regs.Get(m_PFB.rs1) >= m_Regs.Get(m_PFB.rs2));
-    break;
+    jump = (m_RegI.Get(m_PFB.rs1) != m_RegI.Get(m_PFB.rs2));
+
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
+
+    Record.Result = OpResult::Executed;
+    return true;
+  }
+
+  case 0b100: { // BLT
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "blt");
+
+    jump = ((int32_t)m_RegI.Get(m_PFB.rs1) < (int32_t)m_RegI.Get(m_PFB.rs2));
+
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
+
+    Record.Result = OpResult::Executed;
+    return true;
+  }
+
+  case 0b101: { // BGE
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "bge");
+
+    jump = ((int32_t)m_RegI.Get(m_PFB.rs1) >= (int32_t)m_RegI.Get(m_PFB.rs2));
+
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
+
+    Record.Result = OpResult::Executed;
+    return true;
+  }
+
+  case 0b110: { // BLTU
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "bgeu");
+
+    jump = (m_RegI.Get(m_PFB.rs1) < m_RegI.Get(m_PFB.rs2));
+
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
+
+    Record.Result = OpResult::Executed;
+    return true;
+  }
+
+  case 0b111: { // BGEU
+    RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "bgeu");
+
+    jump = (m_RegI.Get(m_PFB.rs1) >= m_RegI.Get(m_PFB.rs2));
+
+    if (jump) {
+      m_JumpIncLen = m_PFB.imm;
+      if (m_EnabledTraceLog) {
+        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+      }
+    }
+
+    Record.Result = OpResult::Executed;
+    return true;
+  }
 
   default:
     assert(!"illegal instruction !!!");
+    return false;
   }
 
-  // perform branch
-  if (jump)
-    m_JumpIncLen = m_PFB.imm;
-
-  return true;
+  return false;
 }
 
 bool Riscv::Op_jal(uint32_t Inst) {
-  SetInstStr(Inst, "jal");
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "jal");
 
   // imm[20|10:1|11|19:12] rd 1101111 JAL
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
@@ -415,13 +665,13 @@ bool Riscv::Op_jal(uint32_t Inst) {
 
   // The J-immediate encodes a signed offset in multiples of 2 bytes.
   if (!m_DeInst32.Is2BytesAligned(m_PFB.imm))
-    return false;
+    ExceptInstructionAddressMisaligned(m_PFB.imm);
 
   // Instruction-address-misaligned exception,
   // if the target address is not aligned to a four-byte boundary.
   const uint32_t pc = GetPc();
   const uint32_t link_pc = pc + m_PFB.imm;
-  if (!m_DeInst32.Is4BytesAligned(link_pc))
+  if (!m_DeInst32.Is2BytesAligned(link_pc))
     ExceptInstructionAddressMisaligned(link_pc);
 
   // return address
@@ -429,17 +679,22 @@ bool Riscv::Op_jal(uint32_t Inst) {
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (RvReg::x0 != m_PFB.rd) {
-    m_Regs.Set(m_PFB.rd) = ra;
+    m_RegI.Set(m_PFB.rd, ra);
   }
 
   // jump (increase jump)
   m_JumpIncLen = m_PFB.imm; // pc += sext(offset)
+  if (m_EnabledTraceLog) {
+    const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+    Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
+  }
 
+  Record.Result = OpResult::Executed;
   return true;
 }
 
 bool Riscv::Op_jalr(uint32_t Inst) {
-  SetInstStr(Inst, "jalr");
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "jalr");
 
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   if (0b000 != m_PFB.funct3)
@@ -457,32 +712,66 @@ bool Riscv::Op_jalr(uint32_t Inst) {
   const uint32_t ra = GetPc() + (uint32_t)m_InstLen; // x[rd] = pc+4;
 
   // jump (new location jump)
-  const uint32_t upper_target_addr = m_Regs.Get(m_PFB.rs1);
+  const uint32_t upper_target_addr = m_RegI.Get(m_PFB.rs1);
   m_JumpNewLen = (upper_target_addr + m_PFB.imm) & ~1u;
+
+  if (m_Elf) {
+    const SymbolData SymData = m_Elf->FindSymbol(m_JumpNewLen);
+    GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
+  }
+
+  if (m_EnabledTraceLog) {
+    const uint32_t NewPc = m_JumpNewLen;
+    Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
+  }
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (AbiName::zero != m_PFB.rd) {
-    m_Regs.Set(m_PFB.rd) = ra;
+    m_RegI.Set(m_PFB.rd, ra);
   }
 
   if (!m_DeInst32.Is2BytesAligned(m_JumpNewLen))
     ExceptInstructionAddressMisaligned(m_JumpNewLen);
 
+  Record.Result = OpResult::Executed;
   return true;
 }
 
-bool Riscv::Op_ecall() {
-  m_SysCall.Handle(m_Regs);
+bool Riscv::Op_ecall(uint32_t Inst) {
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ecall");
+
+  const uint32_t ScNumb = m_RegI.Get(AbiName::a7);
+  int Ret = m_SysCall.Handle(m_RegI, ScNumb);
+
+  if (m_EnabledTraceLog) {
+    const char *ScName = m_SysCall.GetName(ScNumb);
+    Record.AddLog("syscall:%s(%d)", ScName, ScNumb);
+    Record.AddLog("ret:%d", Ret);
+  }
+
+  if (m_EnabledTraceLog) {
+    if (/*rvemu::RvSysCall::exit=*/93 == ScNumb) {
+      char szBuf[128];
+      memset(szBuf, 0, sizeof(szBuf));
+      sprintf(szBuf, "ExitCode=%d (0x%X)", Ret, Ret);
+      this->m_ExitCodeMsg = szBuf;
+    }
+  }
+
+  Record.Result = OpResult::Executed;
   return true;
 }
 
-bool Riscv::Op_ebreak() {
+bool Riscv::Op_ebreak(uint32_t Inst) {
+  RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ebreak");
+
   this->Halt();
+
+  Record.Result = OpResult::Executed;
   return true;
 }
 
 bool Riscv::Op_system(uint32_t Inst) {
-  SetInstStr(Inst, "system");
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
@@ -492,13 +781,15 @@ bool Riscv::Op_system(uint32_t Inst) {
   switch (m_PFB.funct3) {
   case 0b000: { // ECALL & EBREAK
     switch (m_PFB.imm) {
-    case 0b0: // ECALL
-      SetInstStr(Inst, "ecall");
-      return Op_ecall();
-    case 0b1: // EBREAK
-      SetInstStr(Inst, "ebreak");
-      return Op_ebreak();
+    case 0b0: { // ECALL
+      return Op_ecall(Inst);
     }
+
+    case 0b1: { // EBREAK
+      return Op_ebreak(Inst);
+    }
+    }
+
     return false;
   }
 

@@ -61,10 +61,11 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/include/mem.h
     ${CMAKE_SOURCE_DIR}/source/include/regfile.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv.h
-    ${CMAKE_SOURCE_DIR}/source/include/riscv_spec.h
+    ${CMAKE_SOURCE_DIR}/source/include/riscv_define.h
     ${CMAKE_SOURCE_DIR}/source/include/decode.h
     ${CMAKE_SOURCE_DIR}/source/include/state.h
     ${CMAKE_SOURCE_DIR}/source/include/syscall.h
+    ${CMAKE_SOURCE_DIR}/source/include/record.h
 
     # Sources
     ${CMAKE_SOURCE_DIR}/source/main.cpp
@@ -75,7 +76,9 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32c.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32i.cpp
+    ${CMAKE_SOURCE_DIR}/source/riscv_rv32f.cpp
     ${CMAKE_SOURCE_DIR}/source/state.cpp
+    ${CMAKE_SOURCE_DIR}/source/regfile.cpp
     ${CMAKE_SOURCE_DIR}/source/syscall.cpp
     )
 
