@@ -14,6 +14,10 @@ bool CmdArgs::Parse(const int Argc, char **Args,
   for (int i = 0; i < Argc; i++)
     Argv.push_back(*(Args + i));
 
+  /* Check no argument */
+  if (1 == Argv.size())
+    return false;
+
   /* parse each argument in turn */
   for (int i = 1; i < Argv.size(); ++i) {
     const std::string &arg = Argv[i];
@@ -56,10 +60,13 @@ bool CmdArgs::Parse(const int Argc, char **Args,
 
 void CmdArgs::PrintUsage(const std::string &FileName) {
   fprintf(stderr,
-          "RV32I[MA] Emulator which loads an ELF file to execute.\n"
-          "Usage: %s [options] [filename]\n"
+          "RV32I Emulator which loads an ELF file to execute.\n"
+          "Usage: %s [filename] [option]\n"
           "Options:\n"
-          "  --trace : print executable trace\n\n",
+          "  --trace    : print executable trace\n"
+          "  --tracelog : print executable trace and details\n"
+          "  --test     : run unit testing\n"
+          "\n",
           FileName.c_str());
 }
 
