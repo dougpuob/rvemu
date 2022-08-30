@@ -261,7 +261,7 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
   std::string PrintText;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
-    snprintf(szBuf, sizeof(szBuf), "%5lld  0x%.8x  ", m_InstCount,
+    snprintf(szBuf, sizeof(szBuf), "%5ld  0x%.8x  ", m_InstCount,
              RecordInst.Pc);
     PrintText = szBuf;
     memset(szBuf, 0, sizeof(szBuf));
@@ -288,7 +288,7 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
     }
 
     PrintText.append(szBuf);
-    printf(PrintText.c_str());
+    printf("%s", PrintText.c_str());
   }
 
   if (m_EnabledTraceLog) {
@@ -310,7 +310,7 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
         }
       }
     } else {
-      printf("Failure !!! OpResult=%d ", RecordInst.Result);
+      printf("Failure !!! OpResult=%d ", (int)RecordInst.Result);
     }
   }
 

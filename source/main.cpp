@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include <Windows.h>
-
 #include "include/cmd.h"
 #include "include/config.h"
 #include "include/elf.h"

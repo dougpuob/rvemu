@@ -4,6 +4,7 @@
 #include "riscv_define.h"
 
 #include <cstdarg>
+#include <string.h>
 #include <string>
 #include <vector>
 

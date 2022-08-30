@@ -12,7 +12,7 @@ namespace rvemu {
 class MachineState {
 private:
   rvemu::Memory m_Mem;
-  std::unordered_map<int, void * /*FILE**/> m_FDs;
+  std::unordered_map<uintptr_t, FILE *> m_FDs;
 
   bool m_Halt = false;
   uint32_t m_BreakAddress = 0;
@@ -27,7 +27,7 @@ public:
   void SetBreakAddress(uint32_t Addr) { m_BreakAddress = Addr; }
   uint32_t GetBreakAddress() { return m_BreakAddress; }
 
-  std::unordered_map<int, void * /*FILE**/> &GetFd() { return m_FDs; }
+  std::unordered_map<uintptr_t, FILE *> &GetFd() { return m_FDs; }
 };
 
 } // namespace rvemu

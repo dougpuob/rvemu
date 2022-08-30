@@ -4,6 +4,7 @@
 #include "mem.h"
 #include <cassert>
 #include <cstdint>
+#include <string.h>
 
 using Config = ConfigSingleton;
 

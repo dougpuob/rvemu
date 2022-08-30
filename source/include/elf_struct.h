@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 namespace rvemu {
 
 // llvm/include/llvm/BinaryFormat/ELF.h

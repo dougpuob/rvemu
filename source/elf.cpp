@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string.h>
 
 struct chunk_t;
 
@@ -69,7 +70,7 @@ Elf::Elf(const std::string &FilePath) {
     for (; Sym < End; ++Sym) { /* try to find the symbol */
       SymbolData SymData;
 
-      if (NULL == Sym->st_name)
+      if (!Sym->st_name)
         continue;
 
       switch (ELF_ST_TYPE(Sym->st_info)) { /* add to the symbol table */
@@ -153,7 +154,7 @@ const rvemu::Elf32_Sym *Elf::GetSymbol(const char *Name) {
                                                Shdr->sh_offset + Shdr->sh_size);
     const char *StrTab = GetStrTab();
     for (; Sym < End; ++Sym) { /* try to find the symbol */
-      if (NULL == Sym->st_name)
+      if (!Sym->st_name)
         continue;
       const char *SymName = StrTab + Sym->st_name;
       if (0 == strcmp(SymName, Name)) {
@@ -167,7 +168,7 @@ const rvemu::Elf32_Sym *Elf::GetSymbol(const char *Name) {
 void Elf::PrintSymbols() {
   std::cout << "Symbols ..." << std::endl;
   for (auto &Sym : m_Symbols)
-    fprintf(stdout, "  [0x%llu]=%s\n", Sym.first, Sym.second.Name.c_str());
+    fprintf(stdout, "  [0x%lu]=%s\n", Sym.first, Sym.second.Name.c_str());
   std::cout << std::endl << std::endl;
 }
 

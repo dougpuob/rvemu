@@ -2,7 +2,6 @@
 #include "syscall.h"
 #include <cassert>
 #include <fcntl.h>
-#include <io.h>
 #include <stdio.h>
 #include <vector>
 
