@@ -716,7 +716,7 @@ bool Riscv::Op_jalr(uint32_t Inst) {
   m_JumpNewLen = (upper_target_addr + m_PFB.imm) & ~1u;
 
   if (m_Elf) {
-    const SymbolData SymData = m_Elf->FindSymbol(m_JumpNewLen);
+    const SymbolData &SymData = m_Elf->FindSymbol(m_JumpNewLen);
     GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
   }
 

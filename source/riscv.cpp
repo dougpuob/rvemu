@@ -5,8 +5,6 @@
 #include <cassert>
 #include <iostream>
 
-using Config = ConfigSingleton;
-
 namespace rvemu {
 
 Riscv::Riscv() {
@@ -152,12 +150,40 @@ void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
   }
 }
 
+bool Riscv::LoadImage(MyElf *Elf) {
+  m_Elf = Elf;
+
+  const uint8_t *ElfBaseAddr = Elf->GetBase();
+
+  for (auto ProgHdr : Elf->GetProgramHeaders()) {
+    /* memcpy required range */
+    const int ToCopy = std::min(ProgHdr.p_memsz, ProgHdr.p_filesz);
+    if (ToCopy) {
+      uint8_t *BinImgSrc = (uint8_t *)ElfBaseAddr + ProgHdr.p_offset;
+      GetMem().Write(ProgHdr.p_vaddr, BinImgSrc, ToCopy);
+    }
+
+    /* zero fill required range */
+    const int ToZero = std::max(ProgHdr.p_memsz, ProgHdr.p_filesz) - ToCopy;
+    if (ToZero) {
+      GetMem().Fill(ProgHdr.p_vaddr + ToCopy, ToZero, 0);
+    }
+  }
+
+  return true;
+}
+
 RecordInst &Riscv::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
                                   const char *Name) {
   RecordInst New(Pc, Inst, Len, Name);
 
   if (m_Elf && m_EnabledTraceLog) {
-    New.ElfSym = m_Elf->FindSymbol(Pc);
+    const auto &Data = m_Elf->FindSymbol(Pc);
+    New.ElfSym.Index = Data.Index;
+    New.ElfSym.Name = Data.Name;
+    New.ElfSym.Offset = Data.Offset;
+    New.ElfSym.Size = Data.Size;
+    New.ElfSym.Start = Data.Start;
   }
 
   this->m_Records.push_back(New);
@@ -339,7 +365,7 @@ void Riscv::Halt() { m_State.Halt(); }
 
 bool Riscv::HasHalted() { return m_State.IsHalt(); }
 
-void Riscv::Run(rvemu::Elf *Elf) {
+void Riscv::Run(rvemu::MyElf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {

@@ -53,11 +53,9 @@ endif()
 #==============================================================================
 set(SOURCE_FILES
     # Headers
-    ${CMAKE_SOURCE_DIR}/source/include/common.h
     ${CMAKE_SOURCE_DIR}/source/include/config.h
     ${CMAKE_SOURCE_DIR}/source/include/cmd.h
     ${CMAKE_SOURCE_DIR}/source/include/elf.h
-    ${CMAKE_SOURCE_DIR}/source/include/elf_struct.h
     ${CMAKE_SOURCE_DIR}/source/include/mem.h
     ${CMAKE_SOURCE_DIR}/source/include/regfile.h
     ${CMAKE_SOURCE_DIR}/source/include/riscv.h
@@ -72,6 +70,7 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/config.cpp
     ${CMAKE_SOURCE_DIR}/source/cmd.cpp
     ${CMAKE_SOURCE_DIR}/source/elf.cpp
+    ${CMAKE_SOURCE_DIR}/source/elf32.cpp
     ${CMAKE_SOURCE_DIR}/source/mem.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32c.cpp

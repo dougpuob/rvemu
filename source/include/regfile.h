@@ -7,8 +7,6 @@
 #include <cassert>
 #include <vector>
 
-using Config = ConfigSingleton;
-
 namespace rvemu {
 
 class Field {

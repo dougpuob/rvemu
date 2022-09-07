@@ -6,14 +6,26 @@
 #include <cstdint>
 #include <string.h>
 
-using Config = ConfigSingleton;
-
 namespace rvemu {
 
 static Chunk *allocateChunk() {
   Chunk *chunks = new Chunk;
   memset(chunks, 0, sizeof(Chunk));
   return chunks;
+}
+
+Memory::Memory() {
+  m_EnabledTraceLog = Config::getInst().opt_tracelog;
+  m_Mem.resize((0x10000));
+  memset(m_Mem.data(), 0, m_Mem.size() * sizeof(Chunk *));
+}
+
+Memory::~Memory() {
+  for (auto &chunk : m_Mem)
+    if (chunk != nullptr) {
+      free(chunk);
+      chunk = nullptr;
+    }
 }
 
 void *Memory::GetHostAddr(uint32_t Addr) {
@@ -89,7 +101,7 @@ uint8_t Memory::Read8(uint32_t Addr) {
 }
 
 void Memory::Read(uint8_t *Dst, uint32_t Addr, uint32_t Size) {
-  for (int i = 0; i < Size; i++) {
+  for (uint32_t i = 0; i < Size; i++) {
     const uint32_t Index = Addr >> 16;
     const uint32_t Offset = (Addr & MASK_LO);
     if (nullptr == m_Mem[Index])
@@ -117,7 +129,7 @@ void Memory::Write32(uint32_t addr, uint32_t data) {
 }
 
 void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
-  for (int i = 0; i < Size; i++) {
+  for (uint32_t i = 0; i < Size; i++) {
     const uint32_t Index = Addr >> 16;
     const uint32_t Offset = (Addr & MASK_LO);
     if (nullptr == m_Mem[Index])
@@ -127,7 +139,7 @@ void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
 }
 
 void Memory::Fill(uint32_t Addr, uint32_t Size, uint8_t Val) {
-  for (int i = 0; i < Size; i++) {
+  for (uint32_t i = 0; i < Size; i++) {
     const uint32_t Index = Addr >> 16;
     const uint32_t Offset = (Addr & MASK_LO);
     if (nullptr == m_Mem[Index])

@@ -7,9 +7,9 @@
 
 namespace rvemu {
 
-typedef struct {
+struct Chunk {
   uint8_t data[0x10000];
-} Chunk;
+};
 
 class Memory {
 private:
@@ -21,19 +21,8 @@ private:
   const uint32_t MASK_HI = ~(0xffff);
 
 public:
-  Memory() {
-    m_EnabledTraceLog = Config::getInst().opt_tracelog;
-    m_Mem.resize((0x10000));
-    memset(m_Mem.data(), 0, m_Mem.size() * sizeof(Chunk *));
-  }
-
-  ~Memory() {
-    for (auto &chunk : m_Mem)
-      if (chunk != nullptr) {
-        free(chunk);
-        chunk = nullptr;
-      }
-  }
+  Memory();
+  ~Memory();
 
   void Apply(RecordInst **ppRecord) { m_ppRecord = ppRecord; }
 

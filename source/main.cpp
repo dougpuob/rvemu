@@ -6,12 +6,9 @@
 #include "include/cmd.h"
 #include "include/config.h"
 #include "include/elf.h"
-#include "include/elf_struct.h"
 #include "include/mem.h"
 #include "include/riscv.h"
 #include "include/state.h"
-
-using Config = ConfigSingleton;
 
 int main(int Argc, char **Args) {
   std::vector<std::string> Argv;
@@ -26,37 +23,37 @@ int main(int Argc, char **Args) {
     return Ret;
   }
 
-  /* Open the ELF file from the file system */
-  rvemu::Elf Elf(Config::getInst().opt_prog_name);
-  if (!Elf.IsValid()) {
-    return 2;
-  }
-
   /* Create the RISC-V runtime */
   rvemu::Riscv Rv;
 
+  /* Open the ELF file from the file system */
+  rvemu::MyElf *Elf = new rvemu::MyElf32(Config::getInst().opt_prog_name);
+  if (!Elf->IsValid()) {
+    return 2;
+  }
+
   /* Load the ELF file into the memory abstraction */
-  if (!Elf.Load(Rv.GetMem())) {
+  if (!Rv.LoadImage(Elf)) {
     return 3;
   }
 
   /* Find the start of the heap */
-  if (auto pSymEnd = Elf.GetSymbol("_end")) {
-    Rv.GetState().SetBreakAddress(pSymEnd->st_value);
+  if (auto HeapStartAddr = Elf->GetHeapStart()) {
+    Rv.GetState().SetBreakAddress(HeapStartAddr);
   }
 
   /* Print symbols */
   if (Config::getInst().opt_trace || Config::getInst().opt_tracelog)
-    Elf.PrintSymbols();
+    Elf->PrintSymbols();
 
   /* Initialize the program counter */
-  const uint32_t EntryPoint = Elf.GetEntry();
+  const uint32_t EntryPoint = Elf->GetEntry();
   if (!Rv.SetPc(EntryPoint)) {
     return 4;
   }
 
   /* Run based on the specified mode */
-  Rv.Run(&Elf);
+  Rv.Run(Elf);
 
   /* Finalize the RISC-V runtime */
   // Release everything by RAII

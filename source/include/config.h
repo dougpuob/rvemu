@@ -15,3 +15,5 @@ public:
   bool opt_unittest = false;
   std::string opt_prog_name = "";
 };
+
+using Config = ConfigSingleton;

@@ -31,7 +31,7 @@ public:
   void InitStdFds();
 
   bool Register(void *pMachineState /*rvemu::MachineState*/) {
-    this->m_pMachineState = pMachineState;
+    m_pMachineState = pMachineState;
     InitStdFds();
     return true;
   }

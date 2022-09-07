@@ -173,7 +173,7 @@ bool Riscv::Op_c_jal(uint16_t Inst) {
 
   if (m_Elf && m_EnabledTraceLog) {
     const uint32_t NewPc = (m_Pc + m_JumpIncLen);
-    const SymbolData SymData = m_Elf->FindSymbol(NewPc);
+    const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
     GetPcForLog(SymData, NewPc, m_MessageBuffer);
     Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
   }
@@ -401,7 +401,7 @@ bool Riscv::Op_c_j(uint16_t Inst) {
 
     if (m_Elf && m_EnabledTraceLog) {
       const uint32_t NewPc = (m_Pc + m_JumpIncLen);
-      const SymbolData SymData = m_Elf->FindSymbol(NewPc);
+      const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
     }
@@ -425,7 +425,7 @@ bool Riscv::Op_c_beqz(uint16_t Inst) {
 
     if (m_Elf && m_EnabledTraceLog) {
       const uint32_t NewPc = (m_Pc + m_JumpIncLen);
-      const SymbolData SymData = m_Elf->FindSymbol(NewPc);
+      const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
     }
@@ -447,7 +447,7 @@ bool Riscv::Op_c_bnez(uint16_t Inst) {
 
     if (m_Elf && m_EnabledTraceLog) {
       const uint32_t NewPc = (m_Pc + m_JumpIncLen);
-      const SymbolData SymData = m_Elf->FindSymbol(NewPc);
+      const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
     }
@@ -553,7 +553,7 @@ bool Riscv::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     m_JumpNewLen = m_RegI.Get(m_PFB.rs1);
 
     if (m_Elf && m_EnabledTraceLog) {
-      const SymbolData SymData = m_Elf->FindSymbol(m_JumpNewLen);
+      const SymbolData &SymData = m_Elf->FindSymbol(m_JumpNewLen);
       GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
       const uint32_t NewPc = m_JumpNewLen;
       Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
@@ -589,7 +589,7 @@ bool Riscv::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     m_JumpNewLen = m_RegI.Get(m_PFB.rs1);
 
     if (m_Elf && m_EnabledTraceLog) {
-      const SymbolData SymData = m_Elf->FindSymbol(m_JumpNewLen);
+      const SymbolData &SymData = m_Elf->FindSymbol(m_JumpNewLen);
       GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
       const uint32_t NewPc = m_JumpNewLen;
       Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());

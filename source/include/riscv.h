@@ -103,7 +103,7 @@ private:
   std::vector<OpcodeEntry16> m_OpcodeMap_Rv32C; // Table 16.4 RVC opcode map
 
   /* Trace information */
-  Elf *m_Elf = nullptr;
+  MyElf *m_Elf = nullptr;
   RecordInst *m_pRecInst = nullptr;
   int64_t m_InstCount = 0;
   bool m_EnabledTrace = false;
@@ -135,7 +135,7 @@ public:
   uint32_t GetPc();
   void Halt();
   bool HasHalted();
-  void Run(rvemu::Elf *Elf);
+  void Run(rvemu::MyElf *Elf);
   const RvPreFetchBuf &GetFields() { return m_PFB; };
   RegFile &GetRegFile() { return m_RegI; };
 
@@ -148,6 +148,7 @@ public:
   /* I/O & System Calls */
   Memory &GetMem() { return m_State.GetMem(); }
   MachineState &GetState() { return m_State; }
+  bool LoadImage(MyElf *Elf);
 
   /* RV32I instructions */
   bool Op_unimp(uint32_t Inst);

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common.h"
+//#include "common.h"
+#include "elf.h"
 #include "riscv_define.h"
 
 #include <cstdarg>
