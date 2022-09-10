@@ -10,6 +10,39 @@
 
 namespace rvemu {
 
+// Object file magic string.
+static const char ElfMagic[] = {0x7f, 'E', 'L', 'F', '\0'};
+
+// e_ident size and indices.
+enum {
+  EI_MAG0 = 0,       // File identification index.
+  EI_MAG1 = 1,       // File identification index.
+  EI_MAG2 = 2,       // File identification index.
+  EI_MAG3 = 3,       // File identification index.
+  EI_CLASS = 4,      // File class.
+  EI_DATA = 5,       // Data encoding.
+  EI_VERSION = 6,    // File version.
+  EI_OSABI = 7,      // OS/ABI identification.
+  EI_ABIVERSION = 8, // ABI version.
+  EI_PAD = 9,        // Start of padding bytes.
+  EI_NIDENT = 16     // Number of bytes in e_ident.
+};
+
+// File types.
+// See current registered ELF types at:
+//    http://www.sco.com/developers/gabi/latest/ch4.eheader.html
+enum {
+  ET_NONE = 0,        // No file type
+  ET_REL = 1,         // Relocatable file
+  ET_EXEC = 2,        // Executable file
+  ET_DYN = 3,         // Shared object file
+  ET_CORE = 4,        // Core file
+  ET_LOOS = 0xfe00,   // Beginning of operating system-specific codes
+  ET_HIOS = 0xfeff,   // Operating system-specific
+  ET_LOPROC = 0xff00, // Beginning of processor-specific codes
+  ET_HIPROC = 0xffff  // Processor-specific
+};
+
 enum {
   STT_NOTYPE = 0,
   STT_OBJECT = 1,
@@ -34,7 +67,7 @@ enum {
 };
 
 // Object file classes.
-enum {
+enum class ElfClass {
   ELFCLASSNONE = 0,
   ELFCLASS32 = 1, // 32-bit object file
   ELFCLASS64 = 2  // 64-bit object file
@@ -257,27 +290,27 @@ struct SymbolData {
 };
 
 struct ElfProgramHeader {
-  uint32_t p_type;   // Type of segment
-  uint32_t p_offset; // File offset where segment is located, in bytes
-  uint32_t p_vaddr;  // Virtual address of beginning of segment
-  uint32_t p_paddr;  // Physical address of beginning of segment (OS-specific)
-  uint32_t p_filesz; // Num. of bytes in file image of segment (may be zero)
-  uint32_t p_memsz;  // Num. of bytes in mem image of segment (may be zero)
-  uint32_t p_flags;  // Segment flags
-  uint32_t p_align;  // Segment alignment constraint
+  uint64_t p_type;   // Type of segment
+  uint64_t p_offset; // File offset where segment is located, in bytes
+  uint64_t p_vaddr;  // Virtual address of beginning of segment
+  uint64_t p_paddr;  // Physical address of beginning of segment (OS-specific)
+  uint64_t p_filesz; // Num. of bytes in file image of segment (may be zero)
+  uint64_t p_memsz;  // Num. of bytes in mem image of segment (may be zero)
+  uint64_t p_flags;  // Segment flags
+  uint64_t p_align;  // Segment alignment constraint
 };
 
 struct ElfSectionHeader {
-  uint32_t sh_name = 0;      // Section name (index into string table)
-  uint32_t sh_type = 0;      // Section type (SHT_*)
-  uint32_t sh_flags = 0;     // Section flags (SHF_*)
-  uint32_t sh_addr = 0;      // Address where section is to be loaded
-  uint32_t sh_offset = 0;    // File offset of section data, in bytes
-  uint32_t sh_size = 0;      // Size of section, in bytes
-  uint32_t sh_link = 0;      // Section type-specific header table index link
-  uint32_t sh_info = 0;      // Section type-specific extra information
-  uint32_t sh_addralign = 0; // Section address alignment
-  uint32_t sh_entsize = 0;   // Size of records contained within the section
+  uint64_t sh_name = 0;      // Section name (index into string table)
+  uint64_t sh_type = 0;      // Section type (SHT_*)
+  uint64_t sh_flags = 0;     // Section flags (SHF_*)
+  uint64_t sh_addr = 0;      // Address where section is to be loaded
+  uint64_t sh_offset = 0;    // File offset of section data, in bytes
+  uint64_t sh_size = 0;      // Size of section, in bytes
+  uint64_t sh_link = 0;      // Section type-specific header table index link
+  uint64_t sh_info = 0;      // Section type-specific extra information
+  uint64_t sh_addralign = 0; // Section address alignment
+  uint64_t sh_entsize = 0;   // Size of records contained within the section
 
   std::string Name; // Section name (index into string table)
   uint8_t *_AddrToBase = nullptr;
@@ -307,7 +340,7 @@ struct ElfSymbol {
   ElfSymbol(const std::string Name) : st_name(Name) {}
 };
 
-class MyElf {
+class Elf {
   using SymbolDataIt = std::vector<SymbolData>::iterator;
 
 protected:
@@ -337,25 +370,26 @@ protected:
   virtual bool CollectStringTableSymbolName() { return false; }
   virtual bool CollectSections() { return false; }
   virtual bool CollectSymbols() { return false; }
-  virtual bool Load() = 0;
+  virtual bool Load() { return false; }
 
 public:
-  MyElf(const std::string &FilePath);
+  Elf(const std::string &FilePath);
 
+  virtual ElfClass GetClass() final;
   virtual bool IsValid() final { return m_IsValid; }
 
   virtual const uint8_t *GetBase() final;
   virtual const std::vector<ElfProgramHeader> &GetProgramHeaders() final;
 
-  virtual uint32_t GetEntry() = 0;
-  virtual uint32_t GetHeapStart() = 0;
+  virtual uint32_t GetEntry() { return 0; }
+  virtual uint32_t GetHeapStart() { return 0; }
 
   const SymbolData &FindSymbol(uint32_t Pc);
 
   void PrintSymbols();
 };
 
-class MyElf32 : public MyElf {
+class Elf32 : public Elf {
 protected:
   const char *GetSectionName(uint32_t Index);
   bool CollectStringTableSectionName();
@@ -365,20 +399,26 @@ protected:
   bool Load();
 
 public:
-  MyElf32(const std::string &FilePath);
+  Elf32(const std::string &FilePath);
 
   uint32_t GetEntry();
   uint32_t GetHeapStart();
 };
 
-// class MyElf64 : public MyElf {
-// private:
-//   struct Elf64_Ehdr *m_Hdr;
-//
-//   const char *GetShString(int Index);
-//   const char *GetStrTab();
-//   const struct Elf64_Sym *GetSymbol(const char *Name);
-//   const struct Elf64_Shdr *GetSectionHeader(const char *Name);
-// };
+class Elf64 : public Elf {
+protected:
+  const char *GetSectionName(uint32_t Index);
+  bool CollectStringTableSectionName();
+  bool CollectStringTableSymbolName();
+  bool CollectSections();
+  bool CollectSymbols();
+  bool Load();
+
+public:
+  Elf64(const std::string &FilePath);
+
+  uint32_t GetEntry();
+  uint32_t GetHeapStart();
+};
 
 } // namespace rvemu

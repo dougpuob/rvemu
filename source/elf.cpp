@@ -6,13 +6,13 @@
 
 namespace rvemu {
 
-const std::vector<ElfProgramHeader> &MyElf::GetProgramHeaders() {
+const std::vector<ElfProgramHeader> &Elf::GetProgramHeaders() {
   return m_ElfProgHdrList;
 }
 
-const uint8_t *MyElf::GetBase() { return m_pElfBase; }
+const uint8_t *Elf::GetBase() { return m_pElfBase; }
 
-MyElf::MyElf(const std::string &FilePath) {
+Elf::Elf(const std::string &FilePath) {
   std::error_code ErrCode;
 
   auto AbsPath = std::filesystem::absolute(FilePath);
@@ -35,14 +35,20 @@ MyElf::MyElf(const std::string &FilePath) {
   m_IsValid = true;
 }
 
-void MyElf::PrintSymbols() {
+ElfClass Elf::GetClass() {
+  if (m_pElfBase)
+    return (ElfClass)m_pElfBase[EI_CLASS];
+  return ElfClass::ELFCLASSNONE;
+}
+
+void Elf::PrintSymbols() {
   std::cout << "Symbols ..." << std::endl;
   for (auto &Sym : m_SymDataByPc)
     fprintf(stdout, "  [0x%u]=%s\n", Sym.first, Sym.second->Name.c_str());
   std::cout << std::endl << std::endl;
 }
 
-const SymbolData &MyElf::FindSymbol(uint32_t Pc) {
+const SymbolData &Elf::FindSymbol(uint32_t Pc) {
   for (int i = 0; i < m_SymbolDataList.size(); i++) {
     const SymbolData &Sym = m_SymbolDataList[i];
     const uint32_t Start = Sym.Start;

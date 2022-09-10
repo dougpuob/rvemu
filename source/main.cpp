@@ -27,7 +27,13 @@ int main(int Argc, char **Args) {
   rvemu::Riscv Rv;
 
   /* Open the ELF file from the file system */
-  rvemu::MyElf *Elf = new rvemu::MyElf32(Config::getInst().opt_prog_name);
+  rvemu::Elf *Elf = new rvemu::Elf(Config::getInst().opt_prog_name);
+  if (rvemu::ElfClass::ELFCLASS32 == Elf->GetClass())
+    Elf = new rvemu::Elf32(Config::getInst().opt_prog_name);
+  else if (rvemu::ElfClass::ELFCLASS64 == Elf->GetClass())
+    Elf = new rvemu::Elf64(Config::getInst().opt_prog_name);
+
+  // rvemu::Elf *Elf = new rvemu::Elf32(Config::getInst().opt_prog_name);
   if (!Elf->IsValid()) {
     return 2;
   }

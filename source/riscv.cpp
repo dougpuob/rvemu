@@ -150,7 +150,7 @@ void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
   }
 }
 
-bool Riscv::LoadImage(MyElf *Elf) {
+bool Riscv::LoadImage(Elf *Elf) {
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
@@ -365,7 +365,7 @@ void Riscv::Halt() { m_State.Halt(); }
 
 bool Riscv::HasHalted() { return m_State.IsHalt(); }
 
-void Riscv::Run(rvemu::MyElf *Elf) {
+void Riscv::Run(rvemu::Elf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {

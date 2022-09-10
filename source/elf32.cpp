@@ -11,24 +11,6 @@ using Elf32_Half = uint16_t;
 using Elf32_Word = uint32_t;
 using Elf32_Sword = int32_t;
 
-// Object file magic string.
-static const char ElfMagic[] = {0x7f, 'E', 'L', 'F', '\0'};
-
-// e_ident size and indices.
-enum {
-  EI_MAG0 = 0,       // File identification index.
-  EI_MAG1 = 1,       // File identification index.
-  EI_MAG2 = 2,       // File identification index.
-  EI_MAG3 = 3,       // File identification index.
-  EI_CLASS = 4,      // File class.
-  EI_DATA = 5,       // Data encoding.
-  EI_VERSION = 6,    // File version.
-  EI_OSABI = 7,      // OS/ABI identification.
-  EI_ABIVERSION = 8, // ABI version.
-  EI_PAD = 9,        // Start of padding bytes.
-  EI_NIDENT = 16     // Number of bytes in e_ident.
-};
-
 struct Elf32_Ehdr {
   unsigned char e_ident[EI_NIDENT]; // ELF Identification bytes
   Elf32_Half e_type;                // Type of file (see ET_* below)
@@ -51,21 +33,6 @@ struct Elf32_Ehdr {
 
   unsigned char getFileClass() const { return e_ident[EI_CLASS]; }
   unsigned char getDataEncoding() const { return e_ident[EI_DATA]; }
-};
-
-// File types.
-// See current registered ELF types at:
-//    http://www.sco.com/developers/gabi/latest/ch4.eheader.html
-enum {
-  ET_NONE = 0,        // No file type
-  ET_REL = 1,         // Relocatable file
-  ET_EXEC = 2,        // Executable file
-  ET_DYN = 3,         // Shared object file
-  ET_CORE = 4,        // Core file
-  ET_LOOS = 0xfe00,   // Beginning of operating system-specific codes
-  ET_HIOS = 0xfeff,   // Operating system-specific
-  ET_LOPROC = 0xff00, // Beginning of processor-specific codes
-  ET_HIPROC = 0xffff  // Processor-specific
 };
 
 // Program header for ELF32.
@@ -114,15 +81,15 @@ struct Elf32_Sym {
   }
 };
 
-MyElf32::MyElf32(const std::string &FilePath) : MyElf(FilePath) {
+Elf32::Elf32(const std::string &FilePath) : Elf(FilePath) {
   //
   bool Result = Load();
 }
 
-bool MyElf32::Load() {
+bool Elf32::Load() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
 
-  if (ELFCLASS32 != ElfHdr->e_ident[EI_CLASS])
+  if (ElfClass::ELFCLASS32 != (ElfClass)ElfHdr->e_ident[EI_CLASS])
     return false;
 
   for (int i = 0; i < ElfHdr->e_phnum; i++) {
@@ -149,7 +116,7 @@ bool MyElf32::Load() {
   return Result;
 }
 
-bool MyElf32::CollectSections() {
+bool Elf32::CollectSections() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
 
   for (int Idx = 0; Idx < ElfHdr->e_shnum; Idx++) {
@@ -157,7 +124,16 @@ bool MyElf32::CollectSections() {
     const Elf32_Shdr *SectHdr = (Elf32_Shdr *)(m_pElfSectionBase + Offset);
 
     ElfSectionHeader Hdr(m_StrTabMap_SectionName[SectHdr->sh_name]);
-    memcpy(&Hdr, SectHdr, sizeof(Elf32_Shdr));
+    Hdr.sh_name = SectHdr->sh_name;
+    Hdr.sh_type = SectHdr->sh_type;
+    Hdr.sh_flags = SectHdr->sh_flags;
+    Hdr.sh_addr = SectHdr->sh_addr;
+    Hdr.sh_offset = SectHdr->sh_offset;
+    Hdr.sh_size = SectHdr->sh_size;
+    Hdr.sh_link = SectHdr->sh_link;
+    Hdr.sh_info = SectHdr->sh_info;
+    Hdr.sh_addralign = SectHdr->sh_addralign;
+    Hdr.sh_entsize = SectHdr->sh_entsize;
 
     Hdr._AddrToBase = (uint8_t *)m_pElfBase;
     Hdr._AddrToSectBase = (uint8_t *)m_pElfSectionBase;
@@ -170,7 +146,7 @@ bool MyElf32::CollectSections() {
   return true;
 }
 
-bool MyElf32::CollectStringTableSectionName() {
+bool Elf32::CollectStringTableSectionName() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
   const uint32_t Offset = ElfHdr->e_shentsize * ElfHdr->e_shstrndx;
   const Elf32_Shdr *SectHdr = (Elf32_Shdr *)(m_pElfSectionBase + Offset);
@@ -187,7 +163,7 @@ bool MyElf32::CollectStringTableSectionName() {
   return true;
 }
 
-bool MyElf32::CollectStringTableSymbolName() {
+bool Elf32::CollectStringTableSymbolName() {
   const ElfSectionHeader &SectHdr_StrTab = m_SectionHeadersMap[".strtab"];
 
   char *Start = (char *)SectHdr_StrTab._AddrToThisSectContent;
@@ -203,7 +179,7 @@ bool MyElf32::CollectStringTableSymbolName() {
   return true;
 }
 
-bool MyElf32::CollectSymbols() {
+bool Elf32::CollectSymbols() {
   const ElfSectionHeader &SymTab = m_SectionHeadersMap[".symtab"];
   const ElfSectionHeader &StrTab = m_SectionHeadersMap[".strtab"];
 
@@ -254,7 +230,7 @@ bool MyElf32::CollectSymbols() {
   return true;
 }
 
-const char *MyElf32::GetSectionName(uint32_t Index) {
+const char *Elf32::GetSectionName(uint32_t Index) {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
   const uint32_t StrTabOfs = ElfHdr->e_shoff + //
                              ElfHdr->e_shentsize * ElfHdr->e_shstrndx;
@@ -266,12 +242,12 @@ const char *MyElf32::GetSectionName(uint32_t Index) {
   return SectName;
 }
 
-uint32_t MyElf32::GetEntry() {
+uint32_t Elf32::GetEntry() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
   return ElfHdr->e_entry;
 }
 
-uint32_t MyElf32::GetHeapStart() {
+uint32_t Elf32::GetHeapStart() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
   const auto &_End = m_SymDataByName["_end"];
   return _End->st_value;

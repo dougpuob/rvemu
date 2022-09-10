@@ -71,6 +71,7 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/cmd.cpp
     ${CMAKE_SOURCE_DIR}/source/elf.cpp
     ${CMAKE_SOURCE_DIR}/source/elf32.cpp
+    ${CMAKE_SOURCE_DIR}/source/elf64.cpp
     ${CMAKE_SOURCE_DIR}/source/mem.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32c.cpp
