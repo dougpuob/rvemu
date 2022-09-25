@@ -21,13 +21,35 @@ private:
 public:
   MachineState() {}
 
-  bool IsHalt() { return m_Halt; }
-  void Halt(bool Halt = true) { m_Halt = Halt; }
-  rvemu::Memory &GetMem() { return m_Mem; }
-  void SetBreakAddress(uint32_t Addr) { m_BreakAddress = Addr; }
-  uint32_t GetBreakAddress() { return m_BreakAddress; }
+  bool IsHalt() {
+    //
+    return m_Halt;
+  }
 
-  std::unordered_map<uintptr_t, FILE *> &GetFd() { return m_FDs; }
+  void Halt(bool Halt = true) {
+    //
+    m_Halt = Halt;
+  }
+
+  rvemu::Memory &GetMem() {
+    //
+    return m_Mem;
+  }
+
+  void SetBreakAddress(uint32_t Addr) {
+    //
+    m_BreakAddress = Addr;
+  }
+
+  uint32_t GetBreakAddress() {
+    //
+    return m_BreakAddress;
+  }
+
+  std::unordered_map<uintptr_t, FILE *> &GetFd() {
+    //
+    return m_FDs;
+  }
 };
 
 } // namespace rvemu

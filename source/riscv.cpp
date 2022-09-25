@@ -287,8 +287,7 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
   std::string PrintText;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
-    snprintf(szBuf, sizeof(szBuf), "%5ld  0x%.8x  ", m_InstCount,
-             RecordInst.Pc);
+    snprintf(szBuf, sizeof(szBuf), "%5ld  0x%.8x ", m_InstCount, RecordInst.Pc);
     PrintText = szBuf;
     memset(szBuf, 0, sizeof(szBuf));
 
