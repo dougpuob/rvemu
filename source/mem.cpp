@@ -116,25 +116,25 @@ void Memory::Read(uint8_t *Dst, uint32_t Addr, uint32_t Size) {
 void Memory::Write8(uint32_t addr, uint8_t data) {
   Write(addr, &data, 1);
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
-    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.2X", addr, data);
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.2x", addr, data);
 }
 
 void Memory::Write16(uint32_t addr, uint16_t data) {
   Write(addr, (uint8_t *)&data, 2);
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
-    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.4X", addr, data);
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.4x", addr, data);
 }
 
 void Memory::Write32(uint32_t addr, uint32_t data) {
   Write(addr, (uint8_t *)&data, 4);
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
-    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.8X", addr, data);
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.8x", addr, data);
 }
 
 void Memory::Write64(uint32_t addr, uint64_t data) {
   Write(addr, (uint8_t *)&data, 8);
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
-    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.16X", addr, data);
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.16x", addr, data);
 }
 
 void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
