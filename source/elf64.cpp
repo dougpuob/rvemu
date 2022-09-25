@@ -104,9 +104,16 @@ bool Elf64::Load() {
     if (Phdr->p_type != PT_LOAD)
       continue;
 
-    ElfProgramHeader ElfProgHdr;
-    memcpy(&ElfProgHdr, Phdr, sizeof(Elf64_Phdr));
-    m_ElfProgHdrList.push_back(ElfProgHdr);
+    ElfProgramHeader ElfPhdr;
+    ElfPhdr.p_type = Phdr->p_type;
+    ElfPhdr.p_offset = Phdr->p_offset;
+    ElfPhdr.p_vaddr = Phdr->p_vaddr;
+    ElfPhdr.p_paddr = Phdr->p_paddr;
+    ElfPhdr.p_filesz = Phdr->p_filesz;
+    ElfPhdr.p_memsz = Phdr->p_memsz;
+    ElfPhdr.p_flags = Phdr->p_flags;
+    ElfPhdr.p_align = Phdr->p_align;
+    m_ElfProgHdrList.push_back(ElfPhdr);
   }
 
   m_pElfSectionBase = (uint8_t *)m_pElfBase + ElfHdr->e_shoff;

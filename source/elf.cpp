@@ -49,13 +49,19 @@ void Elf::PrintSymbols() {
 }
 
 const SymbolData &Elf::FindSymbol(uint32_t Pc) {
-  for (int i = 0; i < m_SymbolDataList.size(); i++) {
-    const SymbolData &Sym = m_SymbolDataList[i];
+  for (const auto &Sym : m_SymbolDataList) {
     const uint32_t Start = Sym.Start;
     const uint32_t End = Sym.Start + Sym.Size;
     if ((Pc >= Start) && (Pc < End))
       return Sym;
   }
+  // for (int i = 0; i < m_SymbolDataList.size(); i++) {
+  //   const SymbolData &Sym = m_SymbolDataList[i];
+  //   const uint32_t Start = Sym.Start;
+  //   const uint32_t End = Sym.Start + Sym.Size;
+  //   if ((Pc >= Start) && (Pc < End))
+  //     return Sym;
+  // }
 
   return m_EmptySym;
 }

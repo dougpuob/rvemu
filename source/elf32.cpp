@@ -100,9 +100,16 @@ bool Elf32::Load() {
     if (Phdr->p_type != PT_LOAD)
       continue;
 
-    ElfProgramHeader ElfProgHdr;
-    memcpy(&ElfProgHdr, Phdr, sizeof(Elf32_Phdr));
-    m_ElfProgHdrList.push_back(ElfProgHdr);
+    ElfProgramHeader ElfPHdr;
+    ElfPHdr.p_type = Phdr->p_type;
+    ElfPHdr.p_offset = Phdr->p_offset;
+    ElfPHdr.p_vaddr = Phdr->p_vaddr;
+    ElfPHdr.p_paddr = Phdr->p_paddr;
+    ElfPHdr.p_filesz = Phdr->p_filesz;
+    ElfPHdr.p_memsz = Phdr->p_memsz;
+    ElfPHdr.p_flags = Phdr->p_flags;
+    ElfPHdr.p_align = Phdr->p_align;
+    m_ElfProgHdrList.push_back(ElfPHdr);
   }
 
   m_pElfSectionBase = (uint8_t *)m_pElfBase + ElfHdr->e_shoff;
@@ -204,25 +211,26 @@ bool Elf32::CollectSymbols() {
     case STT_FILE:
     case STT_COMMON:
     case STT_TLS: {
-      const uintptr_t Key = (uintptr_t)(Sym->st_value);
-      // const std::string &Name = m_ElfStrTab_SymbolName[Sym->st_name];
+      const uintptr_t Pc = (uintptr_t)(Sym->st_value);
 
       SymbolData SymData(Name);
-      SymData.st_name = Sym->st_name;
-      SymData.st_value = Sym->st_value;
-      SymData.st_size = Sym->st_size;
-      SymData.st_info = Sym->st_info;
-      SymData.st_other = Sym->st_other;
-      SymData.st_shndx = Sym->st_shndx;
-
-      SymData.Size = Sym->st_size;
-      SymData.Start = Key;
-      SymData.Index = Sym->st_shndx;
-
       m_SymbolDataList.push_back(SymData);
       const auto SymDataIt = std::prev(m_SymbolDataList.end());
-      m_SymDataByPc[Key] = SymDataIt;
-      m_SymDataByName[Name] = SymDataIt;
+
+      SymDataIt->st_name = Sym->st_name;
+      SymDataIt->st_value = Sym->st_value;
+      SymDataIt->st_size = Sym->st_size;
+      SymDataIt->st_info = Sym->st_info;
+      SymDataIt->st_other = Sym->st_other;
+      SymDataIt->st_shndx = Sym->st_shndx;
+
+      SymDataIt->Size = Sym->st_size;
+      SymDataIt->Start = Pc;
+      SymDataIt->Index = Sym->st_shndx;
+
+      m_SymDataByPc[Pc] = SymDataIt;
+      if (0 == m_SymDataByName.count(Name))
+        m_SymDataByName[Name] = SymDataIt;
     }
     }
   }
@@ -249,8 +257,10 @@ uint32_t Elf32::GetEntry() {
 
 uint32_t Elf32::GetHeapStart() {
   const Elf32_Ehdr *ElfHdr = (Elf32_Ehdr *)m_pElfBase;
-  const auto &_End = m_SymDataByName["_end"];
-  return _End->st_value;
+  const size_t Count = m_SymDataByName.count("_end");
+  if (Count > 0)
+    return m_SymDataByName["_end"]->st_value;
+  return 0;
 }
 
 } // namespace rvemu

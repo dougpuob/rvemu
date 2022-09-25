@@ -71,6 +71,9 @@ uint32_t Memory::FetchInst(uint32_t Pc) {
 uint64_t Memory::Read64(uint32_t Addr) {
   uint64_t Dst = 0;
   Read((uint8_t *)&Dst, Addr, 8);
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]->0x%.16X", Addr, Dst);
+
   return Dst;
 }
 
@@ -128,23 +131,31 @@ void Memory::Write32(uint32_t addr, uint32_t data) {
     (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.8X", addr, data);
 }
 
+void Memory::Write64(uint32_t addr, uint64_t data) {
+  Write(addr, (uint8_t *)&data, 8);
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog)
+    (*m_ppRecord)->AddLog("m[0x%.8x]<-0x%.16X", addr, data);
+}
+
 void Memory::Write(uint32_t Addr, uint8_t *Src, uint32_t Size) {
   for (uint32_t i = 0; i < Size; i++) {
-    const uint32_t Index = Addr >> 16;
-    const uint32_t Offset = (Addr & MASK_LO);
+    const uint32_t Curr = (Addr + i);
+    const uint32_t Index = Curr >> 16;
+    const uint32_t Offset = (Curr & MASK_LO);
     if (nullptr == m_Mem[Index])
-      m_Mem[Index] = (Chunk *)calloc(1, sizeof(Chunk));
-    m_Mem[Index]->data[Offset + i] = Src[i];
+      m_Mem[Index] = (Chunk *)malloc(sizeof(Chunk));
+    m_Mem[Index]->data[Offset] = Src[i];
   }
 }
 
 void Memory::Fill(uint32_t Addr, uint32_t Size, uint8_t Val) {
   for (uint32_t i = 0; i < Size; i++) {
-    const uint32_t Index = Addr >> 16;
-    const uint32_t Offset = (Addr & MASK_LO);
+    const uint32_t Curr = (Addr + i);
+    const uint32_t Index = Curr >> 16;
+    const uint32_t Offset = (Curr & MASK_LO);
     if (nullptr == m_Mem[Index])
-      m_Mem[Index] = (Chunk *)calloc(1, sizeof(Chunk));
-    m_Mem[Index]->data[Offset + i] = Val;
+      m_Mem[Index] = (Chunk *)malloc(sizeof(Chunk));
+    m_Mem[Index]->data[Offset] = Val;
   }
 }
 

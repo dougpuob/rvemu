@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <stdint.h>
 #include <string>
 #include <unordered_map>
@@ -270,23 +271,52 @@ enum {
 };
 
 struct SymbolData {
-  uint32_t st_name = 0;
-  uint32_t st_value = 0;
-  uint32_t st_size = 0;
-  uint8_t st_info = 0;
-  uint8_t st_other = 0;
-  uint16_t st_shndx = 0;
+  uint32_t st_name;
+  uint32_t st_value;
+  uint32_t st_size;
+  uint8_t st_info;
+  uint8_t st_other;
+  uint16_t st_shndx;
 
   std::string Name;
-  uint32_t Start = 0;
-  uint32_t Size = 0;
-  int Index = 0;
-  uint32_t Offset = 0;
+  uint32_t Start;
+  uint32_t Size;
+  int Index;
+  uint32_t Offset;
 
-  SymbolData() {}
-  SymbolData(const char *Name) : Name(Name) {}
-  SymbolData(const std::string &Name) : Name(Name) {}
-  SymbolData(std::string &Name) : Name(Name) {}
+  void Clear() {
+    st_name = 0;
+    st_value = 0;
+    st_size = 0;
+    st_info = 0;
+    st_other = 0;
+    st_shndx = 0;
+    Start = 0;
+    Size = 0;
+    Index = 0;
+    Offset = 0;
+  }
+
+  SymbolData(const SymbolData &t) {
+    Clear();
+
+    st_name = t.st_name;
+    st_value = t.st_value;
+    st_size = t.st_size;
+    st_info = t.st_info;
+    st_other = t.st_other;
+    st_shndx = t.st_shndx;
+    Name = t.Name;
+    Start = t.Start;
+    Size = t.Size;
+    Index = t.Index;
+    Offset = t.Offset;
+  }
+
+  SymbolData() { Clear(); }
+  SymbolData(const char *Name) : Name(Name) { Clear(); }
+  SymbolData(const std::string &Name) : Name(Name) { Clear(); }
+  SymbolData(std::string &Name) : Name(Name) { Clear(); }
 };
 
 struct ElfProgramHeader {
@@ -341,7 +371,7 @@ struct ElfSymbol {
 };
 
 class Elf {
-  using SymbolDataIt = std::vector<SymbolData>::iterator;
+  using SymbolDataIt = std::list<SymbolData>::iterator;
 
 protected:
   /* ELF data */
@@ -357,7 +387,7 @@ protected:
   /* Maps */
   std::unordered_map<std::string, ElfSectionHeader> m_SectionHeadersMap;
   // clang-format off
-  std::vector<SymbolData> m_SymbolDataList;
+  std::list<SymbolData> m_SymbolDataList;
   std::unordered_map<std::string, SymbolDataIt> m_SymDataByName;         // <Name, SymbolData>
   std::unordered_map<uint32_t, SymbolDataIt>    m_SymDataByPc;           // <PC, SymbolData>
   std::unordered_map<uint32_t, std::string>     m_StrTabMap_SectionName; // <Index, Name>

@@ -126,8 +126,7 @@ bool Riscv::Op_c_sw(uint16_t Inst) {
   }
 
   case 0b111: { // C.SD
-    assert(!"UNIMPLEMENTED!!! c.sd");
-    return false;
+    return Op64_c_sd(Inst);
   }
   }
 
