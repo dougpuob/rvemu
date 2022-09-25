@@ -52,7 +52,19 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}/build
       run: |
-        ./rvemu ../testdata/hello32_1.elf --test     | tee output_unittest.txt
+        ./rvemu --test | tee output_unittest.txt
+        
+        # hello.elf
+        ./rvemu ../testdata/hello.elf             | tee output_hello.txt
+        ./rvemu ../testdata/hello.elf --trace     | tee output_hello_trace.txt
+        ./rvemu ../testdata/hello.elf --tracelog  | tee output_hello_tracelog.txt
+        
+        # hello32.elf
+        ./rvemu ../testdata/hello32.elf             | tee output_hello32.txt
+        ./rvemu ../testdata/hello32.elf --trace     | tee output_hello32_trace.txt
+        ./rvemu ../testdata/hello32.elf --tracelog  | tee output_hello32_tracelog.txt
+        
+        # hello32_1.elf
         ./rvemu ../testdata/hello32_1.elf            | tee output_hello32_1.txt
         ./rvemu ../testdata/hello32_1.elf --trace    | tee output_hello32_1_trace.txt
         ./rvemu ../testdata/hello32_1.elf --tracelog | tee output_hello32_1_tracelog.txt        
