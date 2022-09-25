@@ -669,23 +669,23 @@ bool Riscv::Op_jal(uint32_t Inst) {
 
   // Instruction-address-misaligned exception,
   // if the target address is not aligned to a four-byte boundary.
-  const uint32_t pc = GetPc();
-  const uint32_t link_pc = pc + m_PFB.imm;
-  if (!m_DeInst32.Is2BytesAligned(link_pc))
-    ExceptInstructionAddressMisaligned(link_pc);
+  const uint32_t Pc = GetPc();
+  const uint32_t LinkPc = Pc + m_PFB.imm;
+  if (!m_DeInst32.Is2BytesAligned(LinkPc))
+    ExceptInstructionAddressMisaligned(LinkPc);
 
   // return address
-  const uint32_t ra = pc + (uint32_t)m_InstLen; // x[rd] = pc+4;
+  const uint32_t Ra = Pc + (uint32_t)m_InstLen; // x[rd] = pc+4;
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (RvReg::x0 != m_PFB.rd) {
-    m_RegI.Set(m_PFB.rd, ra);
+    m_RegI.Set(m_PFB.rd, Ra);
   }
 
   // jump (increase jump)
   m_JumpIncLen = m_PFB.imm; // pc += sext(offset)
   if (m_EnabledTraceLog) {
-    const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+    const uint32_t NewPc = LinkPc;
     Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
   }
 
