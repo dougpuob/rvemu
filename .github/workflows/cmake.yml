@@ -1,0 +1,89 @@
+name: CMake
+
+on:
+  push:
+    branches: [ main, m-* ]
+#  pull_request:
+#    branches: [ main, m-* ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+#  Windows:
+#    runs-on: windows-2019
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#      with:
+#        submodules: true
+#
+#    - name: Config
+#      run: cmake -G "Visual Studio 16 2019" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} .
+#
+#    - name: Build
+#      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+#
+#    - name: Test
+#      working-directory: ${{github.workspace}}/build/Release
+#      run: |
+#         #pwsh -C "Get-ChildItem . | ForEach-Object {if ($_.Extension.ToLower() -eq '.exe') { & $_ }}"
+#         (Get-ChildItem .).FullName
+#         python ../../script/runtest.py .
+
+  Linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Prepare environment
+      run: sudo apt install ninja-build
+
+    - name: Config
+      run: cmake -G "Ninja" -S . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: |
+        ./rvemu ../testdata/hello32_1.elf --test     | tee output_unittest.txt
+        ./rvemu ../testdata/hello32_1.elf            | tee output_hello32_1.txt
+        ./rvemu ../testdata/hello32_1.elf --trace    | tee output_hello32_1_trace.txt
+        ./rvemu ../testdata/hello32_1.elf --tracelog | tee output_hello32_1_tracelog.txt        
+        ls -la
+        
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        path: build/*.txt
+        retention-days: 3
+
+
+#  MacOS:
+#    runs-on: macos-10.15
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#      with:
+#        submodules: true
+#
+#    - name: Prepare
+#      run: brew install ninja
+#
+#    - name: Config
+#      run: cmake -G "Ninja" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} .
+#
+#    - name: Build
+#      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+#
+#    - name: Test
+#      working-directory: ${{github.workspace}}/build
+#      run: |
+#        ls -la
+#        python ../script/runtest.py .
