@@ -24,7 +24,7 @@ int main(int Argc, char **Args) {
   }
 
   /* Create the RISC-V runtime */
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
 
   /* Open the ELF file from the file system */
   rvemu::Elf *Elf = new rvemu::Elf(Config::getInst().opt_prog_name);

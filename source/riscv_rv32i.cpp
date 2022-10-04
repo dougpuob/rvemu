@@ -4,7 +4,7 @@
 
 namespace rvemu {
 
-bool Riscv::Op_load(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_load(uint32_t Inst) {
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   m_PFB.rs1 = m_DeInst32.Fetch_19_15(Inst);
@@ -147,19 +147,19 @@ bool Riscv::Op_load(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_load_fp(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_load_fp(uint32_t Inst) {
   // SetInstStr(Inst, "load_fp");
   assert(!"UNIMPLEMENTED!!! rv32i load_fp");
   return false;
 }
 
-bool Riscv::Op_misc_mem(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_misc_mem(uint32_t Inst) {
   // SetInstStr(Inst, "misc_mem");
   assert(!"UNIMPLEMENTED!!! rv32i misc_mem");
   return false;
 }
 
-bool Riscv::Op_opimm(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
@@ -270,7 +270,7 @@ bool Riscv::Op_opimm(uint32_t Inst) {
   return false;
 }
 
-bool Riscv::Op_auipc(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_auipc(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "auipc");
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
@@ -283,7 +283,7 @@ bool Riscv::Op_auipc(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_store(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_store(uint32_t Inst) {
 
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   m_PFB.rs1 = m_DeInst32.Fetch_19_15(Inst);
@@ -359,19 +359,19 @@ bool Riscv::Op_store(uint32_t Inst) {
   return false;
 }
 
-bool Riscv::Op_store_fp(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_store_fp(uint32_t Inst) {
   // SetInstStr(Inst, "store_fp");
   assert(!"UNIMPLEMENTED!!! rv32i store_fp");
   return false;
 }
 
-bool Riscv::Op_amo(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_amo(uint32_t Inst) {
   // SetInstStr(Inst, "amo");
   assert(!"UNIMPLEMENTED!!! rv32i amo");
   return false;
 }
 
-bool Riscv::Op_op(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
@@ -508,7 +508,7 @@ bool Riscv::Op_op(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_lui(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_lui(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "lui");
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
@@ -519,25 +519,25 @@ bool Riscv::Op_lui(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_madd(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_madd(uint32_t Inst) {
   // SetInstStr(Inst, "madd");
   assert(!"UNIMPLEMENTED!!! rv32i madd");
   return false;
 }
 
-bool Riscv::Op_msub(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_msub(uint32_t Inst) {
   // SetInstStr(Inst, "msub");
   assert(!"UNIMPLEMENTED!!! rv32i msub");
   return false;
 }
 
-bool Riscv::Op_nmsub(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_nmsub(uint32_t Inst) {
   // SetInstStr(Inst, "nmsub");
   assert(!"UNIMPLEMENTED!!! rv32i nmsub");
   return false;
 }
 
-bool Riscv::Op_branch(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
   m_PFB.imm = m_DeInst32.FetchImmBType(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   m_PFB.rs1 = m_DeInst32.Fetch_19_15(Inst);
@@ -656,7 +656,7 @@ bool Riscv::Op_branch(uint32_t Inst) {
   return false;
 }
 
-bool Riscv::Op_jal(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_jal(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "jal");
 
   // imm[20|10:1|11|19:12] rd 1101111 JAL
@@ -693,7 +693,7 @@ bool Riscv::Op_jal(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_jalr(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_jalr(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "jalr");
 
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
@@ -737,7 +737,7 @@ bool Riscv::Op_jalr(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_ecall(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_ecall(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ecall");
 
   const uint32_t ScNumb = m_RegI.Get(AbiName::a7);
@@ -762,7 +762,7 @@ bool Riscv::Op_ecall(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_ebreak(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_ebreak(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ebreak");
 
   this->Halt();
@@ -771,7 +771,7 @@ bool Riscv::Op_ebreak(uint32_t Inst) {
   return true;
 }
 
-bool Riscv::Op_system(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_system(uint32_t Inst) {
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);

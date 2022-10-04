@@ -124,7 +124,7 @@ include(source/cmake/clang-format.cmake)
 clangformat_setup(
     ${SOURCE_FILES}
     ${SOURCE_OSDEPS}
-    ${SOURCE_TESTS}
+    #${SOURCE_TESTS}
     )
 
 
@@ -135,7 +135,7 @@ add_executable(
     ${CMAKE_PROJECT_NAME}
     ${SOURCE_FILES}
     ${SOURCE_OSDEPS}
-    ${SOURCE_TESTS}
+    #${SOURCE_TESTS}
     )
 
 target_include_directories(

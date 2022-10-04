@@ -52,7 +52,7 @@ enum RvSysCall {
   getmainvars = 2011,
 };
 
-const char *SystemCall::GetName(uint32_t SyscallNumb) {
+template <class T> const char *SystemCall<T>::GetName(uint32_t SyscallNumb) {
   // clang-format off
   switch(SyscallNumb) {
   case getcwd:        return "getcwd";
@@ -101,7 +101,7 @@ const char *SystemCall::GetName(uint32_t SyscallNumb) {
   return nullptr;
 }
 
-int SystemCall::Exit(RegFile &RvRegs) {
+template <class T> int SystemCall<T>::Exit(RegFile<T> &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
   pState->Halt();
 
@@ -109,7 +109,7 @@ int SystemCall::Exit(RegFile &RvRegs) {
   return ExitCode;
 }
 
-int SystemCall::Brk(RegFile &RvRegs) {
+template <class T> int SystemCall<T>::Brk(RegFile<T> &RvRegs) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Inc = RvRegs.Get(AbiName::a0);
@@ -121,13 +121,16 @@ int SystemCall::Brk(RegFile &RvRegs) {
   return 0;
 }
 
-int SystemCall::GetTimeOfDay(RegFile &RvRegs) { return -1; }
+template <class T> int SystemCall<T>::GetTimeOfDay(RegFile<T> &RvRegs) {
+  return -1;
+}
 
-int SystemCall::Lseek(RegFile &RvRegs) { return -1; }
+template <class T> int SystemCall<T>::Lseek(RegFile<T> &RvRegs) { return -1; }
 
-int SystemCall::Fstat(RegFile &RvRegs) { return -1; }
+template <class T> int SystemCall<T>::Fstat(RegFile<T> &RvRegs) { return -1; }
 
-int SystemCall::Handle(RegFile &Reg, uint32_t SysCall) {
+template <class T>
+int SystemCall<T>::Handle(RegFile<T> &Reg, uint32_t SysCall) {
 
   switch (SysCall) {
   // clang-format off

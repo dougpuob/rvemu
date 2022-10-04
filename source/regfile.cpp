@@ -2,12 +2,12 @@
 
 namespace rvemu {
 
-const char *RegFile::GetName(int Idx) const {
+template <class T> const char *RegFile<T>::GetName(int Idx) const {
   AbiName A = (AbiName)Idx;
   return GetName(A);
 }
 
-const char *RegFile::GetName(rvemu::AbiName A) const {
+template <class T> const char *RegFile<T>::GetName(rvemu::AbiName A) const {
   switch (A) {
     // clang-format off
   case AbiName::zero: return "zero";
@@ -47,7 +47,7 @@ const char *RegFile::GetName(rvemu::AbiName A) const {
   return "unknown";
 }
 
-const char *RegFile::GetName(rvemu::RvReg R) const {
+template <class T> const char *RegFile<T>::GetName(rvemu::RvReg R) const {
   switch (R) {
     // clang-format off
   case RvReg::x0:  return "x0";
@@ -87,7 +87,7 @@ const char *RegFile::GetName(rvemu::RvReg R) const {
   return "unknown";
 }
 
-const uint32_t RegFile::Get(int X) const {
+template <class T> const T RegFile<T>::Get(int X) const {
   const uint32_t Val = m_Files[X];
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog) {
     const char *RegName = GetName((RvReg)X);
@@ -97,9 +97,11 @@ const uint32_t RegFile::Get(int X) const {
   return Val;
 }
 
-void RegFile::Set(uint32_t Reg, int32_t Val) { Set(Reg, (uint32_t)Val); }
+template <class T> void RegFile<T>::Set(uint32_t Reg, int32_t Val) {
+  Set(Reg, (uint32_t)Val);
+}
 
-void RegFile::Set(uint32_t Reg, uint32_t Val) {
+template <class T> void RegFile<T>::Set(uint32_t Reg, uint32_t Val) {
   if (AbiName::zero == Reg)
     return;
   m_Files[Reg] = Val;
@@ -111,16 +113,18 @@ void RegFile::Set(uint32_t Reg, uint32_t Val) {
   }
 }
 
-void RegFile::Set(uint32_t Reg, uint64_t Val) {
+template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
   m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
   m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
 }
 
-size_t RegFile::Size() const { return m_Files.size(); }
+template <class T> size_t RegFile<T>::Size() const { return m_Files.size(); }
 
-void RegFile::Clear() {
+template <class T> void RegFile<T>::Clear() {
   for (int i = 0; i < m_Files.size(); i++)
     m_Files[i] = 0;
 }
+
+template <class T> void FakeRegFile<T>::Set(uint32_t Reg, int32_t Val) {}
 
 } // namespace rvemu

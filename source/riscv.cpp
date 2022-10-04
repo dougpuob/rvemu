@@ -7,7 +7,7 @@
 
 namespace rvemu {
 
-Riscv::Riscv() {
+template <class T> Riscv<T>::Riscv() {
 
   m_EnabledTrace = Config::getInst().opt_trace;
   m_EnabledTraceLog = Config::getInst().opt_tracelog;
@@ -47,12 +47,12 @@ Riscv::Riscv() {
   // clang-format on
 }
 
-const char *Riscv::GetRegName(uint32_t Idx) {
+template <class T> const char *Riscv<T>::GetRegName(uint32_t Idx) {
   RvReg R = (RvReg)Idx;
   return GetRegName(R);
 }
 
-const char *Riscv::GetRegName(AbiName A) {
+template <class T> const char *Riscv<T>::GetRegName(AbiName A) {
   switch (A) {
     // clang-format off
   case AbiName::zero: return "zero";
@@ -92,7 +92,7 @@ const char *Riscv::GetRegName(AbiName A) {
   return "unknown";
 }
 
-const char *Riscv::GetRegName(RvReg R) {
+template <class T> const char *Riscv<T>::GetRegName(RvReg R) {
   switch (R) {
     // clang-format off
   case RvReg::x0:  return "x0";
@@ -132,8 +132,9 @@ const char *Riscv::GetRegName(RvReg R) {
   return "unknown";
 }
 
-void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
-                        std::string &StrBuf) {
+template <class T>
+void Riscv<T>::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
+                           std::string &StrBuf) {
   StrBuf.clear();
   if (SymData.Size > 0) {
     char szBuf[128];
@@ -150,7 +151,7 @@ void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
   }
 }
 
-bool Riscv::LoadImage(Elf *Elf) {
+template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
@@ -173,8 +174,9 @@ bool Riscv::LoadImage(Elf *Elf) {
   return true;
 }
 
-RecordInst &Riscv::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
-                                  const char *Name) {
+template <class T>
+RecordInst &Riscv<T>::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
+                                     const char *Name) {
   RecordInst New(Pc, Inst, Len, Name);
 
   if (m_Elf && m_EnabledTraceLog) {
@@ -194,7 +196,7 @@ RecordInst &Riscv::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
   return Last;
 }
 
-void Riscv::Reset(uint64_t Pc) {
+template <class T> void Riscv<T>::Reset(uint64_t Pc) {
   this->m_RegI.Clear();
   this->m_RegF.Clear();
 
@@ -211,7 +213,7 @@ void Riscv::Reset(uint64_t Pc) {
   m_State.Halt(false);
 }
 
-bool Riscv::Dispatch(uint32_t Inst) {
+template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 
   m_InstCount++;
 
@@ -262,7 +264,8 @@ bool Riscv::Dispatch(uint32_t Inst) {
   return Status;
 }
 
-bool Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
+template <class T>
+bool Riscv<T>::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
 
   /* clean resource */
   m_PFB.Clear();
@@ -281,7 +284,7 @@ bool Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
   return Status;
 }
 
-void Riscv::PrintRecord(const RecordInst &RecordInst) {
+template <class T> void Riscv<T>::PrintRecord(const RecordInst &RecordInst) {
 
   char szBuf[20];
   std::string PrintText;
@@ -343,28 +346,28 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
     printf("\n");
 }
 
-bool Riscv::IncPc() {
+template <class T> bool Riscv<T>::IncPc() {
   m_Pc += (uint8_t)m_InstLen;
   return true;
 }
 
-bool Riscv::IncPc(int32_t Imm) {
+template <class T> bool Riscv<T>::IncPc(int32_t Imm) {
   m_Pc += Imm;
   return true;
 }
 
-bool Riscv::SetPc(uint32_t Pc) {
+template <class T> bool Riscv<T>::SetPc(uint32_t Pc) {
   m_Pc = Pc;
   return true;
 }
 
-uint32_t Riscv::GetPc() { return m_Pc; }
+template <class T> uint32_t Riscv<T>::GetPc() { return m_Pc; }
 
-void Riscv::Halt() { m_State.Halt(); }
+template <class T> void Riscv<T>::Halt() { m_State.Halt(); }
 
-bool Riscv::HasHalted() { return m_State.IsHalt(); }
+template <class T> bool Riscv<T>::HasHalted() { return m_State.IsHalt(); }
 
-void Riscv::Run(rvemu::Elf *Elf) {
+template <class T> void Riscv<T>::Run(rvemu::Elf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
@@ -391,25 +394,26 @@ void Riscv::Run(rvemu::Elf *Elf) {
   printf("%s\n", this->m_ExitCodeMsg.c_str());
 }
 
-void Riscv::ExceptIllegalInstruction(uint32_t Inst) {
+template <class T> void Riscv<T>::ExceptIllegalInstruction(uint32_t Inst) {
   m_PFB.ExceptIllegalInstruction = true;
   assert(!"ExceptIllegalInstruction");
 }
 
-void Riscv::ExceptInstructionAddressMisaligned(uint32_t Inst) {
+template <class T>
+void Riscv<T>::ExceptInstructionAddressMisaligned(uint32_t Inst) {
   m_PFB.ExceptUnalignedInstruction = true;
   assert(!"ExceptInstructionAddressMisaligned");
 }
 
-void Riscv::ExceptLoadMisaligned(uint32_t Inst) {
+template <class T> void Riscv<T>::ExceptLoadMisaligned(uint32_t Inst) {
   assert(!"ExceptLoadMisaligned");
 }
 
-void Riscv::ExceptStoreMisaligned(uint32_t Inst) {
+template <class T> void Riscv<T>::ExceptStoreMisaligned(uint32_t Inst) {
   assert(!"ExceptStoreMisaligned");
 }
 
-bool Riscv::Op_unimp(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_unimp(uint32_t Inst) {
   assert(!"Unimplemented opcode !!!");
   return false;
 }

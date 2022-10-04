@@ -69,17 +69,17 @@ struct RvPreFetchBuf {
   }
 };
 
-class Riscv {
+template <class T> class Riscv {
 
-  using OpcodeEntry16 = std::function<bool(Riscv &, uint32_t Inst)>;
-  using OpcodeEntry32 = std::function<bool(Riscv &, uint32_t Inst)>;
+  using OpcodeEntry16 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
+  using OpcodeEntry32 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
 
 private:
   int m_Cycles = 100;
 
   /* Register File */
-  RegFile m_RegI;
-  RegFile m_RegF;
+  RegFile<T> m_RegI;
+  RegFile<T> m_RegF;
   uint32_t m_Pc = 0;
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
@@ -93,7 +93,7 @@ private:
 
   /* IO & System Calls */
   MachineState m_State;
-  SystemCall m_SysCall;
+  SystemCall<T> m_SysCall;
 
   /* Instructions */
   RvPreFetchBuf m_PFB;
@@ -137,7 +137,7 @@ public:
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
   const RvPreFetchBuf &GetFields() { return m_PFB; };
-  RegFile &GetRegFile() { return m_RegI; };
+  RegFile<T> &GetRegFile() { return m_RegI; };
 
   /* Exception */
   void ExceptIllegalInstruction(uint32_t Inst);
