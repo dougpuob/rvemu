@@ -16,7 +16,7 @@ void SystemCall<T>::InitStdFds() {
 }
 
 template <class T>
-int SystemCall<T>::Open(RegFile &Reg) {
+int SystemCall<T>::Open(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Name_ = Reg.Get(AbiName::a0);
@@ -48,7 +48,7 @@ int SystemCall<T>::Open(RegFile &Reg) {
 }
 
 template <class T>
-int SystemCall<T>::Write(RegFile &Reg) {
+int SystemCall<T>::Write(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = Reg.Get(AbiName::a0);
@@ -67,7 +67,7 @@ int SystemCall<T>::Write(RegFile &Reg) {
 }
 
 template <class T>
-int SystemCall<T>::Close(RegFile &Reg) {
+int SystemCall<T>::Close(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   const uint32_t Fd_ = Reg.Get(AbiName::a0);
@@ -83,7 +83,7 @@ int SystemCall<T>::Close(RegFile &Reg) {
 }
 
 template <class T>
-int SystemCall<T>::Read(RegFile &Reg) {
+int SystemCall<T>::Read(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = Reg.Get(AbiName::a0);
