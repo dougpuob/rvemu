@@ -1,7 +1,7 @@
 
 #include "include/config.h"
 
-#include "mem.h"
+#include "include/mem.h"
 #include <cassert>
 #include <cstdint>
 #include <string.h>

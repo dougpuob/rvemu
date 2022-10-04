@@ -7,14 +7,16 @@
 
 namespace rvemu {
 
-void SystemCall::InitStdFds() {
+template <class T>
+void SystemCall<T>::InitStdFds() {
   m_StdFds.clear();
   m_StdFds.push_back((FILE *)stdin);
   m_StdFds.push_back((FILE *)stdout);
   m_StdFds.push_back((FILE *)stderr);
 }
 
-int SystemCall::Open(RegFile &Reg) {
+template <class T>
+int SystemCall<T>::Open(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Name_ = Reg.Get(AbiName::a0);
@@ -45,7 +47,8 @@ int SystemCall::Open(RegFile &Reg) {
   return -1;
 }
 
-int SystemCall::Write(RegFile &Reg) {
+template <class T>
+int SystemCall<T>::Write(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = Reg.Get(AbiName::a0);
@@ -63,7 +66,8 @@ int SystemCall::Write(RegFile &Reg) {
   return Ret;
 }
 
-int SystemCall::Close(RegFile &Reg) {
+template <class T>
+int SystemCall<T>::Close(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   const uint32_t Fd_ = Reg.Get(AbiName::a0);
@@ -78,7 +82,8 @@ int SystemCall::Close(RegFile &Reg) {
   return Ret;
 }
 
-int SystemCall::Read(RegFile &Reg) {
+template <class T>
+int SystemCall<T>::Read(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
   uint32_t Fd_ = Reg.Get(AbiName::a0);
@@ -97,3 +102,6 @@ int SystemCall::Read(RegFile &Reg) {
 }
 
 } // namespace rvemu
+
+
+template class rvemu::SystemCall<uint32_t>;

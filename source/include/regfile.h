@@ -9,9 +9,9 @@
 
 namespace rvemu {
 
-class Field {
+template <class T> class Field {
 private:
-  std::vector<uint32_t> m_Data;
+  std::vector<T> m_Data;
 
 public:
   Field() {
@@ -25,14 +25,14 @@ public:
       File = 0;
   }
 
-  uint32_t &operator[](RvField F) { return m_Data[(int)F]; }
-  uint32_t operator[](RvField F) const { return m_Data[(int)F]; }
+  T &operator[](RvField F) { return m_Data[(int)F]; }
+  T operator[](RvField F) const { return m_Data[(int)F]; }
 };
 
-class RegFile {
+template <class T> class RegFile {
 private:
   bool m_EnabledTraceLog = false;
-  std::vector<uint32_t> m_Files;
+  std::vector<T> m_Files;
   RecordInst **m_ppRecord = nullptr;
 
 public:
@@ -42,25 +42,36 @@ public:
     Clear();
   }
 
-  RegFile(const std::vector<uint32_t> &Defaults) { m_Files = Defaults; }
+  RegFile(const std::vector<T> &Defaults) { m_Files = Defaults; }
 
   void Apply(RecordInst **ppRecord) { m_ppRecord = ppRecord; }
 
-  const uint32_t operator[](int X) const { return m_Files[X]; }
+  const T operator[](int X) const { return m_Files[X]; }
 
   const char *GetName(int Idx) const;
   const char *GetName(rvemu::AbiName A) const;
   const char *GetName(rvemu::RvReg R) const;
 
-  const uint32_t Get(int X) const;
+  const T Get(int X) const;
 
-  uint32_t &Set(uint32_t Reg) { return m_Files[Reg]; }
+  T &Set(uint32_t Reg) { return m_Files[Reg]; }
   void Set(uint32_t Reg, int32_t Val);
   void Set(uint32_t Reg, uint32_t Val);
   void Set(uint32_t Reg, uint64_t Val);
 
   size_t Size() const;
   void Clear();
+};
+
+template <class T> class FakeRegFile {
+private:
+  bool m_EnabledTraceLog = false;
+  std::vector<T> m_Files;
+  RecordInst **m_ppRecord = nullptr;
+
+  T &Set(uint32_t Reg) { return m_Files[Reg]; }
+
+  void Set(uint32_t Reg, int32_t Val);
 };
 
 } // namespace rvemu

@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <type_traits>
 #include <vector>
 
 namespace rvemu {
@@ -69,18 +70,20 @@ struct RvPreFetchBuf {
   }
 };
 
-class Riscv {
+template <class T> class Riscv {
 
-  using OpcodeEntry16 = std::function<bool(Riscv &, uint32_t Inst)>;
-  using OpcodeEntry32 = std::function<bool(Riscv &, uint32_t Inst)>;
+  using OpcodeEntry16 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
+  using OpcodeEntry32 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
 
 private:
   int m_Cycles = 100;
 
   /* Register File */
-  RegFile m_RegI;
-  RegFile m_RegF;
-  uint32_t m_Pc = 0;
+  RegFile<T> m_RegI;
+  RegFile<T> m_RegF;
+
+  T m_Pc = 0;
+
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
@@ -93,7 +96,7 @@ private:
 
   /* IO & System Calls */
   MachineState m_State;
-  SystemCall m_SysCall;
+  SystemCall<T> m_SysCall;
 
   /* Instructions */
   RvPreFetchBuf m_PFB;
@@ -120,24 +123,27 @@ public:
   const char *GetRegName(RvReg R);
   const char *GetRegName(AbiName A);
   void PrintRecord(const RecordInst &RecordInst);
-  const RecordInst *GetRecordInst() { return m_pRecInst; }
-  void GetPcForLog(const SymbolData &SymData, uint32_t Pc, std::string &StrBuf);
-  RecordInst &FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
+  const RecordInst *GetRecordInst();
+  void GetPcForLog(const SymbolData &SymData, T Pc, std::string &StrBuf);
+  RecordInst &FetchNewRecord(T Pc, uint32_t Inst, InstLen Len,
                              const char *Name);
 
+  bool SetPc(T Pc);
+
   /* Machine instance */
-  void Reset(uint64_t Pc);
-  bool Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
+  void Reset(T Pc);
+  bool Step(int32_t Cycles, T Pc, Memory &Mem);
   bool Dispatch(uint32_t Inst);
   bool IncPc();
   bool IncPc(int32_t Imm);
-  bool SetPc(uint32_t Pc);
-  uint32_t GetPc();
+  void Run(Elf *Elf);
+
+  T GetPc();
+
   void Halt();
   bool HasHalted();
-  void Run(rvemu::Elf *Elf);
-  const RvPreFetchBuf &GetFields() { return m_PFB; };
-  RegFile &GetRegFile() { return m_RegI; };
+  const RvPreFetchBuf &GetFields();
+  RegFile<T> &GetRegFile();
 
   /* Exception */
   void ExceptIllegalInstruction(uint32_t Inst);
@@ -146,9 +152,9 @@ public:
   void ExceptLoadMisaligned(uint32_t Inst);
 
   /* I/O & System Calls */
-  Memory &GetMem() { return m_State.GetMem(); }
-  MachineState &GetState() { return m_State; }
   bool LoadImage(Elf *Elf);
+  Memory &GetMem();
+  MachineState &GetState();
 
   /* RV32I instructions */
   bool Op_unimp(uint32_t Inst);

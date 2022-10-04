@@ -7,7 +7,7 @@
 
 namespace rvemu {
 
-Riscv::Riscv() {
+template <class T> Riscv<T>::Riscv() {
 
   m_EnabledTrace = Config::getInst().opt_trace;
   m_EnabledTraceLog = Config::getInst().opt_tracelog;
@@ -28,10 +28,10 @@ Riscv::Riscv() {
   // Table 19.1: RISC-V base opcode map, inst[1:0]=11
   m_OpcodeMap_Rv32I = {
   /*      000                001                  010                011                  100                101                110                111*/
-  /*00*/  &Riscv::Op_load,   &Riscv::Op_load_fp,  &Riscv::Op_unimp,  &Riscv::Op_misc_mem, &Riscv::Op_opimm,  &Riscv::Op_auipc,  &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*01*/  &Riscv::Op_store,  &Riscv::Op_store_fp, &Riscv::Op_unimp,  &Riscv::Op_amo,      &Riscv::Op_op,     &Riscv::Op_lui,    &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*10*/  &Riscv::Op_madd,   &Riscv::Op_msub,     &Riscv::Op_nmsub,  &Riscv::Op_unimp,    &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*11*/  &Riscv::Op_branch, &Riscv::Op_jalr,     &Riscv::Op_unimp,  &Riscv::Op_jal,      &Riscv::Op_system, &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp
+  /*00*/  &Riscv<T>::Op_load,   &Riscv<T>::Op_load_fp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_misc_mem, &Riscv<T>::Op_opimm,  &Riscv<T>::Op_auipc,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*01*/  &Riscv<T>::Op_store,  &Riscv<T>::Op_store_fp, &Riscv<T>::Op_unimp,  &Riscv<T>::Op_amo,      &Riscv<T>::Op_op,     &Riscv<T>::Op_lui,    &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*10*/  &Riscv<T>::Op_madd,   &Riscv<T>::Op_msub,     &Riscv<T>::Op_nmsub,  &Riscv<T>::Op_unimp,    &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*11*/  &Riscv<T>::Op_branch, &Riscv<T>::Op_jalr,     &Riscv<T>::Op_unimp,  &Riscv<T>::Op_jal,      &Riscv<T>::Op_system, &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp
   };
   // clang-format on
 
@@ -39,20 +39,20 @@ Riscv::Riscv() {
   // Table 16.4 : RVC opcode map
   m_OpcodeMap_Rv32C = {
   /*      000                    001                 010                011                100                   101                 110                111*/
-  /*00*/  &Riscv::Op_c_addi4spn, &Riscv::Op_c_fld,   &Riscv::Op_c_lw,   &Riscv::Op_c_ld,   &Riscv::Op_unimp,     &Riscv::Op_c_fsd,   &Riscv::Op_c_sw,   &Riscv::Op_c_sd,
-  /*01*/  &Riscv::Op_c_addi,     &Riscv::Op_c_jal,   &Riscv::Op_c_li,   &Riscv::Op_c_lui,  &Riscv::Op_c_miscalu, &Riscv::Op_c_j,     &Riscv::Op_c_beqz, &Riscv::Op_c_bnez,
-  /*10*/  &Riscv::Op_c_slli,     &Riscv::Op_c_fldsp, &Riscv::Op_c_lwsp, &Riscv::Op_c_ldsp, &Riscv::Op_c_cr,      &Riscv::Op_c_fsdsp, &Riscv::Op_c_swsp, &Riscv::Op_c_sdsp
+  /*00*/  &Riscv<T>::Op_c_addi4spn, &Riscv<T>::Op_c_fld,   &Riscv<T>::Op_c_lw,   &Riscv<T>::Op_c_ld,   &Riscv<T>::Op_unimp,     &Riscv<T>::Op_c_fsd,   &Riscv<T>::Op_c_sw,   &Riscv<T>::Op_c_sd,
+  /*01*/  &Riscv<T>::Op_c_addi,     &Riscv<T>::Op_c_jal,   &Riscv<T>::Op_c_li,   &Riscv<T>::Op_c_lui,  &Riscv<T>::Op_c_miscalu, &Riscv<T>::Op_c_j,     &Riscv<T>::Op_c_beqz, &Riscv<T>::Op_c_bnez,
+  /*10*/  &Riscv<T>::Op_c_slli,     &Riscv<T>::Op_c_fldsp, &Riscv<T>::Op_c_lwsp, &Riscv<T>::Op_c_ldsp, &Riscv<T>::Op_c_cr,      &Riscv<T>::Op_c_fsdsp, &Riscv<T>::Op_c_swsp, &Riscv<T>::Op_c_sdsp
   /*11*/
   };
   // clang-format on
 }
 
-const char *Riscv::GetRegName(uint32_t Idx) {
+template <class T> const char *Riscv<T>::GetRegName(uint32_t Idx) {
   RvReg R = (RvReg)Idx;
   return GetRegName(R);
 }
 
-const char *Riscv::GetRegName(AbiName A) {
+template <class T> const char *Riscv<T>::GetRegName(AbiName A) {
   switch (A) {
     // clang-format off
   case AbiName::zero: return "zero";
@@ -92,7 +92,7 @@ const char *Riscv::GetRegName(AbiName A) {
   return "unknown";
 }
 
-const char *Riscv::GetRegName(RvReg R) {
+template <class T> const char *Riscv<T>::GetRegName(RvReg R) {
   switch (R) {
     // clang-format off
   case RvReg::x0:  return "x0";
@@ -132,8 +132,9 @@ const char *Riscv::GetRegName(RvReg R) {
   return "unknown";
 }
 
-void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
-                        std::string &StrBuf) {
+template <class T>
+void Riscv<T>::GetPcForLog(const SymbolData &SymData, T Pc,
+                           std::string &StrBuf) {
   StrBuf.clear();
   if (SymData.Size > 0) {
     char szBuf[128];
@@ -150,12 +151,25 @@ void Riscv::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
   }
 }
 
-bool Riscv::LoadImage(Elf *Elf) {
+template <class T> const RecordInst *Riscv<T>::GetRecordInst() {
+  return m_pRecInst;
+}
+
+template <class T> const RvPreFetchBuf &Riscv<T>::GetFields() { return m_PFB; };
+
+template <class T> RegFile<T> &Riscv<T>::GetRegFile() { return m_RegI; };
+
+template <class T> Memory &Riscv<T>::GetMem() { return m_State.GetMem(); }
+
+template <class T> MachineState &Riscv<T>::GetState() { return m_State; }
+
+template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
 
   for (auto ProgHdr : Elf->GetProgramHeaders()) {
+
     /* memcpy required range */
     const int ToCopy = std::min(ProgHdr.p_memsz, ProgHdr.p_filesz);
     if (ToCopy) {
@@ -173,8 +187,9 @@ bool Riscv::LoadImage(Elf *Elf) {
   return true;
 }
 
-RecordInst &Riscv::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
-                                  const char *Name) {
+template <class T>
+RecordInst &Riscv<T>::FetchNewRecord(T Pc, uint32_t Inst, InstLen Len,
+                                     const char *Name) {
   RecordInst New(Pc, Inst, Len, Name);
 
   if (m_Elf && m_EnabledTraceLog) {
@@ -194,7 +209,7 @@ RecordInst &Riscv::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
   return Last;
 }
 
-void Riscv::Reset(uint64_t Pc) {
+template <class T> void Riscv<T>::Reset(T Pc) {
   this->m_RegI.Clear();
   this->m_RegF.Clear();
 
@@ -211,7 +226,7 @@ void Riscv::Reset(uint64_t Pc) {
   m_State.Halt(false);
 }
 
-bool Riscv::Dispatch(uint32_t Inst) {
+template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 
   m_InstCount++;
 
@@ -262,7 +277,8 @@ bool Riscv::Dispatch(uint32_t Inst) {
   return Status;
 }
 
-bool Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
+template <class T>
+bool Riscv<T>::Step(int32_t Cycles, T Pc, rvemu::Memory &Mem) {
 
   /* clean resource */
   m_PFB.Clear();
@@ -281,7 +297,7 @@ bool Riscv::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
   return Status;
 }
 
-void Riscv::PrintRecord(const RecordInst &RecordInst) {
+template <class T> void Riscv<T>::PrintRecord(const RecordInst &RecordInst) {
 
   char szBuf[20];
   std::string PrintText;
@@ -343,28 +359,22 @@ void Riscv::PrintRecord(const RecordInst &RecordInst) {
     printf("\n");
 }
 
-bool Riscv::IncPc() {
+template <class T> bool Riscv<T>::IncPc() {
   m_Pc += (uint8_t)m_InstLen;
   return true;
 }
 
-bool Riscv::IncPc(int32_t Imm) {
+template <class T> bool Riscv<T>::IncPc(int32_t Imm) {
   m_Pc += Imm;
   return true;
 }
 
-bool Riscv::SetPc(uint32_t Pc) {
+template <class T> bool Riscv<T>::SetPc(T Pc) {
   m_Pc = Pc;
   return true;
 }
 
-uint32_t Riscv::GetPc() { return m_Pc; }
-
-void Riscv::Halt() { m_State.Halt(); }
-
-bool Riscv::HasHalted() { return m_State.IsHalt(); }
-
-void Riscv::Run(rvemu::Elf *Elf) {
+template <class T> void Riscv<T>::Run(Elf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
@@ -391,27 +401,36 @@ void Riscv::Run(rvemu::Elf *Elf) {
   printf("%s\n", this->m_ExitCodeMsg.c_str());
 }
 
-void Riscv::ExceptIllegalInstruction(uint32_t Inst) {
+template <class T> T Riscv<T>::GetPc() { return m_Pc; }
+
+template <class T> void Riscv<T>::Halt() { m_State.Halt(); }
+
+template <class T> bool Riscv<T>::HasHalted() { return m_State.IsHalt(); }
+
+template <class T> void Riscv<T>::ExceptIllegalInstruction(uint32_t Inst) {
   m_PFB.ExceptIllegalInstruction = true;
   assert(!"ExceptIllegalInstruction");
 }
 
-void Riscv::ExceptInstructionAddressMisaligned(uint32_t Inst) {
+template <class T>
+void Riscv<T>::ExceptInstructionAddressMisaligned(uint32_t Inst) {
   m_PFB.ExceptUnalignedInstruction = true;
   assert(!"ExceptInstructionAddressMisaligned");
 }
 
-void Riscv::ExceptLoadMisaligned(uint32_t Inst) {
+template <class T> void Riscv<T>::ExceptLoadMisaligned(uint32_t Inst) {
   assert(!"ExceptLoadMisaligned");
 }
 
-void Riscv::ExceptStoreMisaligned(uint32_t Inst) {
+template <class T> void Riscv<T>::ExceptStoreMisaligned(uint32_t Inst) {
   assert(!"ExceptStoreMisaligned");
 }
 
-bool Riscv::Op_unimp(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op_unimp(uint32_t Inst) {
   assert(!"Unimplemented opcode !!!");
   return false;
 }
 
 } // namespace rvemu
+
+template class rvemu::Riscv<uint32_t>;

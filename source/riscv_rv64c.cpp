@@ -1,13 +1,14 @@
-#include "riscv.h"
+#include "include/riscv.h"
+
 #include <array>
 #include <cassert>
 
 namespace rvemu {
 
-bool Riscv::Op64_c_sd(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op64_c_sd(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.sd");
 
-  // M[x[8+rs1’] + uimm][63:0] = x[8+rs2’]
+  // M[x[8+rs1ï¿½] + uimm][63:0] = x[8+rs2ï¿½]
   m_PFB.uimm = m_DeInst16.FetchImmCsFmt_5376(Inst);
 
   if (m_EnabledTraceLog)
@@ -26,3 +27,5 @@ bool Riscv::Op64_c_sd(uint16_t Inst) {
 }
 
 } // namespace rvemu
+
+template class rvemu::Riscv<uint32_t>;
