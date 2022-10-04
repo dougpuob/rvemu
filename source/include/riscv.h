@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <type_traits>
 #include <vector>
 
 namespace rvemu {
@@ -80,7 +81,9 @@ private:
   /* Register File */
   RegFile<T> m_RegI;
   RegFile<T> m_RegF;
+
   T m_Pc = 0;
+
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
@@ -120,24 +123,27 @@ public:
   const char *GetRegName(RvReg R);
   const char *GetRegName(AbiName A);
   void PrintRecord(const RecordInst &RecordInst);
-  const RecordInst *GetRecordInst() { return m_pRecInst; }
+  const RecordInst *GetRecordInst();
   void GetPcForLog(const SymbolData &SymData, T Pc, std::string &StrBuf);
   RecordInst &FetchNewRecord(T Pc, uint32_t Inst, InstLen Len,
                              const char *Name);
 
+  bool SetPc(T Pc);
+
   /* Machine instance */
   void Reset(T Pc);
-  bool Step(int32_t Cycles, T Pc, rvemu::Memory &Mem);
+  bool Step(int32_t Cycles, T Pc, Memory &Mem);
   bool Dispatch(uint32_t Inst);
   bool IncPc();
   bool IncPc(int32_t Imm);
-  bool SetPc(T Pc);
+  void Run(Elf *Elf);
+
   T GetPc();
+
   void Halt();
   bool HasHalted();
-  void Run(rvemu::Elf *Elf);
-  const RvPreFetchBuf &GetFields() { return m_PFB; };
-  RegFile<T> &GetRegFile() { return m_RegI; };
+  const RvPreFetchBuf &GetFields();
+  RegFile<T> &GetRegFile();
 
   /* Exception */
   void ExceptIllegalInstruction(uint32_t Inst);
@@ -146,10 +152,9 @@ public:
   void ExceptLoadMisaligned(uint32_t Inst);
 
   /* I/O & System Calls */
-  Memory &GetMem() { return m_State.GetMem(); }
-  MachineState &GetState() { return m_State; }
-
   bool LoadImage(Elf *Elf);
+  Memory &GetMem();
+  MachineState &GetState();
 
   /* RV32I instructions */
   bool Op_unimp(uint32_t Inst);

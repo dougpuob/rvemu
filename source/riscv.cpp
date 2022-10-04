@@ -151,13 +151,25 @@ void Riscv<T>::GetPcForLog(const SymbolData &SymData, T Pc,
   }
 }
 
+template <class T> const RecordInst *Riscv<T>::GetRecordInst() {
+  return m_pRecInst;
+}
+
+template <class T> const RvPreFetchBuf &Riscv<T>::GetFields() { return m_PFB; };
+
+template <class T> RegFile<T> &Riscv<T>::GetRegFile() { return m_RegI; };
+
+template <class T> Memory &Riscv<T>::GetMem() { return m_State.GetMem(); }
+
+template <class T> MachineState &Riscv<T>::GetState() { return m_State; }
+
 template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
-  std::vector<T> tmp;
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
 
   for (auto ProgHdr : Elf->GetProgramHeaders()) {
+
     /* memcpy required range */
     const int ToCopy = std::min(ProgHdr.p_memsz, ProgHdr.p_filesz);
     if (ToCopy) {
@@ -362,13 +374,7 @@ template <class T> bool Riscv<T>::SetPc(T Pc) {
   return true;
 }
 
-template <class T> T Riscv<T>::GetPc() { return m_Pc; }
-
-template <class T> void Riscv<T>::Halt() { m_State.Halt(); }
-
-template <class T> bool Riscv<T>::HasHalted() { return m_State.IsHalt(); }
-
-template <class T> void Riscv<T>::Run(rvemu::Elf *Elf) {
+template <class T> void Riscv<T>::Run(Elf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
@@ -394,6 +400,12 @@ template <class T> void Riscv<T>::Run(rvemu::Elf *Elf) {
 
   printf("%s\n", this->m_ExitCodeMsg.c_str());
 }
+
+template <class T> T Riscv<T>::GetPc() { return m_Pc; }
+
+template <class T> void Riscv<T>::Halt() { m_State.Halt(); }
+
+template <class T> bool Riscv<T>::HasHalted() { return m_State.IsHalt(); }
 
 template <class T> void Riscv<T>::ExceptIllegalInstruction(uint32_t Inst) {
   m_PFB.ExceptIllegalInstruction = true;
