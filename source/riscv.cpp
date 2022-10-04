@@ -133,7 +133,7 @@ template <class T> const char *Riscv<T>::GetRegName(RvReg R) {
 }
 
 template <class T>
-void Riscv<T>::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
+void Riscv<T>::GetPcForLog(const SymbolData &SymData, T Pc,
                            std::string &StrBuf) {
   StrBuf.clear();
   if (SymData.Size > 0) {
@@ -152,6 +152,7 @@ void Riscv<T>::GetPcForLog(const SymbolData &SymData, uint32_t Pc,
 }
 
 template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
+  std::vector<T> tmp;
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
@@ -175,7 +176,7 @@ template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
 }
 
 template <class T>
-RecordInst &Riscv<T>::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
+RecordInst &Riscv<T>::FetchNewRecord(T Pc, uint32_t Inst, InstLen Len,
                                      const char *Name) {
   RecordInst New(Pc, Inst, Len, Name);
 
@@ -196,7 +197,7 @@ RecordInst &Riscv<T>::FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
   return Last;
 }
 
-template <class T> void Riscv<T>::Reset(uint64_t Pc) {
+template <class T> void Riscv<T>::Reset(T Pc) {
   this->m_RegI.Clear();
   this->m_RegF.Clear();
 
@@ -265,7 +266,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 }
 
 template <class T>
-bool Riscv<T>::Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem) {
+bool Riscv<T>::Step(int32_t Cycles, T Pc, rvemu::Memory &Mem) {
 
   /* clean resource */
   m_PFB.Clear();
@@ -356,12 +357,12 @@ template <class T> bool Riscv<T>::IncPc(int32_t Imm) {
   return true;
 }
 
-template <class T> bool Riscv<T>::SetPc(uint32_t Pc) {
+template <class T> bool Riscv<T>::SetPc(T Pc) {
   m_Pc = Pc;
   return true;
 }
 
-template <class T> uint32_t Riscv<T>::GetPc() { return m_Pc; }
+template <class T> T Riscv<T>::GetPc() { return m_Pc; }
 
 template <class T> void Riscv<T>::Halt() { m_State.Halt(); }
 

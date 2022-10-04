@@ -80,7 +80,7 @@ private:
   /* Register File */
   RegFile<T> m_RegI;
   RegFile<T> m_RegF;
-  uint32_t m_Pc = 0;
+  T m_Pc = 0;
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
@@ -121,18 +121,18 @@ public:
   const char *GetRegName(AbiName A);
   void PrintRecord(const RecordInst &RecordInst);
   const RecordInst *GetRecordInst() { return m_pRecInst; }
-  void GetPcForLog(const SymbolData &SymData, uint32_t Pc, std::string &StrBuf);
-  RecordInst &FetchNewRecord(uint32_t Pc, uint32_t Inst, InstLen Len,
+  void GetPcForLog(const SymbolData &SymData, T Pc, std::string &StrBuf);
+  RecordInst &FetchNewRecord(T Pc, uint32_t Inst, InstLen Len,
                              const char *Name);
 
   /* Machine instance */
-  void Reset(uint64_t Pc);
-  bool Step(int32_t Cycles, uint32_t Pc, rvemu::Memory &Mem);
+  void Reset(T Pc);
+  bool Step(int32_t Cycles, T Pc, rvemu::Memory &Mem);
   bool Dispatch(uint32_t Inst);
   bool IncPc();
   bool IncPc(int32_t Imm);
-  bool SetPc(uint32_t Pc);
-  uint32_t GetPc();
+  bool SetPc(T Pc);
+  T GetPc();
   void Halt();
   bool HasHalted();
   void Run(rvemu::Elf *Elf);
@@ -148,6 +148,7 @@ public:
   /* I/O & System Calls */
   Memory &GetMem() { return m_State.GetMem(); }
   MachineState &GetState() { return m_State; }
+
   bool LoadImage(Elf *Elf);
 
   /* RV32I instructions */
