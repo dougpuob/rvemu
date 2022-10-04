@@ -489,7 +489,7 @@ template <class T> bool Riscv<T>::Op_c_fldsp(uint16_t Inst) {
 
 template <class T> bool Riscv<T>::Op_c_ldsp(uint16_t Inst) {
 
-  Field Field;
+  Field<T> Field;
   Field[RvField::uimm] = m_DeInst16.FetchImmCiFmt_54386(Inst);
   Field[RvField::rd] = m_DeInst16[{11, 7}];
 
