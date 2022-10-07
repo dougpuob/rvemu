@@ -1,6 +1,6 @@
-#include "record.h"
-#include "regfile.h"
-#include "riscv.h"
+#include "include/record.h"
+#include "include/regfile.h"
+#include "include/riscv.h"
 
 #include <cassert>
 
@@ -659,3 +659,5 @@ template <class T> bool Riscv<T>::Op_c_sdsp(uint16_t Inst) {
 }
 
 } // namespace rvemu
+
+template class rvemu::Riscv<uint32_t>;

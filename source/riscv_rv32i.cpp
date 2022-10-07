@@ -1,4 +1,5 @@
-#include "riscv.h"
+#include "include/riscv.h"
+
 #include <array>
 #include <cassert>
 
@@ -837,3 +838,6 @@ template <class T> bool Riscv<T>::Op_system(uint32_t Inst) {
 }
 
 } // namespace rvemu
+
+
+template class rvemu::Riscv<uint32_t>;

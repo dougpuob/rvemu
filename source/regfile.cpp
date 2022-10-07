@@ -1,4 +1,4 @@
-#include "regfile.h"
+#include "include/regfile.h"
 
 namespace rvemu {
 
@@ -128,3 +128,7 @@ template <class T> void RegFile<T>::Clear() {
 template <class T> void FakeRegFile<T>::Set(uint32_t Reg, int32_t Val) {}
 
 } // namespace rvemu
+
+
+
+template class rvemu::RegFile<uint32_t>;

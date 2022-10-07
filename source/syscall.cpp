@@ -153,3 +153,5 @@ int SystemCall<T>::Handle(RegFile<T> &Reg, uint32_t SysCall) {
 }
 
 } // namespace rvemu
+
+template class rvemu::SystemCall<uint32_t>;

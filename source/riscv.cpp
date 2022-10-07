@@ -28,10 +28,10 @@ template <class T> Riscv<T>::Riscv() {
   // Table 19.1: RISC-V base opcode map, inst[1:0]=11
   m_OpcodeMap_Rv32I = {
   /*      000                001                  010                011                  100                101                110                111*/
-  /*00*/  &Riscv::Op_load,   &Riscv::Op_load_fp,  &Riscv::Op_unimp,  &Riscv::Op_misc_mem, &Riscv::Op_opimm,  &Riscv::Op_auipc,  &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*01*/  &Riscv::Op_store,  &Riscv::Op_store_fp, &Riscv::Op_unimp,  &Riscv::Op_amo,      &Riscv::Op_op,     &Riscv::Op_lui,    &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*10*/  &Riscv::Op_madd,   &Riscv::Op_msub,     &Riscv::Op_nmsub,  &Riscv::Op_unimp,    &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp,
-  /*11*/  &Riscv::Op_branch, &Riscv::Op_jalr,     &Riscv::Op_unimp,  &Riscv::Op_jal,      &Riscv::Op_system, &Riscv::Op_unimp,  &Riscv::Op_unimp,  &Riscv::Op_unimp
+  /*00*/  &Riscv<T>::Op_load,   &Riscv<T>::Op_load_fp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_misc_mem, &Riscv<T>::Op_opimm,  &Riscv<T>::Op_auipc,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*01*/  &Riscv<T>::Op_store,  &Riscv<T>::Op_store_fp, &Riscv<T>::Op_unimp,  &Riscv<T>::Op_amo,      &Riscv<T>::Op_op,     &Riscv<T>::Op_lui,    &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*10*/  &Riscv<T>::Op_madd,   &Riscv<T>::Op_msub,     &Riscv<T>::Op_nmsub,  &Riscv<T>::Op_unimp,    &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,
+  /*11*/  &Riscv<T>::Op_branch, &Riscv<T>::Op_jalr,     &Riscv<T>::Op_unimp,  &Riscv<T>::Op_jal,      &Riscv<T>::Op_system, &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp,  &Riscv<T>::Op_unimp
   };
   // clang-format on
 
@@ -39,9 +39,9 @@ template <class T> Riscv<T>::Riscv() {
   // Table 16.4 : RVC opcode map
   m_OpcodeMap_Rv32C = {
   /*      000                    001                 010                011                100                   101                 110                111*/
-  /*00*/  &Riscv::Op_c_addi4spn, &Riscv::Op_c_fld,   &Riscv::Op_c_lw,   &Riscv::Op_c_ld,   &Riscv::Op_unimp,     &Riscv::Op_c_fsd,   &Riscv::Op_c_sw,   &Riscv::Op_c_sd,
-  /*01*/  &Riscv::Op_c_addi,     &Riscv::Op_c_jal,   &Riscv::Op_c_li,   &Riscv::Op_c_lui,  &Riscv::Op_c_miscalu, &Riscv::Op_c_j,     &Riscv::Op_c_beqz, &Riscv::Op_c_bnez,
-  /*10*/  &Riscv::Op_c_slli,     &Riscv::Op_c_fldsp, &Riscv::Op_c_lwsp, &Riscv::Op_c_ldsp, &Riscv::Op_c_cr,      &Riscv::Op_c_fsdsp, &Riscv::Op_c_swsp, &Riscv::Op_c_sdsp
+  /*00*/  &Riscv<T>::Op_c_addi4spn, &Riscv<T>::Op_c_fld,   &Riscv<T>::Op_c_lw,   &Riscv<T>::Op_c_ld,   &Riscv<T>::Op_unimp,     &Riscv<T>::Op_c_fsd,   &Riscv<T>::Op_c_sw,   &Riscv<T>::Op_c_sd,
+  /*01*/  &Riscv<T>::Op_c_addi,     &Riscv<T>::Op_c_jal,   &Riscv<T>::Op_c_li,   &Riscv<T>::Op_c_lui,  &Riscv<T>::Op_c_miscalu, &Riscv<T>::Op_c_j,     &Riscv<T>::Op_c_beqz, &Riscv<T>::Op_c_bnez,
+  /*10*/  &Riscv<T>::Op_c_slli,     &Riscv<T>::Op_c_fldsp, &Riscv<T>::Op_c_lwsp, &Riscv<T>::Op_c_ldsp, &Riscv<T>::Op_c_cr,      &Riscv<T>::Op_c_fsdsp, &Riscv<T>::Op_c_swsp, &Riscv<T>::Op_c_sdsp
   /*11*/
   };
   // clang-format on
@@ -163,7 +163,8 @@ template <class T> Memory &Riscv<T>::GetMem() { return m_State.GetMem(); }
 
 template <class T> MachineState &Riscv<T>::GetState() { return m_State; }
 
-template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
+template <class T>
+bool Riscv<T>::LoadImage(Elf *Elf) {
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();
@@ -432,3 +433,5 @@ template <class T> bool Riscv<T>::Op_unimp(uint32_t Inst) {
 }
 
 } // namespace rvemu
+
+template class rvemu::Riscv<uint32_t>;
