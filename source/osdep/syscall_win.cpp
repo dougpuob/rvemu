@@ -98,5 +98,4 @@ template <class T> int SystemCall<T>::Read(RegFile<T> &Reg) {
 
 } // namespace rvemu
 
-
 template class rvemu::SystemCall<uint32_t>;

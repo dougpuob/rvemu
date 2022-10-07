@@ -163,8 +163,7 @@ template <class T> Memory &Riscv<T>::GetMem() { return m_State.GetMem(); }
 
 template <class T> MachineState &Riscv<T>::GetState() { return m_State; }
 
-template <class T>
-bool Riscv<T>::LoadImage(Elf *Elf) {
+template <class T> bool Riscv<T>::LoadImage(Elf *Elf) {
   m_Elf = Elf;
 
   const uint8_t *ElfBaseAddr = Elf->GetBase();

@@ -28,5 +28,4 @@ template <class T> bool Riscv<T>::Op64_c_sd(uint16_t Inst) {
 
 } // namespace rvemu
 
-
 template class rvemu::Riscv<uint32_t>;
