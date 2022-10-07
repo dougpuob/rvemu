@@ -72,9 +72,6 @@ struct RvPreFetchBuf {
 
 template <class T> class Riscv {
 
-  using OpcodeEntry16 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
-  using OpcodeEntry32 = std::function<bool(Riscv<T> &, uint32_t Inst)>;
-
 private:
   int m_Cycles = 100;
 
@@ -102,8 +99,6 @@ private:
   RvPreFetchBuf m_PFB;
   DecodeInstruction16 m_DeInst16;
   DecodeInstruction32 m_DeInst32;
-  std::vector<OpcodeEntry32> m_OpcodeMap_Rv32I; // Table 25.1 RV opcode map
-  std::vector<OpcodeEntry16> m_OpcodeMap_Rv32C; // Table 16.4 RVC opcode map
 
   /* Trace information */
   Elf *m_Elf = nullptr;
