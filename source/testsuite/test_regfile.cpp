@@ -4,7 +4,7 @@
 namespace {
 
 TEST(RegFile, Default) {
-  rvemu::RegFile Reg;
+  rvemu::RegFile<uint32_t> Reg;
   EXPECT_EQ(32, Reg.Size());
   for (int i = 0; i < Reg.Size(); i++)
     EXPECT_EQ(0, Reg.Get(i));
@@ -35,7 +35,7 @@ TEST(RegFile, CmzVals_AbiName) {
 }
 
 TEST(RegFile, AbiName_a0) {
-  rvemu::RegFile Reg;
+  rvemu::RegFile<uint32_t> Reg;
   EXPECT_EQ(32, Reg.Size());
 
   Reg.Set(rvemu::AbiName::a0, 0xAABBCCDD);
@@ -43,7 +43,7 @@ TEST(RegFile, AbiName_a0) {
 }
 
 TEST(RegFile, AbiName_t6) {
-  rvemu::RegFile Reg;
+  rvemu::RegFile<uint32_t> Reg;
   EXPECT_EQ(32, Reg.Size());
 
   Reg.Set(rvemu::AbiName::t6, 0xAABBCCDD);
@@ -51,7 +51,7 @@ TEST(RegFile, AbiName_t6) {
 }
 
 TEST(RegFile, RvReg_x1) {
-  rvemu::RegFile Reg;
+  rvemu::RegFile<uint32_t> Reg;
   EXPECT_EQ(32, Reg.Size());
 
   Reg.Set(rvemu::RvReg::x1, 0xAABBCCDD);
@@ -59,7 +59,7 @@ TEST(RegFile, RvReg_x1) {
 }
 
 TEST(RegFile, RvReg_x31) {
-  rvemu::RegFile Reg;
+  rvemu::RegFile<uint32_t> Reg;
   EXPECT_EQ(32, Reg.Size());
 
   Reg.Set(rvemu::RvReg::x31, 0xAABBCCDD);

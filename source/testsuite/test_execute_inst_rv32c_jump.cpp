@@ -14,8 +14,8 @@ TEST_F(RV32C_Jump, c_j__0xB749) {
   const int32_t imm = -126;
   const std::string inst_name = "c.j";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   const uint32_t Pc = Rv.GetPc();
   const uint32_t NextPc = Pc + imm;
@@ -43,8 +43,8 @@ TEST_F(RV32C_Jump, c_jal__0x288D) {
   const std::string inst_name = "c.jal";
 
   const uint32_t DefaultPc = 0x10000;
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Rv.SetPc(DefaultPc);
 
   const uint32_t Pc = Rv.GetPc();
@@ -75,8 +75,8 @@ TEST_F(RV32C_Jump, c_jalr__0x9782) {
   const uint32_t rs2 = 0;
   const std::string inst_name = "c.jalr";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   const uint32_t NextPc = Rv.GetPc() + (int)rvemu::InstLen::INST_16;
 
   bool Status = Rv.Dispatch(Inst);
@@ -108,8 +108,8 @@ TEST_F(RV32C_Jump, c_mv__0x872A) {
   const int32_t rd = rs1;
   const std::string inst_name = "c.mv";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
@@ -135,8 +135,8 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_ZERO) {
   const uint32_t rs1 = 1;
   const std::string inst_name = "c.jr";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x00); // Conditional when the Reg[x1] is ZERO
 
   bool Status = Rv.Dispatch(Inst);
@@ -158,8 +158,8 @@ TEST_F(RV32C_Jump, c_jr__0x8082_RegX1_is_NOT_ZERO) {
   const uint32_t rs1 = 1;
   const std::string inst_name = "c.jr";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x5A); // Conditional when the Reg[x1] is NOT ZERO
 
   bool Status = Rv.Dispatch(Inst);

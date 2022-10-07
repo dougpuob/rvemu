@@ -16,8 +16,8 @@ TEST_F(RV32I_Store, SType_store__sb) {
   const uint32_t addr = 0x13D2F;
   const uint8_t data = 0x5A;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x13D2C);
   Reg.Set(rs2, data);
 
@@ -51,8 +51,8 @@ TEST_F(RV32I_Store, SType_store__sh) {
   const uint32_t addr = 0x13848;
   const uint16_t data = 0x5A5B;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x1383C);
   Reg.Set(rs2, data);
 
@@ -86,8 +86,8 @@ TEST_F(RV32I_Store, SType_store__sw) {
   const uint32_t addr = 0x13630;
   const uint32_t data = 0x5A5B5C5D;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x134E8);
   Reg.Set(rs2, data);
 

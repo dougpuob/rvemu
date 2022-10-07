@@ -78,7 +78,7 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32i.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv32f.cpp
     ${CMAKE_SOURCE_DIR}/source/riscv_rv64c.cpp
-    ${CMAKE_SOURCE_DIR}/source/riscv_rv64i.cpp    
+    ${CMAKE_SOURCE_DIR}/source/riscv_rv64i.cpp
     ${CMAKE_SOURCE_DIR}/source/state.cpp
     ${CMAKE_SOURCE_DIR}/source/regfile.cpp
     ${CMAKE_SOURCE_DIR}/source/syscall.cpp
@@ -124,7 +124,7 @@ include(source/cmake/clang-format.cmake)
 clangformat_setup(
     ${SOURCE_FILES}
     ${SOURCE_OSDEPS}
-    #${SOURCE_TESTS}
+    ${SOURCE_TESTS}
     )
 
 
@@ -135,7 +135,7 @@ add_executable(
     ${CMAKE_PROJECT_NAME}
     ${SOURCE_FILES}
     ${SOURCE_OSDEPS}
-    #${SOURCE_TESTS}
+    ${SOURCE_TESTS}
     )
 
 target_include_directories(

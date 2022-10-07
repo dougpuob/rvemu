@@ -7,6 +7,9 @@
 
 namespace rvemu {
 
+//
+// 16-bit instructions
+//
 enum {
   //                    1          0
   //               54321098'76543210
@@ -47,6 +50,9 @@ enum {
   INST16_15_13 = 0b11100000'00000000,
 };
 
+//
+// 32-bit instructions
+//
 enum {
   //                3          2          1          0
   //               10987654'32109876'54321098'76543210
@@ -74,6 +80,10 @@ enum {
   INST32_30_30 = 0b01000000'00000000'00000000'00000000,
   INST32_31_25 = 0b11111110'00000000'00000000'00000000,
 };
+
+//
+// 64-bit instructions
+//
 
 struct DecodeInstruction {
 private:

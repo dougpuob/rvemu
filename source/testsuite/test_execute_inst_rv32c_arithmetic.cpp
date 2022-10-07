@@ -14,8 +14,8 @@ TEST_F(RV32C_Arithmetic, c_addi16sp__0x7139) {
   const uint32_t imm = 0xFFFFFFC0;
   const std::string inst_name = "c.addi16sp";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(rvemu::AbiName::sp, 0xFFFFEFF0);
 
@@ -44,8 +44,8 @@ TEST_F(RV32C_Arithmetic, c_add__0x97B6) {
   const uint8_t rd = rs1;
   const std::string inst_name = "c.add";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
@@ -72,8 +72,8 @@ TEST_F(RV32C_Arithmetic, c_addi4spn__0x004C) {
   const int32_t imm = 4;
   const std::string inst_name = "c.addi4spn";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(2) = (uint32_t)0xFFFFF000;
 
@@ -101,8 +101,8 @@ TEST_F(RV32C_Arithmetic, c_addi__0x0705) {
   const int32_t imm = 1;
   const std::string inst_name = "c.addi";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
@@ -129,8 +129,8 @@ TEST_F(RV32C_Arithmetic, c_sub__0x8E09) {
   const uint8_t rs2 = 2;
   const std::string inst_name = "c.sub";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(8 + rs1, 81284);
   Reg.Set(8 + rs2, 81196);
@@ -161,8 +161,8 @@ TEST_F(RV32C_Arithmetic, c_andi__0x8A3D) {
   const uint32_t imm = 15;
   const std::string inst_name = "c.andi";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(8 + rd, 84);
 
@@ -192,8 +192,8 @@ TEST_F(RV32C_Arithmetic, c_or__0x8F75) {
   const uint8_t rd = rs1;
   const std::string inst_name = "c.and";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(8 + rs1, 0);
   Reg.Set(8 + rs2, 0xFFFFDFFF);
@@ -224,8 +224,8 @@ TEST_F(RV32C_Arithmetic, c_slli__0x068A) {
   const uint8_t rd = rs1;
   const std::string inst_name = "c.slli";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   Reg.Set(rd, 11);
 

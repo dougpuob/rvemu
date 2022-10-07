@@ -13,7 +13,7 @@ TEST_F(RV32I_Branch, BType_bne_0x04079463) {
   int32_t imm = 72;
   std::string inst_name = "bne";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
@@ -34,7 +34,7 @@ TEST_F(RV32I_Branch, BType_bne_0x08059263) {
   int32_t imm = 132;
   std::string inst_name = "bne";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {

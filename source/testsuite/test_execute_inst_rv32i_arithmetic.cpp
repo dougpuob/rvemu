@@ -18,7 +18,7 @@ TEST_F(RV32I_Arithmetic, RType_sub) {
   uint8_t funct7 = 32;
   std::string inst_name = "sub";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
@@ -43,7 +43,7 @@ TEST_F(RV32I_Arithmetic, IType_addi) {
   int32_t imm = -584;
   std::string inst_name = "addi";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {

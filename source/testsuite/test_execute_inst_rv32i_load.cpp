@@ -16,8 +16,8 @@ TEST_F(RV32I_Load, lh) {
   const uint32_t addr = 0x13848;
   const uint32_t data = 0x5a5b;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x1383C);
   Rv.GetMem().Write16(addr, data);
 
@@ -51,8 +51,8 @@ TEST_F(RV32I_Load, lw) {
   const uint32_t addr = 0x13D18;
   const uint32_t data = 0x5a5b5c5d;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x13CE8);
   Rv.GetMem().Write32(addr, data);
 
@@ -86,8 +86,8 @@ TEST_F(RV32I_Load, lbu) {
   const uint32_t addr = 0x12490;
   const uint8_t data = 0x5a;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x12494);
   Rv.GetMem().Write8(addr, data);
 
@@ -121,8 +121,8 @@ TEST_F(RV32I_Load, lhu) {
   const uint32_t addr = 0x13848;
   const uint32_t data = 0x5a5b;
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   Reg.Set(rs1, 0x1383C);
   Rv.GetMem().Write16(addr, data);
 

@@ -11,7 +11,7 @@ TEST_F(RV32I_Jump, UType_auipc) {
   uint32_t uimm = 20480;
   std::string inst_name = "auipc";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
@@ -28,7 +28,7 @@ TEST_F(RV32I_Jump, JType_auipc) {
   uint8_t imm = 124;
   std::string inst_name = "jal";
 
-  rvemu::Riscv Rv;
+  rvemu::Riscv<uint32_t> Rv;
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {

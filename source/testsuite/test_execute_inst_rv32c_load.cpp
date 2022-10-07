@@ -15,8 +15,8 @@ TEST_F(RV32C_Load, c_lw__0x43D8) {
   const uint8_t rs1 = 7;
   const std::string inst_name = "c.lw";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   rvemu::Memory &Mem = Rv.GetMem();
 
   Reg.Set(8 + rs1, 0x13634);
@@ -52,8 +52,8 @@ TEST_F(RV32C_Load, c_li__0x4601) {
   const uint8_t rd = 12;
   const std::string inst_name = "c.li";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
@@ -79,8 +79,8 @@ TEST_F(RV32C_Load, c_lui__0x67C9) {
   const uint8_t rd = 15;
   const std::string inst_name = "c.lui";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
 
   bool Status = Rv.Dispatch(Inst);
   EXPECT_TRUE(Status);
@@ -106,8 +106,8 @@ TEST_F(RV32C_Load, c_lwsp__0x40B2) {
   const uint8_t rd = 1;
   const std::string inst_name = "c.lwsp";
 
-  rvemu::Riscv Rv;
-  rvemu::RegFile &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv;
+  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
   rvemu::Memory &Mem = Rv.GetMem();
 
   const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
