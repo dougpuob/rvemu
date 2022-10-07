@@ -18,27 +18,27 @@ TEST_F(RV32C_Store, c_sw__0xC30C) {
   const uint32_t addr = 0x13D30;
   const uint32_t data = 0x5a5b5c5d;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
 
   Reg.Set(8 + rs1, 0x13D30);
   Reg.Set(8 + rs2, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read32(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read32(PFB.addr));
   }
 }
 
@@ -52,27 +52,27 @@ TEST_F(RV32C_Store, c_sw__0xC70C) {
   const uint32_t addr = 0x13D38;
   const uint32_t data = 0x5a5b5c5d;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
 
   Reg.Set(8 + rs1, 0x13D30);
   Reg.Set(8 + rs2, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read32(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read32(PFB.addr));
   }
 }
 
@@ -85,23 +85,23 @@ TEST_F(RV32C_Store, c_swsp__0xC422) {
   const uint32_t rs2 = 8;
   const std::string inst_name = "c.swsp";
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
 
   const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
   const uint32_t data = Reg.Get(rs2);
-  rvemu::Memory &mem = Rv.GetMem();
+  rvemu::Memory &mem = Rv32.GetMem();
   mem.Write32(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -116,24 +116,24 @@ TEST_F(RV32C_Store, c_swsp__0xC04A) {
   const uint32_t rs2 = 18;
   const std::string inst_name = "c.swsp";
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
 
   const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
   const uint32_t data = Reg.Get(rs2);
 
-  rvemu::Memory &mem = Rv.GetMem();
+  rvemu::Memory &mem = Rv32.GetMem();
   mem.Write32(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
@@ -148,26 +148,26 @@ TEST_F(RV32C_Store, c_swsp__0xC606) {
   const uint32_t rs2 = 1;
   const std::string inst_name = "c.swsp";
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
 
   Reg.Set(rs2, 0x5a5b5c5d);
 
   const uint32_t addr = Reg.Get(rvemu::AbiName::sp) + imm;
   const uint32_t data = Reg.Get(rs2);
 
-  rvemu::Memory &mem = Rv.GetMem();
+  rvemu::Memory &mem = Rv32.GetMem();
   mem.Write32(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs2, PFB.rs2);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);

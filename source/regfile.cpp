@@ -104,6 +104,7 @@ template <class T> void RegFile<T>::Set(uint32_t Reg, int32_t Val) {
 template <class T> void RegFile<T>::Set(uint32_t Reg, uint32_t Val) {
   if (AbiName::zero == Reg)
     return;
+
   m_Files[Reg] = Val;
 
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog) {
@@ -114,8 +115,12 @@ template <class T> void RegFile<T>::Set(uint32_t Reg, uint32_t Val) {
 }
 
 template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
-  m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
-  m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
+  if (sizeof(T) == sizeof(Val)) {
+    m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
+    m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
+  } else {
+    Set(Reg, (uint32_t)Val);
+  }
 }
 
 template <class T> size_t RegFile<T>::Size() const { return m_Files.size(); }
@@ -125,8 +130,7 @@ template <class T> void RegFile<T>::Clear() {
     m_Files[i] = 0;
 }
 
-template <class T> void FakeRegFile<T>::Set(uint32_t Reg, int32_t Val) {}
-
 } // namespace rvemu
 
 template class rvemu::RegFile<uint32_t>;
+template class rvemu::RegFile<uint64_t>;

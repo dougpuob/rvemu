@@ -661,3 +661,4 @@ template <class T> bool Riscv<T>::Op_c_sdsp(uint16_t Inst) {
 } // namespace rvemu
 
 template class rvemu::Riscv<uint32_t>;
+template class rvemu::Riscv<uint64_t>;

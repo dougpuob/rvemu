@@ -276,8 +276,8 @@ template <class T> bool Riscv<T>::Op_auipc(uint32_t Inst) {
 
   m_PFB.rd = m_DeInst32.Fetch_11_07(Inst);
   m_PFB.uimm = m_DeInst32.FetchImmUType(Inst);
-  const uint32_t pc = this->GetPc();
-  const uint32_t val = pc + m_PFB.uimm;
+  const T pc = this->GetPc();
+  const T val = pc + m_PFB.uimm;
   m_RegI.Set(m_PFB.rd, val);
 
   Record.Result = OpResult::Executed;
@@ -840,3 +840,4 @@ template <class T> bool Riscv<T>::Op_system(uint32_t Inst) {
 } // namespace rvemu
 
 template class rvemu::Riscv<uint32_t>;
+template class rvemu::Riscv<uint64_t>;

@@ -105,3 +105,4 @@ int SystemCall<T>::Read(RegFile<T> &Reg) {
 
 
 template class rvemu::SystemCall<uint32_t>;
+template class rvemu::SystemCall<uint64_t>;

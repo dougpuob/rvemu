@@ -8,6 +8,7 @@
 #include "state.h"
 #include "syscall.h"
 
+#include <climits>
 #include <cstdint>
 #include <functional>
 #include <type_traits>
@@ -81,6 +82,8 @@ private:
 
   T m_Pc = 0;
 
+  T m_XLEN = sizeof(T) * CHAR_BIT;
+
   InstLen m_InstLen = InstLen::INST_UNKNOWN;
   int32_t m_JumpIncLen = 0;
   uint32_t m_JumpNewLen = 0;
@@ -131,7 +134,7 @@ public:
   bool Dispatch(uint32_t Inst);
   bool IncPc();
   bool IncPc(int32_t Imm);
-  void Run(Elf *Elf);
+  bool Run(Elf *Elf);
 
   T GetPc();
 

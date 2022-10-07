@@ -13,16 +13,16 @@ TEST_F(RV32I_Branch, BType_bne_0x04079463) {
   int32_t imm = 72;
   std::string inst_name = "bne";
 
-  rvemu::Riscv<uint32_t> Rv;
-  bool Status = Rv.Dispatch(Inst);
+  rvemu::Riscv<uint32_t> Rv32;
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(rs2, Fields.rs2);
     EXPECT_EQ(imm, Fields.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
   }
 }
 
@@ -34,16 +34,16 @@ TEST_F(RV32I_Branch, BType_bne_0x08059263) {
   int32_t imm = 132;
   std::string inst_name = "bne";
 
-  rvemu::Riscv<uint32_t> Rv;
-  bool Status = Rv.Dispatch(Inst);
+  rvemu::Riscv<uint32_t> Rv32;
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(rs2, Fields.rs2);
     EXPECT_EQ(imm, Fields.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
   }
 }
 

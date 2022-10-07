@@ -421,7 +421,7 @@ template <class T> bool Riscv<T>::SetPc(T Pc) {
   return true;
 }
 
-template <class T> void Riscv<T>::Run(Elf *Elf) {
+template <class T> bool Riscv<T>::Run(Elf *Elf) {
   m_Elf = Elf;
 
   if (m_EnabledTraceLog || m_EnabledTrace) {
@@ -433,11 +433,12 @@ template <class T> void Riscv<T>::Run(Elf *Elf) {
 
   const uint32_t CyclesPerStep = 1;
   Memory &Mem = m_State.GetMem();
+  bool Status = false;
 
   for (; !HasHalted();) {
 
     /* step instructions */
-    bool Status = Step(CyclesPerStep, GetPc(), Mem);
+    Status = Step(CyclesPerStep, GetPc(), Mem);
     assert(Status);
 
     /* print this instruction information */
@@ -446,6 +447,7 @@ template <class T> void Riscv<T>::Run(Elf *Elf) {
   }
 
   printf("%s\n", this->m_ExitCodeMsg.c_str());
+  return Status;
 }
 
 template <class T> T Riscv<T>::GetPc() { return m_Pc; }
@@ -481,3 +483,4 @@ template <class T> bool Riscv<T>::Op_unimp(uint32_t Inst) {
 } // namespace rvemu
 
 template class rvemu::Riscv<uint32_t>;
+template class rvemu::Riscv<uint64_t>;

@@ -16,27 +16,27 @@ TEST_F(RV32I_Load, lh) {
   const uint32_t addr = 0x13848;
   const uint32_t data = 0x5a5b;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
   Reg.Set(rs1, 0x1383C);
-  Rv.GetMem().Write16(addr, data);
+  Rv32.GetMem().Write16(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(funct3, PFB.funct3);
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read16(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read16(PFB.addr));
   }
 }
 
@@ -51,27 +51,27 @@ TEST_F(RV32I_Load, lw) {
   const uint32_t addr = 0x13D18;
   const uint32_t data = 0x5a5b5c5d;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
   Reg.Set(rs1, 0x13CE8);
-  Rv.GetMem().Write32(addr, data);
+  Rv32.GetMem().Write32(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(funct3, PFB.funct3);
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read32(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read32(PFB.addr));
   }
 }
 
@@ -86,27 +86,27 @@ TEST_F(RV32I_Load, lbu) {
   const uint32_t addr = 0x12490;
   const uint8_t data = 0x5a;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
   Reg.Set(rs1, 0x12494);
-  Rv.GetMem().Write8(addr, data);
+  Rv32.GetMem().Write8(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(funct3, PFB.funct3);
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read8(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read8(PFB.addr));
   }
 }
 
@@ -121,27 +121,27 @@ TEST_F(RV32I_Load, lhu) {
   const uint32_t addr = 0x13848;
   const uint32_t data = 0x5a5b;
 
-  rvemu::Riscv<uint32_t> Rv;
-  rvemu::RegFile<uint32_t> &Reg = Rv.GetRegFile();
+  rvemu::Riscv<uint32_t> Rv32;
+  rvemu::RegFile<uint32_t> &Reg = Rv32.GetRegFile();
   Reg.Set(rs1, 0x1383C);
-  Rv.GetMem().Write16(addr, data);
+  Rv32.GetMem().Write16(addr, data);
 
-  bool Status = Rv.Dispatch(Inst);
+  bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv.GetFields();
+    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(funct3, PFB.funct3);
     EXPECT_EQ(rs1, PFB.rs1);
     EXPECT_EQ(rd, PFB.rd);
     EXPECT_EQ(imm, PFB.imm);
-    EXPECT_EQ(inst_name, Rv.GetRecordInst()->Name);
+    EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
 
     // Information in memory
     EXPECT_EQ(addr, PFB.addr);
     EXPECT_EQ(data, PFB.data);
-    EXPECT_EQ(data, Rv.GetMem().Read16(PFB.addr));
+    EXPECT_EQ(data, Rv32.GetMem().Read16(PFB.addr));
   }
 }
 

@@ -8,7 +8,7 @@ namespace rvemu {
 template <class T> bool Riscv<T>::Op64_c_sd(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.sd");
 
-  // M[x[8+rs1�] + uimm][63:0] = x[8+rs2�]
+  // M[x[8+rs1'] + uimm][63:0] = x[8+rs2']
   m_PFB.uimm = m_DeInst16.FetchImmCsFmt_5376(Inst);
 
   if (m_EnabledTraceLog)
@@ -29,3 +29,4 @@ template <class T> bool Riscv<T>::Op64_c_sd(uint16_t Inst) {
 } // namespace rvemu
 
 template class rvemu::Riscv<uint32_t>;
+template class rvemu::Riscv<uint64_t>;
