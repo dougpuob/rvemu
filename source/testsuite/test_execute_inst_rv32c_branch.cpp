@@ -25,7 +25,7 @@ TEST_F(RV32C_Branch, c_bnez__0xE315_Condition_is_ZERO) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -54,7 +54,7 @@ TEST_F(RV32C_Branch, c_bnez__0xE315_Condition_is_NOT_ZERO) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -86,7 +86,7 @@ TEST_F(RV32C_Branch, c_beqz__0xD179_Condition_is_ZERO) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -115,7 +115,7 @@ TEST_F(RV32C_Branch, c_beqz__0xD179_Condition_is_NOT_ZERO) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);

@@ -15,7 +15,7 @@ TEST_F(RV32I_Jump, UType_auipc) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(uimm, Fields.uimm);
     EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);
@@ -32,7 +32,7 @@ TEST_F(RV32I_Jump, JType_auipc) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(imm, Fields.imm);
     EXPECT_EQ(inst_name, Rv32.GetRecordInst()->Name);

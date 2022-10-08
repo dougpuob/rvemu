@@ -24,7 +24,7 @@ template <class T> bool Riscv<T>::Op_load(uint32_t Inst) {
       Record.AddLog("addr:0x%.8x", m_PFB.addr);
 
     m_PFB.data = m_State.GetMem().Read8(m_PFB.addr);
-    const uint32_t Val = m_DeInst32.SignExtB(m_PFB.data);
+    const T Val = m_DeInst32.SignExtB(m_PFB.data);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -61,7 +61,7 @@ template <class T> bool Riscv<T>::Op_load(uint32_t Inst) {
       Record.AddLog("addr:0x%.8x", m_PFB.addr);
 
     m_PFB.data = m_State.GetMem().Read16(m_PFB.addr);
-    const uint32_t Val = m_DeInst32.SignExtH(m_PFB.data);
+    const T Val = m_DeInst32.SignExtH(m_PFB.data);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -98,7 +98,7 @@ template <class T> bool Riscv<T>::Op_load(uint32_t Inst) {
       Record.AddLog("addr:0x%.8x", m_PFB.addr);
 
     m_PFB.data = m_State.GetMem().Read32(m_PFB.addr);
-    const uint32_t Val = m_DeInst32.SignExtW(m_PFB.data);
+    const T Val = m_DeInst32.SignExtW(m_PFB.data);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -171,7 +171,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b000: { // ADDI
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "addi");
 
-    const uint32_t Val = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
+    const T Val = m_RegI.Get(m_PFB.rs1) + m_PFB.imm;
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -182,7 +182,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slli");
 
     m_PFB.shamt = m_DeInst32.Fetch_24_20(Inst);
-    const int32_t Val = m_RegI.Get(m_PFB.rs1) << m_PFB.shamt;
+    const T Val = m_RegI.Get(m_PFB.rs1) << m_PFB.shamt;
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -192,7 +192,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b010: { // SLTI (set less than immediate)
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slti");
 
-    const uint32_t Val = (int32_t)m_RegI.Get(m_PFB.rs1) < (m_PFB.imm) ? 1 : 0;
+    const T Val = (int32_t)m_RegI.Get(m_PFB.rs1) < (m_PFB.imm) ? 1 : 0;
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -202,7 +202,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b011: { // SLTIU
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sltiu");
 
-    const uint32_t Val = (m_RegI.Get(m_PFB.rs1) < (uint32_t)m_PFB.imm) ? 1 : 0;
+    const T Val = (m_RegI.Get(m_PFB.rs1) < (uint32_t)m_PFB.imm) ? 1 : 0;
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -212,7 +212,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b100: { // XORI
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "xori");
 
-    const uint32_t Val = (m_RegI.Get(m_PFB.rs1) ^ m_PFB.imm);
+    const T Val = (m_RegI.Get(m_PFB.rs1) ^ m_PFB.imm);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -221,7 +221,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
 
   case 0b101: { // SRAI/SRLI
     uint32_t inst_30_30 = m_DeInst32.Fetch_30_30(Inst);
-    uint32_t Val = 0;
+    T Val = 0;
 
     // the shift amount is encoded in the lower 5 bits of the I-immediate field.
     m_PFB.imm = m_PFB.imm & 0b11111;
@@ -246,7 +246,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b110: { // ORI
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ori");
 
-    uint32_t val = m_RegI.Get(m_PFB.rs1) | m_PFB.imm;
+    T val = m_RegI.Get(m_PFB.rs1) | m_PFB.imm;
     m_RegI.Set(m_PFB.rd, val);
 
     Record.Result = OpResult::Executed;
@@ -256,7 +256,7 @@ template <class T> bool Riscv<T>::Op_opimm(uint32_t Inst) {
   case 0b111: { // ANDI
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "andi");
 
-    uint32_t val = m_RegI.Get(m_PFB.rs1) & m_PFB.imm;
+    T val = m_RegI.Get(m_PFB.rs1) & m_PFB.imm;
     m_RegI.Set(m_PFB.rd, val);
 
     Record.Result = OpResult::Executed;
@@ -386,8 +386,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b000: { // ADD
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "add");
 
-      const uint32_t val =
-          (int32_t)m_RegI.Get(m_PFB.rs1) + (int32_t)m_RegI.Get(m_PFB.rs2);
+      const T val = m_RegI.Get(m_PFB.rs1) + m_RegI.Get(m_PFB.rs2);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -397,8 +396,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b001: { // SLL
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sll");
 
-      const uint32_t val = m_RegI.Get(m_PFB.rs1)
-                           << (m_RegI.Get(m_PFB.rs2) & 0x1f);
+      const T val = m_RegI.Get(m_PFB.rs1) << (m_RegI.Get(m_PFB.rs2) & 0x1f);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -408,7 +406,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b010: { // SLT
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "slt");
 
-      const uint32_t val =
+      const T val =
           ((int32_t)m_RegI.Get(m_PFB.rs1) < (int32_t)m_RegI.Get(m_PFB.rs2)) ? 1
                                                                             : 0;
       m_RegI.Set(m_PFB.rd, val);
@@ -420,8 +418,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b011: { // SLTU
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sltu");
 
-      const uint32_t val =
-          (m_RegI.Get(m_PFB.rs1) < m_RegI.Get(m_PFB.rs2)) ? 1 : 0;
+      const T val = (m_RegI.Get(m_PFB.rs1) < m_RegI.Get(m_PFB.rs2)) ? 1 : 0;
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -431,7 +428,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b100: { // XOR
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "xor");
 
-      const uint32_t val = m_RegI.Get(m_PFB.rs1) ^ m_RegI.Get(m_PFB.rs2);
+      const T val = m_RegI.Get(m_PFB.rs1) ^ m_RegI.Get(m_PFB.rs2);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -441,8 +438,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b101: { // SRL
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "srl");
 
-      const uint32_t val =
-          m_RegI.Get(m_PFB.rs1) >> (m_RegI.Get(m_PFB.rs2) & 0x1f);
+      const T val = m_RegI.Get(m_PFB.rs1) >> (m_RegI.Get(m_PFB.rs2) & 0x1f);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -452,7 +448,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b110: { // OR
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "or");
 
-      const uint32_t val = m_RegI.Get(m_PFB.rs1) | m_RegI.Get(m_PFB.rs2);
+      const T val = m_RegI.Get(m_PFB.rs1) | m_RegI.Get(m_PFB.rs2);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -462,7 +458,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b111: { // AND
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "and");
 
-      const uint32_t val = m_RegI.Get(m_PFB.rs1) & m_RegI.Get(m_PFB.rs2);
+      const T val = m_RegI.Get(m_PFB.rs1) & m_RegI.Get(m_PFB.rs2);
       m_RegI.Set(m_PFB.rd, val);
 
       Record.Result = OpResult::Executed;
@@ -480,7 +476,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b000: { // SUB
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sub");
 
-      const uint32_t val =
+      const T val =
           (int32_t)(m_RegI.Get(m_PFB.rs1)) - (int32_t)(m_RegI.Get(m_PFB.rs2));
       m_RegI.Set(m_PFB.rd, val);
 
@@ -491,7 +487,7 @@ template <class T> bool Riscv<T>::Op_op(uint32_t Inst) {
     case 0b101: { // SRA
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sra");
 
-      const uint32_t val =
+      const T val =
           ((int32_t)m_RegI.Get(m_PFB.rs1)) >> (m_RegI.Get(m_PFB.rs2) & 0x1f);
       m_RegI.Set(m_PFB.rd, val);
 
@@ -555,7 +551,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -572,7 +568,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -589,7 +585,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -606,7 +602,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -623,7 +619,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -640,7 +636,7 @@ template <class T> bool Riscv<T>::Op_branch(uint32_t Inst) {
     if (jump) {
       m_JumpIncLen = m_PFB.imm;
       if (m_EnabledTraceLog) {
-        const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+        const T NewPc = (m_Pc + m_JumpIncLen);
         Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
       }
     }
@@ -670,13 +666,13 @@ template <class T> bool Riscv<T>::Op_jal(uint32_t Inst) {
 
   // Instruction-address-misaligned exception,
   // if the target address is not aligned to a four-byte boundary.
-  const uint32_t Pc = GetPc();
-  const uint32_t LinkPc = Pc + m_PFB.imm;
+  const T Pc = GetPc();
+  const T LinkPc = Pc + m_PFB.imm;
   if (!m_DeInst32.Is2BytesAligned(LinkPc))
     ExceptInstructionAddressMisaligned(LinkPc);
 
   // return address
-  const uint32_t Ra = Pc + (uint32_t)m_InstLen; // x[rd] = pc+4;
+  const T Ra = Pc + (uint32_t)m_InstLen; // x[rd] = pc+4;
 
   // alternate link (rd is ZERO means jump jump, don't go back)
   if (RvReg::x0 != m_PFB.rd) {
@@ -686,7 +682,7 @@ template <class T> bool Riscv<T>::Op_jal(uint32_t Inst) {
   // jump (increase jump)
   m_JumpIncLen = m_PFB.imm; // pc += sext(offset)
   if (m_EnabledTraceLog) {
-    const uint32_t NewPc = LinkPc;
+    const T NewPc = LinkPc;
     Record.AddLog("+pc<-0x%.8x(%d)", NewPc, NewPc);
   }
 
@@ -710,10 +706,10 @@ template <class T> bool Riscv<T>::Op_jalr(uint32_t Inst) {
   // x[rd]=t
 
   // return address
-  const uint32_t ra = GetPc() + (uint32_t)m_InstLen; // x[rd] = pc+4;
+  const T ra = GetPc() + (uint32_t)m_InstLen; // x[rd] = pc+4;
 
   // jump (new location jump)
-  const uint32_t upper_target_addr = m_RegI.Get(m_PFB.rs1);
+  const T upper_target_addr = m_RegI.Get(m_PFB.rs1);
   m_JumpNewLen = (upper_target_addr + m_PFB.imm) & ~1u;
 
   if (m_Elf) {
@@ -722,7 +718,7 @@ template <class T> bool Riscv<T>::Op_jalr(uint32_t Inst) {
   }
 
   if (m_EnabledTraceLog) {
-    const uint32_t NewPc = m_JumpNewLen;
+    const T NewPc = m_JumpNewLen;
     Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
   }
 
@@ -741,7 +737,7 @@ template <class T> bool Riscv<T>::Op_jalr(uint32_t Inst) {
 template <class T> bool Riscv<T>::Op_ecall(uint32_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "ecall");
 
-  const uint32_t ScNumb = m_RegI.Get(AbiName::a7);
+  const T ScNumb = m_RegI.Get(AbiName::a7);
   int Ret = m_SysCall.Handle(m_RegI, ScNumb);
 
   if (m_EnabledTraceLog) {

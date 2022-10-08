@@ -88,7 +88,7 @@ template <class T> const char *RegFile<T>::GetName(rvemu::RvReg R) const {
 }
 
 template <class T> const T RegFile<T>::Get(int X) const {
-  const uint32_t Val = m_Files[X];
+  const T Val = m_Files[X];
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog) {
     const char *RegName = GetName((RvReg)X);
     const char *AbiName = GetName((rvemu::AbiName)X);
@@ -115,11 +115,40 @@ template <class T> void RegFile<T>::Set(uint32_t Reg, uint32_t Val) {
 }
 
 template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
-  if (sizeof(T) == sizeof(Val)) {
-    m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
-    m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
+  if (AbiName::zero == Reg)
+    return;
+
+  if (sizeof(T) == sizeof(uint32_t)) {
+    m_Files[Reg * 2] = (uint32_t)(Val & 0xFFFFffff);
+    m_Files[Reg * 2 + 1] = (uint32_t)(Val >> 31 & 0xFFFFffff);
   } else {
-    Set(Reg, (uint32_t)Val);
+    m_Files[Reg] = Val;
+  }
+
+  if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog) {
+    const char *RegName = GetName((RvReg)Reg);
+    const char *AbiName = GetName((rvemu::AbiName)Reg);
+    (*m_ppRecord)->AddLog("%s[%s]<-0x%.16x", RegName, AbiName, Val);
+  }
+}
+
+// template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
+//   if (sizeof(T) == sizeof(uint32_t)) {
+//     m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
+//     m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
+//   } else {
+//     Set(Reg, (uint32_t)Val);
+//   }
+// }
+
+template <class T> void RegFile<T>::Set(uint32_t Reg, double Val) {
+  if (sizeof(T) == sizeof(uint32_t)) {
+    uint64_t Data = 0;
+    memcpy(&Data, &Val, sizeof(uint64_t));
+    m_Files[Reg * 2] = (uint32_t)(Data & 0xFFFFffff);
+    m_Files[Reg * 2 + 1] = (uint32_t)(Data >> 31 & 0xFFFFffff);
+  } else {
+    Set(Reg, Val);
   }
 }
 

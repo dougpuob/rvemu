@@ -15,7 +15,7 @@ template <class T> bool Riscv<T>::Op_c_addi4spn(uint16_t Inst) {
   m_PFB.uimm = m_DeInst16.FetchImmCiwFmt_549623(Inst);
 
   // x[8+rd'] = x[2] + uimm
-  uint32_t Val = m_RegI.Get(RvReg::x2) + m_PFB.uimm;
+  const T Val = m_RegI.Get(RvReg::x2) + m_PFB.uimm;
   m_RegI.Set(8 + m_PFB.rd, Val);
 
   Record.Result = OpResult::Executed;
@@ -149,7 +149,7 @@ template <class T> bool Riscv<T>::Op_c_addi(uint16_t Inst) {
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.addi");
 
     // x[rd] = x[rd] + sext(imm)
-    const uint32_t Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
+    const T Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -166,12 +166,12 @@ template <class T> bool Riscv<T>::Op_c_jal(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
 
   // x[1] = pc+2; pc += sext(offset)
-  const uint32_t Val = GetPc() + (uint16_t)(InstLen::INST_16);
+  const T Val = GetPc() + (uint16_t)(InstLen::INST_16);
   m_RegI.Set(AbiName::ra, Val);
   m_JumpIncLen = m_PFB.imm;
 
   if (m_Elf && m_EnabledTraceLog) {
-    const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+    const T NewPc = (m_Pc + m_JumpIncLen);
     const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
     GetPcForLog(SymData, NewPc, m_MessageBuffer);
     Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
@@ -189,7 +189,7 @@ template <class T> bool Riscv<T>::Op_c_addiw(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = sext((x[rd] + sext(imm))[31:0])
-  const uint32_t Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
+  const T Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
   m_RegI.Set(m_PFB.rd, Val);
 
   Record.Result = OpResult::Executed;
@@ -207,7 +207,7 @@ template <class T> bool Riscv<T>::Op_c_li(uint16_t Inst) {
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = sext(imm)
-  this->m_RegI.Set(m_PFB.rd, m_PFB.imm);
+  this->m_RegI.Set(m_PFB.rd, (T)m_PFB.imm);
 
   Record.Result = OpResult::Executed;
   return true;
@@ -227,7 +227,7 @@ template <class T> bool Riscv<T>::Op_c_lui(uint16_t Inst) {
     if (m_EnabledTraceLog)
       Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
 
-    const uint32_t Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
+    const T Val = m_RegI.Get(m_PFB.rd) + m_PFB.imm;
     m_RegI.Set(AbiName::sp, Val);
 
     Record.Result = OpResult::Executed;
@@ -241,7 +241,7 @@ template <class T> bool Riscv<T>::Op_c_lui(uint16_t Inst) {
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.lui");
 
       // x[rd] = sext(imm[17:12] << 12)
-      m_RegI.Set(m_PFB.rd, m_PFB.imm);
+      m_RegI.Set(m_PFB.rd, (T)m_PFB.imm);
 
       Record.Result = OpResult::Executed;
       return true;
@@ -280,7 +280,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
       if (m_EnabledTraceLog)
         Record.AddLog("shamt:0x%x(%d)", m_PFB.shamt, m_PFB.shamt);
 
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) >> m_PFB.shamt;
+      const T Val = m_RegI.Get(8 + m_PFB.rd) >> m_PFB.shamt;
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -300,7 +300,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
 
       // x[8+rd’] = x[8+rd’] >>s uimm
       m_PFB.shamt = m_DeInst16.FetchImmCbFmt_540(Inst);
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rs1) >> m_PFB.shamt;
+      const T Val = m_RegI.Get(8 + m_PFB.rs1) >> m_PFB.shamt;
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -313,7 +313,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
 
     m_PFB.imm = m_DeInst16.FetchImmCbFmt_540(Inst);
     // x[8+rd'] = x[8+rd'] & sext(imm)
-    const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) & m_PFB.imm;
+    const T Val = m_RegI.Get(8 + m_PFB.rd) & m_PFB.imm;
     m_RegI.Set(8 + m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -330,7 +330,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.sub");
 
       // x[8+rd'] = x[8+rd'] - x[8+rs2']
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) - m_RegI.Get(8 + m_PFB.rs2);
+      const T Val = m_RegI.Get(8 + m_PFB.rd) - m_RegI.Get(8 + m_PFB.rs2);
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -347,7 +347,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.xor");
 
       // x[8+rd'] = x[8+rd'] ^ x[8+rs2']
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) ^ m_RegI.Get(8 + m_PFB.rs2);
+      const T Val = m_RegI.Get(8 + m_PFB.rd) ^ m_RegI.Get(8 + m_PFB.rs2);
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -358,7 +358,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.or");
 
       // x[8+rd'] = x[8+rd'] | x[8+rs2']
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) | m_RegI.Get(8 + m_PFB.rs2);
+      const T Val = m_RegI.Get(8 + m_PFB.rd) | m_RegI.Get(8 + m_PFB.rs2);
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -369,7 +369,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
       RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.and");
 
       // x[8+rd'] = x[8+rd'] & x[8+rs2']
-      const uint32_t Val = m_RegI.Get(8 + m_PFB.rd) & m_RegI.Get(8 + m_PFB.rs2);
+      const T Val = m_RegI.Get(8 + m_PFB.rd) & m_RegI.Get(8 + m_PFB.rs2);
       m_RegI.Set(8 + m_PFB.rd, Val);
 
       Record.Result = OpResult::Executed;
@@ -400,7 +400,7 @@ template <class T> bool Riscv<T>::Op_c_j(uint16_t Inst) {
     m_JumpIncLen = m_PFB.imm;
 
     if (m_Elf && m_EnabledTraceLog) {
-      const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+      const T NewPc = (m_Pc + m_JumpIncLen);
       const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
@@ -424,7 +424,7 @@ template <class T> bool Riscv<T>::Op_c_beqz(uint16_t Inst) {
     m_JumpIncLen = m_PFB.imm;
 
     if (m_Elf && m_EnabledTraceLog) {
-      const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+      const T NewPc = (m_Pc + m_JumpIncLen);
       const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
@@ -446,7 +446,7 @@ template <class T> bool Riscv<T>::Op_c_bnez(uint16_t Inst) {
     m_JumpIncLen = m_PFB.imm;
 
     if (m_Elf && m_EnabledTraceLog) {
-      const uint32_t NewPc = (m_Pc + m_JumpIncLen);
+      const T NewPc = (m_Pc + m_JumpIncLen);
       const SymbolData &SymData = m_Elf->FindSymbol(NewPc);
       GetPcForLog(SymData, NewPc, m_MessageBuffer);
       Record.AddLog("+pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
@@ -474,7 +474,7 @@ template <class T> bool Riscv<T>::Op_c_slli(uint16_t Inst) {
   m_PFB.shamt = m_DeInst16.FetchImmCiFmt_540(Inst);
 
   // x[rd] = x[rd] << uimm
-  const uint32_t Val = m_RegI.Get(m_PFB.rd) << m_PFB.shamt;
+  const T Val = m_RegI.Get(m_PFB.rd) << m_PFB.shamt;
   m_RegI.Set(m_PFB.rd, Val);
 
   Record.Result = OpResult::Executed;
@@ -555,7 +555,7 @@ template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     if (m_Elf && m_EnabledTraceLog) {
       const SymbolData &SymData = m_Elf->FindSymbol(m_JumpNewLen);
       GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
-      const uint32_t NewPc = m_JumpNewLen;
+      const T NewPc = m_JumpNewLen;
       Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
     }
 
@@ -567,7 +567,7 @@ template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.mv");
 
     // x[rd] = x[rs2]
-    const uint32_t Val = m_RegI.Get(m_PFB.rs2);
+    const T Val = m_RegI.Get(m_PFB.rs2);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;
@@ -584,14 +584,14 @@ template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.jalr");
 
     // t = pc+2; pc = x[rs1]; x[1] = t
-    const uint32_t Val = GetPc() + (int32_t)m_InstLen;
+    const T Val = GetPc() + (int32_t)m_InstLen;
     m_RegI.Set(RvReg::x1, Val);
     m_JumpNewLen = m_RegI.Get(m_PFB.rs1);
 
     if (m_Elf && m_EnabledTraceLog) {
       const SymbolData &SymData = m_Elf->FindSymbol(m_JumpNewLen);
       GetPcForLog(SymData, m_JumpNewLen, m_MessageBuffer);
-      const uint32_t NewPc = m_JumpNewLen;
+      const T NewPc = m_JumpNewLen;
       Record.AddLog("pc<-0x%.8x(%d)%s", NewPc, NewPc, m_MessageBuffer.c_str());
     }
 
@@ -603,7 +603,7 @@ template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.add");
 
     // x[rd] = x[rd] + x[rs2]
-    const uint32_t Val = m_RegI.Get(m_PFB.rd) + m_RegI.Get(m_PFB.rs2);
+    const T Val = m_RegI.Get(m_PFB.rd) + m_RegI.Get(m_PFB.rs2);
     m_RegI.Set(m_PFB.rd, Val);
 
     Record.Result = OpResult::Executed;

@@ -27,7 +27,7 @@ TEST_F(RV32I_Arithmetic, RType_sub) {
   Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
@@ -42,7 +42,7 @@ TEST_F(RV32I_Arithmetic, RType_sub) {
   Status = Rv64.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv64.GetFields();
+    const rvemu::RvPreFetchBuf<uint64_t> &Fields = Rv64.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
@@ -72,7 +72,7 @@ TEST_F(RV32I_Arithmetic, RType_add) {
     Status = Rv32.Dispatch(Inst);
     EXPECT_TRUE(Status);
     if (Status) {
-      const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+      const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
       EXPECT_EQ(rd, Fields.rd);
       EXPECT_EQ(funct3, Fields.funct3);
       EXPECT_EQ(rs1, Fields.rs1);
@@ -88,18 +88,19 @@ TEST_F(RV32I_Arithmetic, RType_add) {
     rvemu::Riscv<uint64_t> Rv64;
     rvemu::RegFile<uint64_t> &RegFile = Rv64.GetRegFile();
     RegFile.Set(rs1, UINT32_MAX);
-    RegFile.Set(rs2, UINT32_MAX / 2);
+    RegFile.Set(rs2, UINT32_MAX);
     Status = Rv64.Dispatch(Inst);
     EXPECT_TRUE(Status);
     if (Status) {
-      const rvemu::RvPreFetchBuf &Fields = Rv64.GetFields();
+      const rvemu::RvPreFetchBuf<uint64_t> &Fields = Rv64.GetFields();
+      const uint64_t Result = ((uint64_t)UINT32_MAX + (uint64_t)UINT32_MAX);
       EXPECT_EQ(rd, Fields.rd);
       EXPECT_EQ(funct3, Fields.funct3);
       EXPECT_EQ(rs1, Fields.rs1);
       EXPECT_EQ(rs2, Fields.rs2);
       EXPECT_EQ(funct7, Fields.funct7);
       EXPECT_EQ(inst_name, Rv64.GetRecordInst()->Name);
-      EXPECT_EQ((UINT32_MAX + UINT32_MAX / 2), RegFile.Get(rd));
+      EXPECT_EQ(Result, RegFile.Get(rd));
     }
   }
 }
@@ -119,7 +120,7 @@ TEST_F(RV32I_Arithmetic, IType_addi) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(rd, Fields.rd);
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);

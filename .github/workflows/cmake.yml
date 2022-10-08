@@ -53,23 +53,94 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: |
         ./rvemu --test | tee output_unittest.txt
-        
+
         # hello.elf
         ./rvemu ../testdata/hello.elf             | tee output_hello.txt
         ./rvemu ../testdata/hello.elf --trace     | tee output_hello_trace.txt
         ./rvemu ../testdata/hello.elf --tracelog  | tee output_hello_tracelog.txt
-        
+
         # hello32.elf
         ./rvemu ../testdata/hello32.elf             | tee output_hello32.txt
         ./rvemu ../testdata/hello32.elf --trace     | tee output_hello32_trace.txt
         ./rvemu ../testdata/hello32.elf --tracelog  | tee output_hello32_tracelog.txt
-        
+
         # hello32_1.elf
         ./rvemu ../testdata/hello32_1.elf            | tee output_hello32_1.txt
         ./rvemu ../testdata/hello32_1.elf --trace    | tee output_hello32_1_trace.txt
-        ./rvemu ../testdata/hello32_1.elf --tracelog | tee output_hello32_1_tracelog.txt        
+        ./rvemu ../testdata/hello32_1.elf --tracelog | tee output_hello32_1_tracelog.txt
+
+
+        # programiz_examples
+        ./rvemu ../testdata/programiz_examples/03_c_program_to_add_two_integers.elf                        | tee 03_c_program_to_add_two_integers.txt
+        ./rvemu ../testdata/programiz_examples/03_c_program_to_add_two_integers.elf --trace --trace        | tee 03_c_program_to_add_two_integers_trace.txt
+        ./rvemu ../testdata/programiz_examples/03_c_program_to_add_two_integers.elf --tracelog --tracelog  | tee 03_c_program_to_add_two_integers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/04_c_program_to_multiply_two_floating_point_numbers.elf            | tee 04_c_program_to_multiply_two_floating_point_numbers.txt
+        ./rvemu ../testdata/programiz_examples/04_c_program_to_multiply_two_floating_point_numbers.elf --trace    | tee 04_c_program_to_multiply_two_floating_point_numbers_trace.txt
+        ./rvemu ../testdata/programiz_examples/04_c_program_to_multiply_two_floating_point_numbers.elf --tracelog | tee 04_c_program_to_multiply_two_floating_point_numbers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/05_c_program_to_find_ascii_value_of_a_character.elf             | tee 05_c_program_to_find_ascii_value_of_a_character.txt
+        ./rvemu ../testdata/programiz_examples/05_c_program_to_find_ascii_value_of_a_character.elf --trace     | tee 05_c_program_to_find_ascii_value_of_a_character_trace.txt
+        ./rvemu ../testdata/programiz_examples/05_c_program_to_find_ascii_value_of_a_character.elf --tracelog  | tee 05_c_program_to_find_ascii_value_of_a_characte_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/06_c_program_to_compute_quotient_and_remainder.elf             | tee 06_c_program_to_compute_quotient_and_remainder.txt
+        ./rvemu ../testdata/programiz_examples/06_c_program_to_compute_quotient_and_remainder.elf --trace     | tee 06_c_program_to_compute_quotient_and_remainder_trace.txt
+        ./rvemu ../testdata/programiz_examples/06_c_program_to_compute_quotient_and_remainder.elf --tracelog  | tee 06_c_program_to_compute_quotient_and_remainder_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/07_c_program_to_find_the_size_of_int_float_double_and_char.elf            | tee 07_c_program_to_find_the_size_of_int_float_double_and_char.txt
+        ./rvemu ../testdata/programiz_examples/07_c_program_to_find_the_size_of_int_float_double_and_char.elf --trace    | tee 07_c_program_to_find_the_size_of_int_float_double_and_char_trace.txt
+        ./rvemu ../testdata/programiz_examples/07_c_program_to_find_the_size_of_int_float_double_and_char.elf --tracelog | tee 07_c_program_to_find_the_size_of_int_float_double_and_char_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/08_c_program_to_demonstrate_the_working_of_keyword_long.elf              | tee 08_c_program_to_demonstrate_the_working_of_keyword_long.txt
+        ./rvemu ../testdata/programiz_examples/08_c_program_to_demonstrate_the_working_of_keyword_long.elf --trace      | tee 08_c_program_to_demonstrate_the_working_of_keyword_long_trace.txt
+        ./rvemu ../testdata/programiz_examples/08_c_program_to_demonstrate_the_working_of_keyword_long.elf  --tracelog  | tee 08_c_program_to_demonstrate_the_working_of_keyword_long_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/09_c_program_to_swap_two_numbers.elf               | tee 09_c_program_to_swap_two_numbers.txt
+        ./rvemu ../testdata/programiz_examples/09_c_program_to_swap_two_numbers.elf --trace       | tee 09_c_program_to_swap_two_numbers_trace.txt
+        ./rvemu ../testdata/programiz_examples/09_c_program_to_swap_two_numbers.elf  --tracelog   | tee 09_c_program_to_swap_two_numbers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/10_c_program_to_multiply_two_numbers.elf             | tee 10_c_program_to_multiply_two_numbers.txt
+        ./rvemu ../testdata/programiz_examples/10_c_program_to_multiply_two_numbers.elf --trace     | tee 10_c_program_to_multiply_two_numbers_trace.txt
+        ./rvemu ../testdata/programiz_examples/10_c_program_to_multiply_two_numbers.elf --tracelog  | tee 10_c_program_to_multiply_two_numbers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant.elf            | tee 11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant.txt
+        ./rvemu ../testdata/programiz_examples/11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant.elf --trace    | tee 11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant_trace.txt
+        ./rvemu ../testdata/programiz_examples/11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant.elf --tracelog | tee 11_c_program_to_check_whether_a_character_is_a_vowel_or_consonant_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/12_c_program_to_find_the_largest_number_among_three_numbers.elf              | tee 12_c_program_to_find_the_largest_number_among_three_numbers.txt
+        ./rvemu ../testdata/programiz_examples/12_c_program_to_find_the_largest_number_among_three_numbers.elf --trace      | tee 12_c_program_to_find_the_largest_number_among_three_numbers_trace.txt
+        ./rvemu ../testdata/programiz_examples/12_c_program_to_find_the_largest_number_among_three_numbers.elf --tracelog   | tee 12_c_program_to_find_the_largest_number_among_three_numbers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/14_c_program_to_check_leap_year.elf              | tee 14_c_program_to_check_leap_year.txt
+        ./rvemu ../testdata/programiz_examples/14_c_program_to_check_leap_year.elf --trace      | tee 14_c_program_to_check_leap_year_trace.txt
+        ./rvemu ../testdata/programiz_examples/14_c_program_to_check_leap_year.elf --tracelog   | tee 14_c_program_to_check_leap_year_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/15_c_program_to_check_whether_a_number_is_positive_or_negative.elf             | tee 15_c_program_to_check_whether_a_number_is_positive_or_negative.txt
+        ./rvemu ../testdata/programiz_examples/15_c_program_to_check_whether_a_number_is_positive_or_negative.elf --trace     | tee 15_c_program_to_check_whether_a_number_is_positive_or_negative_trace.txt
+        ./rvemu ../testdata/programiz_examples/15_c_program_to_check_whether_a_number_is_positive_or_negative.elf --tracelog  | tee 15_c_program_to_check_whether_a_number_is_positive_or_negative_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/16_c_program_to_check_whether_a_character_is_an_alphabet_or_not.elf            | tee 16_c_program_to_check_whether_a_character_is_an_alphabet_or_not.txt
+        ./rvemu ../testdata/programiz_examples/16_c_program_to_check_whether_a_character_is_an_alphabet_or_not.elf --trace    | tee 16_c_program_to_check_whether_a_character_is_an_alphabet_or_not_trace.txt
+        ./rvemu ../testdata/programiz_examples/16_c_program_to_check_whether_a_character_is_an_alphabet_or_not.elf --tracelog | tee 16_c_program_to_check_whether_a_character_is_an_alphabet_or_not_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/17_c_program_to_calculate_the_sum_of_natural_numbers.elf             | tee 17_c_program_to_calculate_the_sum_of_natural_numbers.txt
+        ./rvemu ../testdata/programiz_examples/17_c_program_to_calculate_the_sum_of_natural_numbers.elf --trace     | tee 17_c_program_to_calculate_the_sum_of_natural_numbers_trace.txt
+        ./rvemu ../testdata/programiz_examples/17_c_program_to_calculate_the_sum_of_natural_numbers.elf --tracelog  | tee 17_c_program_to_calculate_the_sum_of_natural_numbers_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/18_c_program_to_find_factorial_of_a_number.elf             | tee 18_c_program_to_find_factorial_of_a_number.txt
+        ./rvemu ../testdata/programiz_examples/18_c_program_to_find_factorial_of_a_number.elf --trace     | tee 18_c_program_to_find_factorial_of_a_number_trace.txt
+        ./rvemu ../testdata/programiz_examples/18_c_program_to_find_factorial_of_a_number.elf --tracelog  | tee 18_c_program_to_find_factorial_of_a_number_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/19_c_program_to_generate_multiplication_table.elf            | tee 19_c_program_to_generate_multiplication_table.txt
+        ./rvemu ../testdata/programiz_examples/19_c_program_to_generate_multiplication_table.elf --trace    | tee 19_c_program_to_generate_multiplication_table_trace.txt
+        ./rvemu ../testdata/programiz_examples/19_c_program_to_generate_multiplication_table.elf --tracelog | tee 19_c_program_to_generate_multiplication_table_tracelog.txt
+
+        ./rvemu ../testdata/programiz_examples/20_c_program_to_display_fibonacci_sequence.elf             | tee 20_c_program_to_display_fibonacci_sequence.txt
+        ./rvemu ../testdata/programiz_examples/20_c_program_to_display_fibonacci_sequence.elf --trace     | tee 20_c_program_to_display_fibonacci_sequence_trace.txt
+        ./rvemu ../testdata/programiz_examples/20_c_program_to_display_fibonacci_sequence.elf --tracelog  | tee 20_c_program_to_display_fibonacci_sequence_tracelog.txt
+
         ls -la
-        
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:

@@ -16,7 +16,7 @@
 
 namespace rvemu {
 
-struct RvPreFetchBuf {
+template <class T> struct RvPreFetchBuf {
   uint8_t opcode;
   uint8_t rd;
   uint8_t rs1;
@@ -42,7 +42,8 @@ struct RvPreFetchBuf {
   // Load & Store
   uint64_t addr;
   union {
-    uint32_t data;
+    T data;
+    uint32_t data32;
     uint64_t data64;
   };
 
@@ -99,7 +100,7 @@ private:
   SystemCall<T> m_SysCall;
 
   /* Instructions */
-  RvPreFetchBuf m_PFB;
+  RvPreFetchBuf<T> m_PFB;
   DecodeInstruction16 m_DeInst16;
   DecodeInstruction32 m_DeInst32;
 
@@ -140,7 +141,7 @@ public:
 
   void Halt();
   bool HasHalted();
-  const RvPreFetchBuf &GetFields();
+  const RvPreFetchBuf<T> &GetFields();
   RegFile<T> &GetRegFile();
 
   /* Exception */

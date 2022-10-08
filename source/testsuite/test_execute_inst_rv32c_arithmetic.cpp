@@ -22,7 +22,7 @@ TEST_F(RV32C_Arithmetic, c_addi16sp__0x7139) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
@@ -50,7 +50,7 @@ TEST_F(RV32C_Arithmetic, c_add__0x97B6) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -80,7 +80,7 @@ TEST_F(RV32C_Arithmetic, c_addi4spn__0x004C) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
@@ -107,7 +107,7 @@ TEST_F(RV32C_Arithmetic, c_addi__0x0705) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
@@ -138,7 +138,7 @@ TEST_F(RV32C_Arithmetic, c_sub__0x8E09) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rd, PFB.rd);
@@ -169,7 +169,7 @@ TEST_F(RV32C_Arithmetic, c_andi__0x8A3D) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -201,7 +201,7 @@ TEST_F(RV32C_Arithmetic, c_or__0x8F75) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(rs1, PFB.rs1);
@@ -232,7 +232,7 @@ TEST_F(RV32C_Arithmetic, c_slli__0x068A) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &PFB = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &PFB = Rv32.GetFields();
 
     // Fileds of instruction
     EXPECT_EQ(shamt, PFB.shamt);

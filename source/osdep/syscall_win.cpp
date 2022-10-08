@@ -17,9 +17,9 @@ template <class T> void SystemCall<T>::InitStdFds() {
 template <class T> int SystemCall<T>::Open(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
-  uint32_t Name_ = Reg.Get(AbiName::a0);
-  uint32_t Flags = Reg.Get(AbiName::a1);
-  uint32_t Mode = Reg.Get(AbiName::a2);
+  T Name_ = Reg.Get(AbiName::a0);
+  T Flags = Reg.Get(AbiName::a1);
+  T Mode = Reg.Get(AbiName::a2);
 
   const char *Name = (char *)pState->GetMem().GetHostAddr(Name_);
   const char *ModeStr;
@@ -36,7 +36,7 @@ template <class T> int SystemCall<T>::Open(RegFile<T> &Reg) {
 
   FILE *Fd = fopen(Name, ModeStr);
   if (0 != Fd) {
-    uint32_t Key = pState->GetFd().size();
+    T Key = pState->GetFd().size();
     pState->GetFd()[Key] = Fd;
     Reg.Set(AbiName::a0, Key);
     return 0;
@@ -48,14 +48,14 @@ template <class T> int SystemCall<T>::Open(RegFile<T> &Reg) {
 template <class T> int SystemCall<T>::Write(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
-  uint32_t Fd_ = Reg.Get(AbiName::a0);
-  uint32_t Buf_ = Reg.Get(AbiName::a1);
-  uint32_t Count = Reg.Get(AbiName::a2);
+  T Fd_ = Reg.Get(AbiName::a0);
+  T Buf_ = Reg.Get(AbiName::a1);
+  T Count = Reg.Get(AbiName::a2);
 
   void *Fd = pState->GetFd()[Fd_];
   void *Buf = (char *)pState->GetMem().GetHostAddr(Buf_);
 
-  int Ret = 0;
+  T Ret = 0;
   if (0 != Fd && nullptr != Buf)
     Ret = fwrite(Buf, 1, Count, (FILE *)Fd);
 
@@ -66,26 +66,26 @@ template <class T> int SystemCall<T>::Write(RegFile<T> &Reg) {
 template <class T> int SystemCall<T>::Close(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
-  const uint32_t Fd_ = Reg.Get(AbiName::a0);
+  const T Fd_ = Reg.Get(AbiName::a0);
 
-  int Ret = 0;
+  T Ret = 0;
   if (Fd_ >= 3) {
     void *Fd = pState->GetFd()[Fd_];
     Ret = fclose((FILE *)Fd);
   }
 
-  Reg.Set(AbiName::a0, (uint32_t)Ret);
+  Reg.Set(AbiName::a0, Ret);
   return Ret;
 }
 
 template <class T> int SystemCall<T>::Read(RegFile<T> &Reg) {
   rvemu::MachineState *pState = (rvemu::MachineState *)m_pMachineState;
 
-  uint32_t Fd_ = Reg.Get(AbiName::a0);
-  uint32_t Buf_ = Reg.Get(AbiName::a1);
-  uint32_t Count = Reg.Get(AbiName::a2);
+  T Fd_ = Reg.Get(AbiName::a0);
+  T Buf_ = Reg.Get(AbiName::a1);
+  T Count = Reg.Get(AbiName::a2);
 
-  int Ret = 0;
+  T Ret = 0;
   FILE *Fd = pState->GetFd()[Fd_];
   void *Buf = pState->GetMem().GetHostAddr(Buf_);
   if (0 != Fd_ && nullptr != Buf) {

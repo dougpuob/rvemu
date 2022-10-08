@@ -133,7 +133,9 @@ template <class T> const RecordInst *Riscv<T>::GetRecordInst() {
   return m_pRecInst;
 }
 
-template <class T> const RvPreFetchBuf &Riscv<T>::GetFields() { return m_PFB; };
+template <class T> const RvPreFetchBuf<T> &Riscv<T>::GetFields() {
+  return m_PFB;
+};
 
 template <class T> RegFile<T> &Riscv<T>::GetRegFile() { return m_RegI; };
 
@@ -195,7 +197,7 @@ template <class T> void Riscv<T>::Reset(T Pc) {
   m_Pc = 0;
 
   // set the default stack pointer
-  m_RegI.Set(AbiName::sp, 0xFFFFF000);
+  m_RegI.Set(AbiName::sp, (T)0xFFFFF000);
 
   // reset the csrs
   // rv->csr_cycle = 0;

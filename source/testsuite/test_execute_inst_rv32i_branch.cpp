@@ -17,7 +17,7 @@ TEST_F(RV32I_Branch, BType_bne_0x04079463) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(rs2, Fields.rs2);
@@ -38,7 +38,7 @@ TEST_F(RV32I_Branch, BType_bne_0x08059263) {
   bool Status = Rv32.Dispatch(Inst);
   EXPECT_TRUE(Status);
   if (Status) {
-    const rvemu::RvPreFetchBuf &Fields = Rv32.GetFields();
+    const rvemu::RvPreFetchBuf<uint32_t> &Fields = Rv32.GetFields();
     EXPECT_EQ(funct3, Fields.funct3);
     EXPECT_EQ(rs1, Fields.rs1);
     EXPECT_EQ(rs2, Fields.rs2);
