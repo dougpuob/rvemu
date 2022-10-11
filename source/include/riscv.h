@@ -204,7 +204,9 @@ public:
   bool Op_c_sdsp(uint16_t Inst);
 
   /*RV64C*/
+  bool Op_opimm32(uint32_t Inst);
   bool Op64_c_sd(uint16_t Inst);
+  bool Op64i_addiw(uint32_t Inst);
 };
 
 } // namespace rvemu

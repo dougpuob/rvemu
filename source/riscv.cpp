@@ -229,7 +229,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     case 0b00011:  Status = this->Op_misc_mem(Inst);   break;
     case 0b00100:  Status = this->Op_opimm(Inst);      break;
     case 0b00101:  Status = this->Op_auipc(Inst);      break;
-    case 0b00110:  Status = this->Op_unimp(Inst);      break;
+    case 0b00110:  Status = this->Op_opimm32(Inst);    break;
     case 0b00111:  Status = this->Op_unimp(Inst);      break;
 
     case 0b01000:  Status = this->Op_store(Inst);      break;

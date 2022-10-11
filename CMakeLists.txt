@@ -96,6 +96,8 @@ set(SOURCE_TESTS
     #
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_regfile.cpp
     #
+    ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv64i.cpp
+    #
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_arithmetic.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_branch.cpp
     ${CMAKE_SOURCE_DIR}/source/testsuite/test_execute_inst_rv32c_jump.cpp
