@@ -101,6 +101,10 @@ template <class T> void RegFile<T>::Set(uint32_t Reg, int32_t Val) {
   Set(Reg, (uint32_t)Val);
 }
 
+template <class T> void RegFile<T>::Set(uint32_t Reg, int64_t Val) {
+  Set(Reg, (uint64_t)Val);
+}
+
 template <class T> void RegFile<T>::Set(uint32_t Reg, uint32_t Val) {
   if (AbiName::zero == Reg)
     return;
@@ -131,15 +135,6 @@ template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
     (*m_ppRecord)->AddLog("%s[%s]<-0x%.16x", RegName, AbiName, Val);
   }
 }
-
-// template <class T> void RegFile<T>::Set(uint32_t Reg, uint64_t Val) {
-//   if (sizeof(T) == sizeof(uint32_t)) {
-//     m_Files[Reg * 2] = (Val >> 0) & 0xFFFFffff;
-//     m_Files[Reg * 2 + 1] = (Val >> 31) & 0xFFFFffff;
-//   } else {
-//     Set(Reg, (uint32_t)Val);
-//   }
-// }
 
 template <class T> void RegFile<T>::Set(uint32_t Reg, double Val) {
   if (sizeof(T) == sizeof(uint32_t)) {

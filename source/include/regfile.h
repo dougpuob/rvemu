@@ -56,6 +56,7 @@ public:
 
   T &Set(uint32_t Reg) { return m_Files[Reg]; }
   void Set(uint32_t Reg, int32_t Val);
+  void Set(uint32_t Reg, int64_t Val);
   void Set(uint32_t Reg, uint32_t Val);
   void Set(uint32_t Reg, uint64_t Val);
   void Set(uint32_t Reg, double Val);
