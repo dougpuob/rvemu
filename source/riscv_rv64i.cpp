@@ -9,11 +9,11 @@ template <class T> bool Riscv<T>::Op_opimm32(uint32_t Inst) {
 
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
 
+  // clang-format off
   switch (m_PFB.funct3) {
-  case 0b000: { // addiw
-    return this->Op64i_addiw(Inst);
+  case 0b000: { return this->Op64i_addiw(Inst);  }  // addiw
   }
-  }
+  // clang-format on
 
   return false;
 }
@@ -30,9 +30,8 @@ template <class T> bool Riscv<T>::Op64i_addiw(uint32_t Inst) {
 
   const int32_t val_imm = (int32_t)m_PFB.imm;
   const int64_t val_rs1 = (int64_t)m_RegI.Get(m_PFB.rs1);
-  const uint64_t val_result = val_imm + val_rs1;
-  m_PFB.data64 =
-      (val_result & (0x80000000'00000000)) | (val_result & 0x00000000'8fffFFFF);
+  const int64_t val = val_imm + val_rs1;
+  m_PFB.data64 = (val & (0x80000000'00000000)) | (val & 0x00000000'8fffFFFF);
   m_RegI.Set(m_PFB.rd, m_PFB.data64);
 
   Record.Result = OpResult::Executed;
