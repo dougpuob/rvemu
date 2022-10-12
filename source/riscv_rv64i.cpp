@@ -29,12 +29,10 @@ template <class T> bool Riscv<T>::Op64i_addiw(uint32_t Inst) {
     Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
 
   const int32_t val_imm = (int32_t)m_PFB.imm;
-  const int32_t val_rs1 = (int32_t)m_RegI.Get(m_PFB.rs1);
-  const int32_t val_result = val_imm + val_rs1;
-  m_PFB.data64 = (int64_t)val_result;
-  // uint64_t msb = m_PFB.data64 & ((uint64_t)1 << 63);
-  // m_PFB.data64 = (m_PFB.data64 & 0x8FFFffff) | msb;
-
+  const int64_t val_rs1 = (int64_t)m_RegI.Get(m_PFB.rs1);
+  const uint64_t val_result = val_imm + val_rs1;
+  m_PFB.data64 =
+      (val_result & (0x80000000'00000000)) | (val_result & 0x00000000'8fffFFFF);
   m_RegI.Set(m_PFB.rd, m_PFB.data64);
 
   Record.Result = OpResult::Executed;
