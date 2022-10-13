@@ -28,10 +28,7 @@ template <class T> bool Riscv<T>::Op64i_addiw(uint32_t Inst) {
   if (m_EnabledTraceLog)
     Record.AddLog("imm:0x%x(%d)", m_PFB.imm, m_PFB.imm);
 
-  const int32_t val_imm = (int32_t)m_PFB.imm;
-  const int64_t val_rs1 = (int64_t)m_RegI.Get(m_PFB.rs1);
-  const int64_t val = val_imm + val_rs1;
-  m_PFB.data64 = (val & (0x80000000'00000000)) | (val & 0x00000000'8fffFFFF);
+  m_PFB.data64 = (int32_t)((int64_t)m_PFB.imm + (int64_t)m_RegI.Get(m_PFB.rs1));
   m_RegI.Set(m_PFB.rd, m_PFB.data64);
 
   Record.Result = OpResult::Executed;
