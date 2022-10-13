@@ -6,7 +6,7 @@
 
 namespace rvemu {
 
-template <class T> bool Riscv<T>::Op_c_addi4spn(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_addi4spn(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.addi4spn");
 
   m_PFB.funct3 = m_DeInst16.Fetch_15_13(Inst);
@@ -22,7 +22,7 @@ template <class T> bool Riscv<T>::Op_c_addi4spn(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_fld(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_fld(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.fld");
 
   m_PFB.rd = m_DeInst16.Fetch_04_02(Inst);
@@ -44,7 +44,7 @@ template <class T> bool Riscv<T>::Op_c_fld(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_lw(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_lw(uint16_t Inst) {
 
   m_PFB.funct3 = m_DeInst16.Fetch_15_13(Inst);
   m_PFB.rd = m_DeInst16.Fetch_04_02(Inst);
@@ -78,7 +78,7 @@ template <class T> bool Riscv<T>::Op_c_lw(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_ld(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_ld(uint16_t Inst) {
   // SetInstStr(Inst, "c.ld");
 
   assert(!"UNIMPLEMENTED!!! c.fld");
@@ -86,7 +86,7 @@ template <class T> bool Riscv<T>::Op_c_ld(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_fsd(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_fsd(uint16_t Inst) {
   // SetInstStr(Inst, "c.fsd");
 
   assert(!"UNIMPLEMENTED!!! c.fsd");
@@ -94,7 +94,7 @@ template <class T> bool Riscv<T>::Op_c_fsd(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_sw(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_sw(uint16_t Inst) {
   m_PFB.rs2 = m_DeInst16.Fetch_04_02(Inst);
   m_PFB.rs1 = m_DeInst16.Fetch_09_07(Inst);
   m_PFB.funct3 = m_DeInst16.Fetch_15_13(Inst);
@@ -133,12 +133,12 @@ template <class T> bool Riscv<T>::Op_c_sw(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_sd(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_sd(uint16_t Inst) {
   assert(!"UNIMPLEMENTED!!! c.sd");
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_addi(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_addi(uint16_t Inst) {
 
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);
   m_PFB.rd = m_DeInst16.Fetch_11_07(Inst);
@@ -160,7 +160,7 @@ template <class T> bool Riscv<T>::Op_c_addi(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_jal(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_jal(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.jal");
 
   m_PFB.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
@@ -181,7 +181,7 @@ template <class T> bool Riscv<T>::Op_c_jal(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_addiw(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_addiw(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.addiw");
 
   m_PFB.rd = m_DeInst16.Fetch_11_07(Inst);
@@ -196,7 +196,7 @@ template <class T> bool Riscv<T>::Op_c_addiw(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_li(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_li(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.li");
 
   m_PFB.rd = m_DeInst16.Fetch_11_07(Inst);
@@ -213,7 +213,7 @@ template <class T> bool Riscv<T>::Op_c_li(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_lui(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_lui(uint16_t Inst) {
 
   m_PFB.rd = m_DeInst16[{11, 7}];
 
@@ -251,7 +251,7 @@ template <class T> bool Riscv<T>::Op_c_lui(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_miscalu(uint16_t Inst) {
 
   m_PFB.opcode = m_DeInst16.Fetch_01_00(Inst);
   m_PFB.funct2 = m_DeInst16.Fetch_06_05(Inst);
@@ -388,7 +388,7 @@ template <class T> bool Riscv<T>::Op_c_miscalu(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_j(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_j(uint16_t Inst) {
   m_PFB.funct3 = m_DeInst16.Fetch_15_13(Inst);
   m_PFB.imm = m_DeInst16.FetchImmCjFmt_114981067315(Inst);
 
@@ -413,7 +413,7 @@ template <class T> bool Riscv<T>::Op_c_j(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_beqz(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_beqz(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.beqz");
 
   m_PFB.rs1 = m_DeInst16.Fetch_09_07(Inst);
@@ -435,7 +435,7 @@ template <class T> bool Riscv<T>::Op_c_beqz(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_bnez(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_bnez(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.bnez");
 
   m_PFB.rs1 = m_DeInst16.Fetch_09_07(Inst);
@@ -457,7 +457,7 @@ template <class T> bool Riscv<T>::Op_c_bnez(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_slli(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_slli(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.slli");
 
   m_PFB.rs1 = m_DeInst16.Fetch_11_07(Inst);
@@ -481,13 +481,13 @@ template <class T> bool Riscv<T>::Op_c_slli(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_fldsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_fldsp(uint16_t Inst) {
   // SetInstStr(Inst, "c.fldsp");
   assert(!"UNIMPLEMENTED!!! c.fldsp");
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_ldsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_ldsp(uint16_t Inst) {
 
   Field<T> Field;
   Field[RvField::uimm] = m_DeInst16.FetchImmCiFmt_54386(Inst);
@@ -501,7 +501,7 @@ template <class T> bool Riscv<T>::Op_c_ldsp(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_lwsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_lwsp(uint16_t Inst) {
 
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_54276(Inst);
   m_PFB.rd = m_DeInst16.Fetch_11_07(Inst);
@@ -532,7 +532,7 @@ template <class T> bool Riscv<T>::Op_c_lwsp(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
+template <class T> bool Riscv<T>::Op32c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
 
   const uint16_t inst_06_02 = m_DeInst16.Fetch_06_02(Inst);
   const uint16_t inst_11_07 = m_DeInst16.Fetch_11_07(Inst);
@@ -614,13 +614,13 @@ template <class T> bool Riscv<T>::Op_c_cr(uint16_t Inst) { // J[AL]R/MV/ADD
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_fsdsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_fsdsp(uint16_t Inst) {
   // SetInstStr(Inst, "c.fsdsp");
   assert(!"UNIMPLEMENTED!!! c.fsdsp");
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_c_swsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_swsp(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.swsp");
 
   m_PFB.uimm = m_DeInst16.FetchImmCssFmt_5276(Inst);
@@ -643,7 +643,7 @@ template <class T> bool Riscv<T>::Op_c_swsp(uint16_t Inst) {
   return true;
 }
 
-template <class T> bool Riscv<T>::Op_c_sdsp(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op32c_sdsp(uint16_t Inst) {
   // RecordInst& Record = FetchNewRecord(m_Pc, Inst, m_InstLen,
   // "c.sdsp");
 

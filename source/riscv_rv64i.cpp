@@ -5,7 +5,7 @@
 
 namespace rvemu {
 
-template <class T> bool Riscv<T>::Op_op32(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op64i_op32(uint32_t Inst) {
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   m_PFB.funct7 = m_DeInst32.Fetch_31_25(Inst);
 
@@ -30,7 +30,7 @@ template <class T> bool Riscv<T>::Op_op32(uint32_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op_opimm32(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op64i_opimm32(uint32_t Inst) {
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
   m_PFB.funct7 = m_DeInst32.Fetch_31_25(Inst);
 

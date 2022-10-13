@@ -223,41 +223,41 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     // clang-format off
     // Table 19.1: RISC-V base opcode map, inst[1:0]=11
     switch (Funct) {
-    case 0b00000:  Status = this->Op_load(Inst);       break;
-    case 0b00001:  Status = this->Op_load_fp(Inst);    break;
-    case 0b00010:  Status = this->Op_unimp(Inst);      break;
-    case 0b00011:  Status = this->Op_misc_mem(Inst);   break;
-    case 0b00100:  Status = this->Op_opimm(Inst);      break;
-    case 0b00101:  Status = this->Op_auipc(Inst);      break;
-    case 0b00110:  Status = this->Op_opimm32(Inst);    break;
-    case 0b00111:  Status = this->Op_unimp(Inst);      break;
+    case 0b00000:  Status = this->Op32i_load(Inst);       break;
+    case 0b00001:  Status = this->Op32i_load_fp(Inst);    break;
+    case 0b00010:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b00011:  Status = this->Op32i_misc_mem(Inst);   break;
+    case 0b00100:  Status = this->Op32i_opimm(Inst);      break;
+    case 0b00101:  Status = this->Op32i_auipc(Inst);      break;
+    case 0b00110:  Status = this->Op64i_opimm32(Inst);    break;
+    case 0b00111:  Status = this->Op32i_unimp(Inst);      break;
 
-    case 0b01000:  Status = this->Op_store(Inst);      break;
-    case 0b01001:  Status = this->Op_store_fp(Inst);   break;
-    case 0b01010:  Status = this->Op_unimp(Inst);      break;
-    case 0b01011:  Status = this->Op_amo(Inst);        break;
-    case 0b01100:  Status = this->Op_op(Inst);         break;
-    case 0b01101:  Status = this->Op_lui(Inst);        break;
-    case 0b01110:  Status = this->Op_unimp(Inst);      break;
-    case 0b01111:  Status = this->Op_unimp(Inst);      break;
+    case 0b01000:  Status = this->Op32i_store(Inst);      break;
+    case 0b01001:  Status = this->Op32i_store_fp(Inst);   break;
+    case 0b01010:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b01011:  Status = this->Op32i_amo(Inst);        break;
+    case 0b01100:  Status = this->Op32i_op(Inst);         break;
+    case 0b01101:  Status = this->Op32i_lui(Inst);        break;
+    case 0b01110:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b01111:  Status = this->Op32i_unimp(Inst);      break;
 
-    case 0b10000:  Status = this->Op_madd(Inst);       break;
-    case 0b10001:  Status = this->Op_msub(Inst);       break;
-    case 0b10010:  Status = this->Op_nmsub(Inst);      break;
-    case 0b10011:  Status = this->Op_unimp(Inst);      break;
-    case 0b10100:  Status = this->Op_unimp(Inst);      break;
-    case 0b10101:  Status = this->Op_unimp(Inst);      break;
-    case 0b10110:  Status = this->Op_unimp(Inst);      break;
-    case 0b10111:  Status = this->Op_unimp(Inst);      break;
+    case 0b10000:  Status = this->Op32i_madd(Inst);       break;
+    case 0b10001:  Status = this->Op32i_msub(Inst);       break;
+    case 0b10010:  Status = this->Op32i_nmsub(Inst);      break;
+    case 0b10011:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b10100:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b10101:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b10110:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b10111:  Status = this->Op32i_unimp(Inst);      break;
 
-    case 0b11000:  Status = this->Op_branch(Inst);     break;
-    case 0b11001:  Status = this->Op_jalr(Inst);       break;
-    case 0b11010:  Status = this->Op_unimp(Inst);      break;
-    case 0b11011:  Status = this->Op_jal(Inst);        break;
-    case 0b11100:  Status = this->Op_system(Inst);     break;
-    case 0b11101:  Status = this->Op_unimp(Inst);      break;
-    case 0b11110:  Status = this->Op_unimp(Inst);      break;
-    case 0b11111:  Status = this->Op_unimp(Inst);      break;
+    case 0b11000:  Status = this->Op32i_branch(Inst);     break;
+    case 0b11001:  Status = this->Op32i_jalr(Inst);       break;
+    case 0b11010:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b11011:  Status = this->Op32i_jal(Inst);        break;
+    case 0b11100:  Status = this->Op32i_system(Inst);     break;
+    case 0b11101:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b11110:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b11111:  Status = this->Op32i_unimp(Inst);      break;
     }
     // clang-format on
 
@@ -275,32 +275,32 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     // clang-format off
     // Table 16.4 : RVC opcode map
     switch (Funct) {
-    case 0b00000:  Status = this->Op_c_addi4spn(Inst);  break;
-    case 0b00001:  Status = this->Op_c_fld(Inst);       break;
-    case 0b00010:  Status = this->Op_c_lw(Inst);        break;
-    case 0b00011:  Status = this->Op_c_ld(Inst);        break;
-    case 0b00100:  Status = this->Op_unimp(Inst);       break;
-    case 0b00101:  Status = this->Op_c_fsd(Inst);       break;
-    case 0b00110:  Status = this->Op_c_sw(Inst);        break;
-    case 0b00111:  Status = this->Op_c_sd(Inst);        break;
+    case 0b00000:  Status = this->Op32c_addi4spn(Inst);  break;
+    case 0b00001:  Status = this->Op32c_fld(Inst);       break;
+    case 0b00010:  Status = this->Op32c_lw(Inst);        break;
+    case 0b00011:  Status = this->Op32c_ld(Inst);        break;
+    case 0b00100:  Status = this->Op32i_unimp(Inst);       break;
+    case 0b00101:  Status = this->Op32c_fsd(Inst);       break;
+    case 0b00110:  Status = this->Op32c_sw(Inst);        break;
+    case 0b00111:  Status = this->Op32c_sd(Inst);        break;
 
-    case 0b01000:  Status = this->Op_c_addi(Inst);      break;
-    case 0b01001:  Status = this->Op_c_jal(Inst);       break;
-    case 0b01010:  Status = this->Op_c_li(Inst);        break;
-    case 0b01011:  Status = this->Op_c_lui(Inst);       break;
-    case 0b01100:  Status = this->Op_c_miscalu(Inst);   break;
-    case 0b01101:  Status = this->Op_c_j(Inst);         break;
-    case 0b01110:  Status = this->Op_c_beqz(Inst);      break;
-    case 0b01111:  Status = this->Op_c_bnez(Inst);      break;
+    case 0b01000:  Status = this->Op32c_addi(Inst);      break;
+    case 0b01001:  Status = this->Op32c_jal(Inst);       break;
+    case 0b01010:  Status = this->Op32c_li(Inst);        break;
+    case 0b01011:  Status = this->Op32c_lui(Inst);       break;
+    case 0b01100:  Status = this->Op32c_miscalu(Inst);   break;
+    case 0b01101:  Status = this->Op32c_j(Inst);         break;
+    case 0b01110:  Status = this->Op32c_beqz(Inst);      break;
+    case 0b01111:  Status = this->Op32c_bnez(Inst);      break;
 
-    case 0b10000:  Status = this->Op_c_slli(Inst);      break;
-    case 0b10001:  Status = this->Op_c_fldsp(Inst);     break;
-    case 0b10010:  Status = this->Op_c_lwsp(Inst);      break;
-    case 0b10011:  Status = this->Op_c_ldsp(Inst);      break;
-    case 0b10100:  Status = this->Op_c_cr(Inst);        break;
-    case 0b10101:  Status = this->Op_c_fsdsp(Inst);     break;
-    case 0b10110:  Status = this->Op_c_swsp(Inst);      break;
-    case 0b10111:  Status = this->Op_c_sdsp(Inst);      break;
+    case 0b10000:  Status = this->Op32c_slli(Inst);      break;
+    case 0b10001:  Status = this->Op32c_fldsp(Inst);     break;
+    case 0b10010:  Status = this->Op32c_lwsp(Inst);      break;
+    case 0b10011:  Status = this->Op32c_ldsp(Inst);      break;
+    case 0b10100:  Status = this->Op32c_cr(Inst);        break;
+    case 0b10101:  Status = this->Op32c_fsdsp(Inst);     break;
+    case 0b10110:  Status = this->Op32c_swsp(Inst);      break;
+    case 0b10111:  Status = this->Op32c_sdsp(Inst);      break;
     }
     // clang-format on
 
@@ -477,7 +477,7 @@ template <class T> void Riscv<T>::ExceptStoreMisaligned(uint32_t Inst) {
   assert(!"ExceptStoreMisaligned");
 }
 
-template <class T> bool Riscv<T>::Op_unimp(uint32_t Inst) {
+template <class T> bool Riscv<T>::Op32i_unimp(uint32_t Inst) {
   assert(!"Unimplemented opcode !!!");
   return false;
 }
