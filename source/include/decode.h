@@ -66,10 +66,12 @@ enum {
   INST32_11_08 = 0b00000000'00000000'00001111'00000000,
   INST32_19_12 = 0b00000000'00001111'11110000'00000000,
   INST32_24_20 = 0b00000001'11110000'00000000'00000000,
+  INST32_25_25 = 0b00000010'00000000'00000000'00000000,
   INST32_20_20 = 0b00000000'00010000'00000000'00000000,
   INST32_30_20 = 0b01111111'11110000'00000000'00000000,
   INST32_31_12 = 0b11111111'11111111'11110000'00000000,
   INST32_31_21 = 0b01111111'11100000'00000000'00000000,
+  INST32_31_26 = 0b11111100'00000000'00000000'00000000,
   INST32_31_31 = 0b10000000'00000000'00000000'00000000,
   INST32_31_20 = 0b11111111'11110000'00000000'00000000,
   INST32_14_12 = 0b00000000'00000000'01110000'00000000,
@@ -662,6 +664,10 @@ struct DecodeInstruction32 : DecodeInstruction {
     return (INST32_24_20 & Inst) >> 20;
   }
 
+  inline uint32_t Fetch_25_25(uint32_t Inst) {
+    return (INST32_25_25 & Inst) >> 25;
+  }
+
   inline uint32_t Fetch_30_21(uint32_t Inst) {
     return (INST32_30_21 & Inst) >> 21;
   }
@@ -676,12 +682,19 @@ struct DecodeInstruction32 : DecodeInstruction {
   inline uint32_t Fetch_31_12(uint32_t Inst) {
     return (INST32_31_12 & Inst) >> 12;
   }
+
   inline uint32_t Fetch_31_20(uint32_t Inst) {
     return (INST32_31_20 & Inst) >> 20;
   }
+
   inline uint32_t Fetch_31_25(uint32_t Inst) {
     return (INST32_31_25 & Inst) >> 25;
   }
+
+  inline uint32_t Fetch_31_26(uint32_t Inst) {
+    return (INST32_31_31 & Inst) >> 26;
+  }
+
   inline uint32_t Fetch_31_31(uint32_t Inst) {
     return (INST32_31_31 & Inst) >> 31;
   }
@@ -710,6 +723,36 @@ struct DecodeInstruction32 : DecodeInstruction {
 
     // Cast to sign integer
     const int32_t imm = ((int32_t)(uimm << (31 - 11))) >> (31 - 11);
+    return imm;
+  }
+
+  inline int32_t FetchImmIType_116540(uint32_t Inst) {
+    const uint32_t inst_04_00 = Fetch_24_20(Inst);
+    const uint32_t inst_05_05 = Fetch_25_25(Inst);
+    const uint32_t inst_11_06 = Fetch_31_26(Inst);
+
+    // Combine them
+    const uint32_t uimm = (inst_04_00 << 0) | //
+                          (inst_05_05 << 5) | //
+                          (inst_11_06 << 6);
+
+    // Cast to sign integer ??
+    const int32_t imm = ((int32_t)(uimm << (31 - 6))) >> (31 - 6);
+
+    return imm;
+  }
+
+  inline int32_t FetchImmIType_11540(uint32_t Inst) {
+    const uint32_t inst_04_00 = Fetch_11_07(Inst);
+    const uint32_t inst_11_05 = Fetch_31_25(Inst);
+
+    // Combine them
+    const uint32_t uimm = (inst_04_00 << 0) | //
+                          (inst_11_05 << 5);
+
+    // Cast to sign integer
+    const int32_t imm = ((int32_t)(uimm << (31 - 5))) >> (31 - 5);
+
     return imm;
   }
 

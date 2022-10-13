@@ -5,7 +5,7 @@
 
 namespace rvemu {
 
-template <class T> bool Riscv<T>::Op64_c_sd(uint16_t Inst) {
+template <class T> bool Riscv<T>::Op64c_sd(uint16_t Inst) {
   RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "c.sd");
 
   // M[x[8+rs1'] + uimm][63:0] = x[8+rs2']

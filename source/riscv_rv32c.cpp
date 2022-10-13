@@ -126,7 +126,7 @@ template <class T> bool Riscv<T>::Op_c_sw(uint16_t Inst) {
   }
 
   case 0b111: { // C.SD
-    return Op64_c_sd(Inst);
+    return Op64c_sd(Inst);
   }
   }
 
