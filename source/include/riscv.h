@@ -207,6 +207,7 @@ public:
   bool Op64c_sd(uint16_t Inst);
 
   /*RV64I*/
+  bool Op_op32(uint32_t Inst);
   bool Op_opimm32(uint32_t Inst);
   bool Op64i_addiw(uint32_t Inst);
   bool Op64i_slliw(uint32_t Inst);

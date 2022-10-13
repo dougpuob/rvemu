@@ -5,14 +5,50 @@
 
 namespace rvemu {
 
-template <class T> bool Riscv<T>::Op_opimm32(uint32_t Inst) {
-
+template <class T> bool Riscv<T>::Op_op32(uint32_t Inst) {
   m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
+  m_PFB.funct7 = m_DeInst32.Fetch_31_25(Inst);
 
   // clang-format off
   switch (m_PFB.funct3) {
-  case 0b000: { return this->Op64i_addiw(Inst);  }  // addiw
+  case 0b000: {
+    switch (m_PFB.funct7) {
+    case 0b0000000: return this->Op64i_addw(Inst);  // addw
+    case 0b0100000: return this->Op64i_subw(Inst);  // subw
+    }
+  case 0b001: {
+     return this->Op64i_sllw(Inst);  // sllw
   }
+  case 0b101: {
+    switch (m_PFB.funct7) {
+    case 0b0000000: return this->Op64i_srlw(Inst);  // srlw
+    case 0b0100000: return this->Op64i_sraw(Inst);  // sraw
+    }
+  }}}
+  // clang-format on
+
+  return false;
+}
+
+template <class T> bool Riscv<T>::Op_opimm32(uint32_t Inst) {
+  m_PFB.funct3 = m_DeInst32.Fetch_14_12(Inst);
+  m_PFB.funct7 = m_DeInst32.Fetch_31_25(Inst);
+
+  // clang-format off
+    switch (m_PFB.funct3) {
+    case 0b000: {
+        return this->Op64i_addiw(Inst); // addiw
+    }
+    case 0b001: {
+        return this->Op64i_slliw(Inst); // slliw
+    }
+    case 0b101: {
+        switch (m_PFB.funct7) {
+        case 0b0000000: return this->Op64i_srliw(Inst);  // srliw
+        case 0b0100000: return this->Op64i_sraiw(Inst);  // sraiw
+        }
+    }
+    }
   // clang-format on
 
   return false;
