@@ -92,7 +92,12 @@ template <class T> const T RegFile<T>::Get(int X) const {
   if (m_ppRecord && *m_ppRecord && m_EnabledTraceLog) {
     const char *RegName = GetName((RvReg)X);
     const char *AbiName = GetName((rvemu::AbiName)X);
-    (*m_ppRecord)->AddLog("%s[%s]->0x%.8x ", RegName, AbiName, Val);
+    if (sizeof(T) == sizeof(uint32_t))
+      (*m_ppRecord)->AddLog("%s[%s]->0x%.8x ", RegName, AbiName, Val);
+    else if (sizeof(T) == sizeof(uint64_t))
+      (*m_ppRecord)->AddLog("%s[%s]->0x%.16x ", RegName, AbiName, Val);
+    else
+      assert(false);
   }
   return Val;
 }
