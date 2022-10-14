@@ -212,7 +212,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 
   bool Status = false;
 
-  /* standard uncompressed instruction */
+  /* Standard uncompressed instruction */
   if ((Inst & 3) == 3) {
     m_DeInst32.SetValue(Inst);
     const uint16_t Funct_04_02 = (Inst & 0b00000000'00011100);
@@ -230,7 +230,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     case 0b00100:  Status = this->Op32i_opimm(Inst);      break;
     case 0b00101:  Status = this->Op32i_auipc(Inst);      break;
     case 0b00110:  Status = this->Op64i_opimm32(Inst);    break;
-    case 0b00111:  Status = this->Op32i_unimp(Inst);      break;
+    case 0b00111:  Status = this->Op64i_sd(Inst);         break;
 
     case 0b01000:  Status = this->Op32i_store(Inst);      break;
     case 0b01001:  Status = this->Op32i_store_fp(Inst);   break;
@@ -263,7 +263,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 
     assert(Status);
   }
-  /* compressed extension instruction */
+  /* Compressed extension instruction */
   else {
     // Inst &= 0x0000FFFF;
     m_DeInst16.SetValue(Inst);
@@ -279,10 +279,10 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     case 0b00001:  Status = this->Op32c_fld(Inst);       break;
     case 0b00010:  Status = this->Op32c_lw(Inst);        break;
     case 0b00011:  Status = this->Op32c_ld(Inst);        break;
-    case 0b00100:  Status = this->Op32i_unimp(Inst);       break;
+    case 0b00100:  Status = this->Op32i_unimp(Inst);     break;
     case 0b00101:  Status = this->Op32c_fsd(Inst);       break;
     case 0b00110:  Status = this->Op32c_sw(Inst);        break;
-    case 0b00111:  Status = this->Op32c_sd(Inst);        break;
+    case 0b00111:  Status = this->Op64c_sd(Inst);        break;
 
     case 0b01000:  Status = this->Op32c_addi(Inst);      break;
     case 0b01001:  Status = this->Op32c_jal(Inst);       break;
@@ -307,7 +307,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
     assert(Status);
   }
 
-  /* step over instruction */
+  /* Step over instruction */
   if (Status) {
     bool IncInst = (0 == m_JumpIncLen) && (0 == m_JumpNewLen);
     if (IncInst) {
@@ -329,7 +329,7 @@ template <class T> bool Riscv<T>::Dispatch(uint32_t Inst) {
 template <class T>
 bool Riscv<T>::Step(int32_t Cycles, T Pc, rvemu::Memory &Mem) {
 
-  /* clean resource */
+  /* Clear resource */
   m_PFB.Clear();
   m_pRecInst = nullptr;
 
@@ -439,11 +439,11 @@ template <class T> bool Riscv<T>::Run(Elf *Elf) {
 
   for (; !HasHalted();) {
 
-    /* step instructions */
+    /* Step next instruction */
     Status = Step(CyclesPerStep, GetPc(), Mem);
     assert(Status);
 
-    /* print this instruction information */
+    /* Print this instruction information */
     if (m_pRecInst)
       PrintRecord(*m_pRecInst);
   }

@@ -133,11 +133,6 @@ template <class T> bool Riscv<T>::Op32c_sw(uint16_t Inst) {
   return false;
 }
 
-template <class T> bool Riscv<T>::Op32c_sd(uint16_t Inst) {
-  assert(!"UNIMPLEMENTED!!! c.sd");
-  return false;
-}
-
 template <class T> bool Riscv<T>::Op32c_addi(uint16_t Inst) {
 
   m_PFB.imm = m_DeInst16.FetchImmCiFmt_540(Inst);

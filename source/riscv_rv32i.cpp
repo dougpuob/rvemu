@@ -292,7 +292,7 @@ template <class T> bool Riscv<T>::Op32i_store(uint32_t Inst) {
   m_PFB.imm = m_DeInst32.FetchImmSType(Inst);
 
   switch (m_PFB.funct3) {
-  case 0b000: { // SB
+  case 0b000: { // sb
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sb");
 
     if (m_EnabledTraceLog)
@@ -312,7 +312,7 @@ template <class T> bool Riscv<T>::Op32i_store(uint32_t Inst) {
     return true;
   }
 
-  case 0b001: { // SH
+  case 0b001: { // sh
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sh");
 
     if (m_EnabledTraceLog)
@@ -332,7 +332,7 @@ template <class T> bool Riscv<T>::Op32i_store(uint32_t Inst) {
     return true;
   }
 
-  case 0b010: { // SW
+  case 0b010: { // sw
     RecordInst &Record = FetchNewRecord(m_Pc, Inst, m_InstLen, "sw");
 
     if (m_EnabledTraceLog)
@@ -350,6 +350,10 @@ template <class T> bool Riscv<T>::Op32i_store(uint32_t Inst) {
 
     Record.Result = OpResult::Executed;
     return true;
+  }
+
+  case 0b011: { // rv64i.sd
+    return Op64c_sd(Inst);
   }
 
   default:
